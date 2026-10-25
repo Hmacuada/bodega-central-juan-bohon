@@ -2,9 +2,9 @@
 <style>
 /* layout: navy hero portal (home / categorias / mis pedidos), card catalog below a career icon grid, light-blue quick-access band */
 :root{
-  --navy-900:#0E2347; --navy-700:#1B3F7A; --blue-600:#2F6FE4; --blue-500:#3E7CF0;
+  --navy-900:#0E2347; --navy-700:#1B3F7A; --yellow:#F6C500; --yellow-50:#FFF6D1;
   --gold:#C99A3B; --gold-ink:#8A6A22;
-  --blue-50:#EAF2FD; --bg:#F6F8FC; --surface:#FFFFFF; --border:#E2E8F3;
+  --bg:#F6F8FC; --surface:#FFFFFF; --border:#E2E8F3;
   --ink:#16233D; --ink-muted:#5B6B85;
   --good:#1E8F5D; --good-bg:#E3F3EC;
   --warning:#C98A12; --warning-bg:#FBF0DB;
@@ -14,9 +14,9 @@
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --navy-900:#0A1830; --navy-700:#15284F; --blue-600:#4C8DF5; --blue-500:#5B99FB;
+    --navy-900:#14315C; --navy-700:#1F4677; --yellow:#FFD23F; --yellow-50:#2E2810;
     --gold:#DDB35F; --gold-ink:#E8C178;
-    --blue-50:#152238; --bg:#0B1220; --surface:#121A2C; --border:#223049;
+    --bg:#0B1220; --surface:#121A2C; --border:#223049;
     --ink:#E7ECF6; --ink-muted:#8FA0BE;
     --good:#3FBE87; --good-bg:#16302A;
     --warning:#E0A83D; --warning-bg:#332810;
@@ -26,9 +26,9 @@
   }
 }
 :root[data-theme="dark"]{
-  --navy-900:#0A1830; --navy-700:#15284F; --blue-600:#4C8DF5; --blue-500:#5B99FB;
+  --navy-900:#14315C; --navy-700:#1F4677; --yellow:#FFD23F; --yellow-50:#2E2810;
   --gold:#DDB35F; --gold-ink:#E8C178;
-  --blue-50:#152238; --bg:#0B1220; --surface:#121A2C; --border:#223049;
+  --bg:#0B1220; --surface:#121A2C; --border:#223049;
   --ink:#E7ECF6; --ink-muted:#8FA0BE;
   --good:#3FBE87; --good-bg:#16302A;
   --warning:#E0A83D; --warning-bg:#332810;
@@ -39,7 +39,7 @@
 *{box-sizing:border-box;}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Inter",system-ui,sans-serif;}
 .mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;}
-a{color:var(--blue-600);text-decoration:none;}
+a{color:var(--navy-700);text-decoration:none;}
 button{font-family:inherit;}
 svg{display:block;}
 .icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
@@ -56,7 +56,7 @@ svg{display:block;}
 :root[data-theme="dark"] .logo-text .l1{color:var(--ink);}
 .navlinks{display:flex;gap:4px;margin-left:12px;flex:1 1 auto;}
 .navlink{display:flex;align-items:center;gap:7px;padding:8px 12px;border-radius:8px;border:none;background:none;color:var(--ink-muted);font-weight:600;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;}
-.navlink.active{color:var(--blue-600);border-bottom-color:var(--blue-600);}
+.navlink.active{color:var(--navy-900);border-bottom-color:var(--yellow);}
 .navlink:hover{background:var(--neutral-bg);}
 .profile{display:flex;align-items:center;gap:10px;flex:0 0 auto;padding:6px 8px;border-radius:10px;cursor:default;}
 .avatar{width:36px;height:36px;border-radius:50%;background:var(--navy-700);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none;}
@@ -75,9 +75,9 @@ main{max-width:1180px;margin:0 auto;padding:0 max(16px, env(safe-area-inset-left
 .search-box{display:flex;align-items:center;gap:8px;background:#fff;border-radius:999px;padding:6px 6px 6px 16px;max-width:520px;}
 .search-box input{flex:1;border:none;outline:none;font-size:14px;padding:8px 0;color:var(--ink);background:none;}
 .search-box .icon{color:var(--ink-muted);}
-.search-go{background:var(--blue-600);color:#fff;border:none;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;}
+.search-go{background:var(--yellow);color:var(--navy-900);border:none;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;}
 .hero-art{display:flex;align-items:center;justify-content:center;}
-.hero-art svg{width:100%;height:auto;max-width:300px;}
+.hero-art svg{width:100%;height:auto;max-width:150px;}
 @media (max-width:760px){
   .hero{grid-template-columns:1fr;padding:28px 20px;}
   .hero-art{display:none;}
@@ -92,18 +92,18 @@ main{max-width:1180px;margin:0 auto;padding:0 max(16px, env(safe-area-inset-left
 .career-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:18px;}
 .career-grid.full{grid-template-columns:repeat(5,1fr);}
 .career{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;background:none;border:none;cursor:pointer;padding:6px;}
-.career-icon{width:68px;height:68px;border-radius:50%;background:var(--blue-50);color:var(--navy-700);display:flex;align-items:center;justify-content:center;}
+.career-icon{width:68px;height:68px;border-radius:50%;background:var(--yellow-50);color:var(--navy-700);display:flex;align-items:center;justify-content:center;}
 .career-icon .icon{width:28px;height:28px;}
 .career-name{font-size:13px;font-weight:600;color:var(--ink);line-height:1.25;}
 @media (max-width:900px){ .career-grid{grid-template-columns:repeat(3,1fr);} .career-grid.full{grid-template-columns:repeat(3,1fr);} }
 @media (max-width:480px){ .career-grid{grid-template-columns:repeat(2,1fr);} .career-grid.full{grid-template-columns:repeat(2,1fr);} }
 
-.quick-band{background:var(--blue-50);border-radius:16px;padding:22px;}
+.quick-band{background:var(--yellow-50);border-radius:16px;padding:22px;}
 .quick-band h2{font-size:18px;font-weight:800;margin:0 0 14px;}
 .quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
 .quick-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;text-align:left;}
-.quick-card:hover{border-color:var(--blue-500);}
-.quick-ico{width:40px;height:40px;border-radius:10px;background:var(--blue-50);color:var(--navy-700);display:flex;align-items:center;justify-content:center;flex:none;}
+.quick-card:hover{border-color:var(--navy-700);}
+.quick-ico{width:40px;height:40px;border-radius:10px;background:var(--yellow-50);color:var(--navy-700);display:flex;align-items:center;justify-content:center;flex:none;}
 .quick-title{font-weight:700;font-size:14.5px;margin:0 0 4px;}
 .quick-desc{font-size:12.5px;color:var(--ink-muted);line-height:1.35;}
 .quick-arrow{margin-left:auto;align-self:center;color:var(--ink-muted);}
@@ -113,9 +113,9 @@ main{max-width:1180px;margin:0 auto;padding:0 max(16px, env(safe-area-inset-left
 .catalog-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px;}
 .chip-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink-muted);background:none;border:none;cursor:pointer;padding:4px 0;}
 select,input,textarea{font-family:inherit;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 10px;}
-select:focus,input:focus,textarea:focus{outline:2px solid var(--blue-500);outline-offset:1px;}
+select:focus,input:focus,textarea:focus{outline:2px solid var(--navy-700);outline-offset:1px;}
 .btn{font-weight:700;font-size:13.5px;border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:8px;padding:9px 16px;cursor:pointer;}
-.btn-primary{background:var(--blue-600);color:#fff;border-color:var(--blue-600);}
+.btn-primary{background:var(--navy-900);color:#fff;border-color:var(--navy-900);}
 .btn-small{padding:6px 12px;font-size:12.5px;}
 .btn[disabled]{opacity:.5;cursor:not-allowed;}
 .btn-ghost{background:none;border-color:transparent;color:var(--ink-muted);}
@@ -202,7 +202,7 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
           <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
           <input id="hero-search" placeholder="Buscar materiales, herramientas o equipos...">
           <button class="search-go" type="submit" aria-label="Buscar">
-            <svg class="icon" viewBox="0 0 24 24" style="stroke:#fff;width:18px;height:18px;"><path d="M5 12h14"/><path d="M13 5l7 7-7 7"/></svg>
+            <svg class="icon" viewBox="0 0 24 24" style="stroke:var(--navy-900);width:18px;height:18px;"><path d="M5 12h14"/><path d="M13 5l7 7-7 7"/></svg>
           </button>
         </form>
       </div>
@@ -364,34 +364,37 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
   "use strict";
 
   var ICONS = {
-    bolt: '<path d="M13 2 4 14h6l-1 8 9-12h-6z"/>',
-    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
-    gear: '<circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M4.2 4.2l2.2 2.2M17.6 17.6l2.2 2.2M3 12h3M18 12h3M4.2 19.8l2.2-2.2M17.6 6.4l2.2-2.2"/>',
-    droplet: '<path d="M12 3c4 5 7 8.5 7 12a7 7 0 1 1-14 0c0-3.5 3-7 7-12z"/>',
-    chef: '<path d="M8 21h8M9 21v-6M15 21v-6M6 11a4 4 0 0 1 4-4 3 3 0 0 1 2-1 3 3 0 0 1 2 1 4 4 0 0 1 4 4c0 2-1.5 3.5-3 4H9c-1.5-.5-3-2-3-4z"/>',
-    gauge: '<circle cx="12" cy="13" r="8"/><path d="M12 13l4-4"/><path d="M8 13h.01M12 5h.01M16 13h.01"/>',
-    truck: '<rect x="2" y="9" width="12" height="8" rx="1"/><path d="M14 11h4l3 3v3h-7z"/><circle cx="6.5" cy="18.5" r="1.6"/><circle cx="17.5" cy="18.5" r="1.6"/>',
-    pickaxe: '<path d="M4 20 14 10"/><path d="M8 4c3 1 6 4 7 7"/><path d="M17 3c-3 1-6 4-7 7"/>',
-    heavy: '<path d="M3 17h4l2-5h6l3 5h3"/><circle cx="7" cy="19" r="1.6"/><circle cx="18" cy="19" r="1.6"/><path d="M9 12V7h4l2 5"/>',
-    tripod: '<path d="M12 4v9"/><path d="M12 13 6 20"/><path d="M12 13l6 7"/><circle cx="12" cy="4" r="1.6"/>',
-    book: '<path d="M4 5c2-1 5-1 8 1 3-2 6-2 8-1v13c-2-1-5-1-8 1-3-2-6-2-8-1z"/>',
-    dot: '<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>'
+    bolt: '<g fill="currentColor" stroke="none"><path d="M13 2 3 14h7l-1.5 8L21 10h-7l1-8z"/></g>',
+    sun: '<g fill="currentColor" stroke="none"><circle cx="12" cy="12" r="4.3"/>' +
+      [0,45,90,135,180,225,270,315].map(function(a){ return '<rect x="10.9" y="1" width="2.2" height="5" rx="1.1" transform="rotate(' + a + ' 12 12)"/>'; }).join('') + '</g>',
+    gear: '<g fill="currentColor" stroke="none"><circle cx="12" cy="12" r="5.3"/>' +
+      [0,45,90,135,180,225,270,315].map(function(a){ return '<rect x="10.4" y="0.8" width="3.2" height="4.4" rx="1" transform="rotate(' + a + ' 12 12)"/>'; }).join('') + '</g>',
+    droplet: '<g fill="currentColor" stroke="none"><path d="M12 2c4.3 5 7.2 8.8 7.2 12.3A7.2 7.2 0 1 1 4.8 14.3C4.8 10.8 7.7 7 12 2z"/></g>',
+    sparkle: '<g fill="currentColor" stroke="none"><path d="M12 2l1.9 6.4L20 10l-6.1 1.8L12 18l-1.9-6.2L4 10l6.1-1.6z"/></g>',
+    chef: '<g fill="currentColor" stroke="none"><path d="M7 18c-2.3 0-4.2-1.8-4.2-4.1 0-2 1.5-3.7 3.4-4C6.7 7.6 9.1 5.7 12 5.7s5.3 1.9 5.8 4.2c1.9.3 3.4 2 3.4 4C21.2 16.2 19.3 18 17 18z"/><path d="M7.5 19.5h9v2.3h-9z"/></g>',
+    gauge: '<g fill="currentColor" stroke="none"><path d="M3.5 15a8.5 8.5 0 0 1 17 0h-2.6a5.9 5.9 0 0 0-11.8 0z"/><circle cx="12" cy="15" r="1.7"/></g><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 15l3.6-4"/>',
+    truck: '<g fill="currentColor" stroke="none"><path d="M2 7.5h10.5v8H2z"/><path d="M12.5 10.5h4l3.5 3.5v1.5h-7.5z"/><circle cx="7" cy="18.3" r="2.1"/><circle cx="17" cy="18.3" r="2.1"/></g>',
+    mountain: '<g fill="currentColor" stroke="none"><path d="M2.5 19 9 7.5l3.3 5.3L14.5 10 21.5 19z"/></g>',
+    heavy: '<g fill="currentColor" stroke="none"><path d="M2 15.5h4.3l1.6-4.2h7l2 4.2H21v3H2z"/><rect x="8.5" y="7.5" width="6" height="4.2"/><circle cx="7" cy="20" r="2.2"/><circle cx="17" cy="20" r="2.2"/></g>',
+    tripod: '<g fill="currentColor" stroke="none"><circle cx="12" cy="5" r="2.2"/><path d="M12 7v6.5L7 21H9l3-5.4 3 5.4h2l-5-7.5V7z"/></g>',
+    book: '<g fill="currentColor" stroke="none"><path d="M3 5.3c2.4-1.3 5.8-1.3 8 0v14.4c-2.2-1.3-5.6-1.3-8 0z"/><path d="M21 5.3c-2.4-1.3-5.8-1.3-8 0v14.4c2.2-1.3 5.6-1.3 8 0z"/></g>',
+    dot: '<g fill="currentColor" stroke="none"><circle cx="12" cy="12" r="8"/></g>'
   };
 
   var CARRERAS = [
-    { nombre:"Administración de Procesos Mineros", icon:"pickaxe" },
+    { nombre:"Administración de Procesos Mineros", icon:"mountain" },
     { nombre:"Asistente de Educación Diferencial", icon:"book" },
     { nombre:"Cosmetología", icon:"droplet" },
     { nombre:"Electricidad y Electrónica Industrial", icon:"bolt" },
     { nombre:"Electricidad y Energías Renovables", icon:"sun" },
     { nombre:"Electromecánica", icon:"gear" },
-    { nombre:"Estética Integral", icon:"droplet" },
+    { nombre:"Estética Integral", icon:"sparkle" },
     { nombre:"Gastronomía y Cocina Internacional", icon:"chef" },
     { nombre:"Instrumentación Automatización y Control Industrial", icon:"gauge" },
     { nombre:"Logística Industrial", icon:"truck" },
     { nombre:"Mantenimiento Mecánico Industrial", icon:"gear" },
     { nombre:"Mecánica en Maquinaria Pesada", icon:"heavy" },
-    { nombre:"Minería y Metalurgia", icon:"pickaxe" },
+    { nombre:"Minería y Metalurgia", icon:"mountain" },
     { nombre:"Operación y Mantención de Maquinaria Pesada", icon:"heavy" },
     { nombre:"Topografía", icon:"tripod" }
   ];
