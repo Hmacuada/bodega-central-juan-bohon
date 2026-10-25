@@ -278,6 +278,7 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
           <option value="Disponible">Disponible</option>
           <option value="Prestado">Prestado</option>
         </select>
+        <button class="btn btn-small" id="btn-solicitar-compra">¿No está lo que buscas? Pide su compra</button>
       </div>
       <div id="item-grid" class="item-grid"><div class="notice">Cargando...</div></div>
     </div>
@@ -286,6 +287,11 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
   <!-- MIS PEDIDOS -->
   <div id="view-mis-pedidos" class="view">
     <div class="section-head"><h2>Mis pedidos</h2></div>
+    <div class="filter-tabs" id="pedidos-tipo">
+      <button class="filter-tab active" data-tipo="prestamos">Préstamos</button>
+      <button class="filter-tab" data-tipo="compras">Solicitudes de compra</button>
+    </div>
+    <div style="height:10px;"></div>
     <div class="filter-tabs" id="pedidos-filtros">
       <button class="filter-tab active" data-f="activos">Activos</button>
       <button class="filter-tab" data-f="todos">Todos</button>
@@ -352,6 +358,42 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
       <div class="field"><label for="p-obs">Observaciones</label><textarea id="p-obs" rows="2"></textarea></div>
     </div>
     <div class="dlg-foot"><button type="button" class="btn" data-close>Cancelar</button><button type="submit" class="btn btn-primary">Enviar solicitud</button></div>
+  </form>
+</dialog>
+
+<dialog id="dlg-compra">
+  <form id="form-compra">
+    <div class="dlg-head"><h2>Solicitar compra de material</h2><button type="button" class="btn btn-ghost btn-small" data-close>Cerrar</button></div>
+    <div class="dlg-body">
+      <p class="notice" style="padding:0;margin:0 0 4px;">Para materiales que no existen aún en el inventario. El encargado de bodega revisa, aprueba y registra la compra.</p>
+      <div class="field"><label for="c-material">Material deseado *</label><input id="c-material" required placeholder="Ej: Pinza amperométrica"></div>
+      <div class="field-2col">
+        <div class="field"><label for="c-carrera">Carrera *</label><select id="c-carrera" required></select></div>
+        <div class="field"><label for="c-nombre">Solicitado por</label><input id="c-nombre" placeholder="Nombre"></div>
+      </div>
+      <div class="field"><label for="c-justificacion">Justificación</label><textarea id="c-justificacion" rows="2" placeholder="¿Para qué se usará?"></textarea></div>
+    </div>
+    <div class="dlg-foot"><button type="button" class="btn" data-close>Cancelar</button><button type="submit" class="btn btn-primary">Enviar solicitud de compra</button></div>
+  </form>
+</dialog>
+
+<dialog id="dlg-marcar-comprado">
+  <form id="form-marcar-comprado">
+    <div class="dlg-head"><h2>Registrar compra en el inventario</h2><button type="button" class="btn btn-ghost btn-small" data-close>Cerrar</button></div>
+    <div class="dlg-body">
+      <p class="notice" style="padding:0;margin:0 0 4px;" id="mc-resumen"></p>
+      <div class="field-2col">
+        <div class="field"><label for="mc-marca">Marca / modelo</label><input id="mc-marca" placeholder="Ej: Fluke 117"></div>
+        <div class="field"><label for="mc-estado">Estado físico</label>
+          <select id="mc-estado"><option>Bueno</option><option>Regular</option></select>
+        </div>
+      </div>
+      <div class="field-2col">
+        <div class="field"><label for="mc-zona">Zona / ubicación</label><input id="mc-zona" placeholder="Ej: Estante 3B"></div>
+        <div class="field"><label for="mc-fecha">Fecha de ingreso</label><input id="mc-fecha" type="date"></div>
+      </div>
+    </div>
+    <div class="dlg-foot"><button type="button" class="btn" data-close>Cancelar</button><button type="submit" class="btn btn-primary">Agregar al inventario</button></div>
   </form>
 </dialog>
 
@@ -423,8 +465,8 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
   var FEATURED = ["Electricidad y Energías Renovables","Minería y Metalurgia","Topografía","Logística Industrial","Mantenimiento Mecánico Industrial","Gastronomía y Cocina Internacional"];
   var CARRERA_NAMES = CARRERAS.map(function(c){ return c.nombre; });
 
-  var state = { inventario: [], prestamos: [], dbOk: false, readOnly: false, canManage: false, userId: null,
-                view: "home", selectedCarrera: null, pedidosFiltro: "activos" };
+  var state = { inventario: [], prestamos: [], compras: [], dbOk: false, readOnly: false, canManage: false, userId: null,
+                view: "home", selectedCarrera: null, pedidosTipo: "prestamos", pedidosFiltro: "activos" };
 
   function todayISO(){ return new Date().toISOString().slice(0,10); }
   function fmtDate(iso){
@@ -449,9 +491,9 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
     return activo ? "Prestado" : "Disponible";
   }
   function pillFor(estado){
-    if(estado === "Disponible" || estado === "Activo" || estado === "Devuelto") return "pill-good";
-    if(estado === "Prestado") return "pill-warning";
-    if(estado === "Atrasado") return "pill-critical";
+    if(estado === "Disponible" || estado === "Activo" || estado === "Devuelto" || estado === "Comprada") return "pill-good";
+    if(estado === "Prestado" || estado === "Pendiente") return "pill-warning";
+    if(estado === "Atrasado" || estado === "Rechazada") return "pill-critical";
     return "pill-neutral";
   }
   function iconSvg(key, cls){
@@ -485,10 +527,13 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
   var dlgInstrumento = document.getElementById("dlg-instrumento");
   var dlgPrestamo = document.getElementById("dlg-prestamo");
   var dlgDevolver = document.getElementById("dlg-devolver");
-  [dlgInstrumento, dlgPrestamo, dlgDevolver].forEach(wireDialog);
+  var dlgCompra = document.getElementById("dlg-compra");
+  var dlgMarcarComprado = document.getElementById("dlg-marcar-comprado");
+  [dlgInstrumento, dlgPrestamo, dlgDevolver, dlgCompra, dlgMarcarComprado].forEach(wireDialog);
 
   fillSelect(document.getElementById("f-carrera"), CARRERA_NAMES);
   fillSelect(document.getElementById("p-carrera"), CARRERA_NAMES);
+  fillSelect(document.getElementById("c-carrera"), CARRERA_NAMES);
   document.getElementById("f-fecha").value = todayISO();
   document.getElementById("p-entrega").value = todayISO();
 
@@ -512,8 +557,17 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
     dlgPrestamo.showModal();
   }
   document.getElementById("qc-solicitar").addEventListener("click", function(){ openSolicitar(null); });
-  document.getElementById("qc-solicitudes").addEventListener("click", function(){ state.pedidosFiltro = "todos"; goTo("mis-pedidos"); });
-  document.getElementById("qc-prestamos").addEventListener("click", function(){ state.pedidosFiltro = "activos"; goTo("mis-pedidos"); });
+  document.getElementById("qc-solicitudes").addEventListener("click", function(){ state.pedidosTipo = "compras"; state.pedidosFiltro = "activos"; goTo("mis-pedidos"); });
+  document.getElementById("qc-prestamos").addEventListener("click", function(){ state.pedidosTipo = "prestamos"; state.pedidosFiltro = "activos"; goTo("mis-pedidos"); });
+
+  function openSolicitarCompra(){
+    document.getElementById("form-compra").reset();
+    if(state.selectedCarrera && state.selectedCarrera !== "__ALL__") document.getElementById("c-carrera").value = state.selectedCarrera;
+    var q = document.getElementById("catalogo-search").value.trim();
+    if(q) document.getElementById("c-material").value = q;
+    dlgCompra.showModal();
+  }
+  document.getElementById("btn-solicitar-compra").addEventListener("click", openSolicitarCompra);
 
   document.getElementById("hero-search-form").addEventListener("submit", function(ev){
     ev.preventDefault();
@@ -612,17 +666,32 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
   });
 
   // ---- mis pedidos ----
+  var FILTRO_LABELS = {
+    prestamos: { activos: "Activos", todos: "Todos", historial: "Historial" },
+    compras: { activos: "Pendientes", todos: "Todas", historial: "Resueltas" }
+  };
+  function updateFiltroLabels(){
+    var labels = FILTRO_LABELS[state.pedidosTipo];
+    Array.prototype.forEach.call(document.querySelectorAll("#pedidos-filtros .filter-tab"), function(b){
+      b.textContent = labels[b.dataset.f];
+    });
+  }
+  document.getElementById("pedidos-tipo").addEventListener("click", function(ev){
+    var btn = ev.target.closest(".filter-tab");
+    if(!btn) return;
+    state.pedidosTipo = btn.dataset.tipo;
+    Array.prototype.forEach.call(document.querySelectorAll("#pedidos-tipo .filter-tab"), function(b){ b.classList.toggle("active", b === btn); });
+    updateFiltroLabels();
+    renderPedidos();
+  });
   document.getElementById("pedidos-filtros").addEventListener("click", function(ev){
     var btn = ev.target.closest(".filter-tab");
     if(!btn) return;
     state.pedidosFiltro = btn.dataset.f;
-    Array.prototype.forEach.call(document.querySelectorAll(".filter-tab"), function(b){ b.classList.toggle("active", b === btn); });
+    Array.prototype.forEach.call(document.querySelectorAll("#pedidos-filtros .filter-tab"), function(b){ b.classList.toggle("active", b === btn); });
     renderPedidos();
   });
-  function renderPedidos(){
-    Array.prototype.forEach.call(document.querySelectorAll(".filter-tab"), function(b){ b.classList.toggle("active", b.dataset.f === state.pedidosFiltro); });
-    var cont = document.getElementById("lista-pedidos");
-    if(!state.dbOk){ cont.innerHTML = '<div class="notice">Conectando con el almacén de datos...</div>'; return; }
+  function renderPedidosPrestamos(cont){
     var base = state.prestamos;
     if(!state.canManage && state.userId){ base = base.filter(function(p){ return p.requesterId === state.userId; }); }
     var items = base.filter(function(p){
@@ -632,7 +701,7 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
       return true;
     });
     if(state.prestamos.length === 0){
-      cont.innerHTML = '<div class="empty"><h3>Aún no hay solicitudes</h3><p>Usa "Solicitar materiales" para pedir tu primer equipo.</p></div>';
+      cont.innerHTML = '<div class="empty"><h3>Aún no hay préstamos</h3><p>Usa "Solicitar materiales" para pedir prestado tu primer equipo.</p></div>';
       return;
     }
     if(items.length === 0){ cont.innerHTML = '<div class="empty"><p>No hay pedidos en este filtro.</p></div>'; return; }
@@ -650,12 +719,72 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
       '</div></div>';
     }).join("");
   }
+  function renderPedidosCompras(cont){
+    var base = state.compras;
+    if(!state.canManage && state.userId){ base = base.filter(function(c){ return c.requesterId === state.userId; }); }
+    var items = base.filter(function(c){
+      var est = c.estado || "Pendiente";
+      if(state.pedidosFiltro === "activos") return est === "Pendiente" || est === "Aprobada";
+      if(state.pedidosFiltro === "historial") return est === "Comprada" || est === "Rechazada";
+      return true;
+    });
+    if(state.compras.length === 0){
+      cont.innerHTML = '<div class="empty"><h3>Aún no hay solicitudes de compra</h3><p>Usa "¿No está lo que buscas? Pide su compra" dentro de una categoría.</p></div>';
+      return;
+    }
+    if(items.length === 0){ cont.innerHTML = '<div class="empty"><p>No hay solicitudes en este filtro.</p></div>'; return; }
+    cont.innerHTML = items.map(function(c){
+      var est = c.estado || "Pendiente";
+      var accion = "";
+      if(state.canManage){
+        if(est === "Pendiente") accion = '<button class="btn btn-small" data-aprobar="' + c.id + '">Aprobar</button> <button class="btn btn-small btn-ghost" data-rechazar="' + c.id + '">Rechazar</button>';
+        else if(est === "Aprobada") accion = '<button class="btn btn-small" data-comprado="' + c.id + '">Marcar comprado</button>';
+      }
+      return '<div class="card"><div class="card-row">' +
+        '<div><div class="name" style="font-weight:700;">' + escapeHtml(c.material||"–") + '</div><div class="sub">' + escapeHtml(c.solicitadoPor||"") + '</div></div>' +
+        '<div><div class="field-label">Carrera</div><div class="field-value">' + escapeHtml(c.carrera||"–") + '</div></div>' +
+        '<div><div class="field-label">Justificación</div><div class="field-value">' + escapeHtml(c.justificacion||"–") + '</div></div>' +
+        '<div><div class="field-label">Estado</div><span class="pill ' + pillFor(est) + '">' + est + '</span></div>' +
+        '<div>' + accion + '</div>' +
+      '</div></div>';
+    }).join("");
+  }
+  function renderPedidos(){
+    var cont = document.getElementById("lista-pedidos");
+    if(!state.dbOk){ cont.innerHTML = '<div class="notice">Conectando con el almacén de datos...</div>'; return; }
+    if(state.pedidosTipo === "compras") renderPedidosCompras(cont); else renderPedidosPrestamos(cont);
+  }
   document.getElementById("lista-pedidos").addEventListener("click", function(ev){
-    var btn = ev.target.closest("[data-devolver]");
-    if(!btn) return;
-    dlgDevolver.dataset.prestamoId = btn.getAttribute("data-devolver");
-    document.getElementById("form-devolver").reset();
-    dlgDevolver.showModal();
+    var btnDev = ev.target.closest("[data-devolver]");
+    if(btnDev){
+      dlgDevolver.dataset.prestamoId = btnDev.getAttribute("data-devolver");
+      document.getElementById("form-devolver").reset();
+      dlgDevolver.showModal();
+      return;
+    }
+    var btnAp = ev.target.closest("[data-aprobar]");
+    if(btnAp){
+      window.__db.collection("compras").doc(btnAp.getAttribute("data-aprobar")).update({ estado: "Aprobada" })
+        .catch(function(e){ if(e && e.code === "invalid_argument") markReadOnly(); else console.error(e); });
+      return;
+    }
+    var btnRe = ev.target.closest("[data-rechazar]");
+    if(btnRe){
+      window.__db.collection("compras").doc(btnRe.getAttribute("data-rechazar")).update({ estado: "Rechazada" })
+        .catch(function(e){ if(e && e.code === "invalid_argument") markReadOnly(); else console.error(e); });
+      return;
+    }
+    var btnCo = ev.target.closest("[data-comprado]");
+    if(btnCo){
+      var id = btnCo.getAttribute("data-comprado");
+      var compra = state.compras.find(function(c){ return c.id === id; });
+      if(!compra) return;
+      dlgMarcarComprado.dataset.compraId = id;
+      document.getElementById("form-marcar-comprado").reset();
+      document.getElementById("mc-resumen").textContent = compra.material + " · " + compra.carrera;
+      document.getElementById("mc-fecha").value = todayISO();
+      dlgMarcarComprado.showModal();
+    }
   });
 
   function renderAll(){
@@ -667,6 +796,7 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
   function markReadOnly(){
     state.readOnly = true;
     document.getElementById("btn-nuevo-instrumento").disabled = true;
+    document.getElementById("btn-solicitar-compra").disabled = true;
   }
 
   document.getElementById("form-instrumento").addEventListener("submit", function(ev){
@@ -724,6 +854,45 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
       .catch(function(e){ if(e && e.code === "invalid_argument") markReadOnly(); else console.error(e); });
   });
 
+  document.getElementById("form-compra").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    if(!state.dbOk) return;
+    var data = {
+      material: document.getElementById("c-material").value.trim(),
+      carrera: document.getElementById("c-carrera").value,
+      solicitadoPor: document.getElementById("c-nombre").value.trim(),
+      justificacion: document.getElementById("c-justificacion").value.trim(),
+      requesterId: state.userId || null,
+      estado: "Pendiente",
+      createdAt: Date.now()
+    };
+    window.__db.collection("compras").add(data).then(function(){ dlgCompra.close(); })
+      .catch(function(e){ if(e && e.code === "invalid_argument") markReadOnly(); else console.error(e); });
+  });
+
+  document.getElementById("form-marcar-comprado").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    if(!state.dbOk) return;
+    var compraId = dlgMarcarComprado.dataset.compraId;
+    var compra = state.compras.find(function(c){ return c.id === compraId; });
+    if(!compra) return;
+    var invData = {
+      codigo: "INS-" + String(state.inventario.length + 1).padStart(3,"0"),
+      nombre: compra.material,
+      marcaModelo: document.getElementById("mc-marca").value.trim(),
+      carrera: compra.carrera,
+      estadoFisico: document.getElementById("mc-estado").value,
+      zona: document.getElementById("mc-zona").value.trim(),
+      fechaIngreso: document.getElementById("mc-fecha").value || todayISO(),
+      observaciones: "Ingresado desde solicitud de compra.",
+      createdAt: Date.now()
+    };
+    window.__db.collection("inventario").add(invData).then(function(ref){
+      return window.__db.collection("compras").doc(compraId).update({ estado: "Comprada", inventarioId: ref.id });
+    }).then(function(){ dlgMarcarComprado.close(); })
+      .catch(function(e){ if(e && e.code === "invalid_argument") markReadOnly(); else console.error(e); });
+  });
+
   // ---- boot ----
   var initialView = (location.hash || "").replace("#","");
   if(views[initialView]) goTo(initialView);
@@ -772,6 +941,11 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
       state.prestamos = snap.docs.map(function(d){ return Object.assign({ id: d.id }, d.data()); });
       renderAll();
     }, function(err){ console.error("prestamos", err); });
+
+    db.collection("compras").orderBy("createdAt","desc").onSnapshot(function(snap){
+      state.compras = snap.docs.map(function(d){ return Object.assign({ id: d.id }, d.data()); });
+      renderAll();
+    }, function(err){ console.error("compras", err); });
   }
   boot();
 })();
