@@ -79,9 +79,13 @@
           <button type="button" data-go="solicitudes" class="nav-link relative px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-cft-navy flex items-center gap-2 transition"><i data-lucide="file-text" class="w-4 h-4"></i><span>Mis solicitudes</span><span data-badge="solicitudes" class="hidden absolute -top-1 -right-1 bg-cft-gold text-cft-navy text-[10px] font-black min-w-[1rem] h-4 px-1 rounded-full items-center justify-center shadow">0</span></button>
           <button type="button" data-go="prestamos" class="nav-link px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-cft-navy flex items-center gap-2 transition"><i data-lucide="package" class="w-4 h-4"></i><span>Mis préstamos</span></button>
           <button type="button" data-go="flujo" class="nav-link px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-cft-navy flex items-center gap-2 transition"><i data-lucide="workflow" class="w-4 h-4"></i><span>Flujo Pañol</span></button>
+          <button type="button" data-go="gestion" data-admin class="nav-link hidden px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-cft-navy items-center gap-2 transition"><i data-lucide="clipboard-check" class="w-4 h-4"></i><span>Gestión</span></button>
         </nav>
 
-        <div class="flex items-center gap-3 sm:gap-4">
+        <div class="flex items-center gap-2 sm:gap-4">
+          <button type="button" id="btn-modo" data-action="modo" class="hidden items-center gap-2 p-2.5 sm:px-3 sm:py-2 rounded-xl border border-cft-gold/60 bg-cft-goldLight text-cft-navy text-xs font-bold hover:bg-amber-100 transition whitespace-nowrap" aria-label="Cambiar vista entre encargado y estudiante">
+            <i data-lucide="eye" class="w-4 h-4"></i><span id="btn-modo-text" class="hidden sm:inline">Ver como estudiante</span>
+          </button>
           <button type="button" data-action="bolsa" class="relative p-2.5 text-cft-navy hover:bg-cft-goldLight rounded-xl transition-all border border-gray-200 bg-white" aria-label="Abrir bolsa de solicitud">
             <i data-lucide="shopping-bag" class="w-5 h-5"></i>
             <span id="cart-counter" class="absolute -top-1 -right-1 bg-cft-gold text-cft-navy text-xs font-black w-5 h-5 rounded-full flex items-center justify-center shadow">0</span>
@@ -98,14 +102,22 @@
     </div>
 
     <!-- Menú móvil -->
-    <nav class="xl:hidden grid grid-cols-5 border-t border-gray-100 bg-white text-[11px] sm:text-xs text-gray-600" aria-label="Secciones">
+    <nav id="mob-nav" class="xl:hidden grid grid-cols-5 border-t border-gray-100 bg-white text-[11px] sm:text-xs text-gray-600" aria-label="Secciones">
       <button type="button" data-go="inicio" class="mob-link flex flex-col items-center gap-0.5 py-2"><i data-lucide="home" class="w-4 h-4"></i><span>Inicio</span></button>
       <button type="button" data-go="catalogo" class="mob-link flex flex-col items-center gap-0.5 py-2"><i data-lucide="layout-grid" class="w-4 h-4"></i><span>Catálogo</span></button>
       <button type="button" data-go="solicitudes" class="mob-link relative flex flex-col items-center gap-0.5 py-2"><i data-lucide="file-text" class="w-4 h-4"></i><span>Solicitudes</span><span data-badge="solicitudes" class="hidden absolute top-1 right-[22%] bg-cft-gold text-cft-navy text-[9px] font-black min-w-[0.9rem] h-[0.9rem] px-0.5 rounded-full items-center justify-center">0</span></button>
       <button type="button" data-go="prestamos" class="mob-link flex flex-col items-center gap-0.5 py-2"><i data-lucide="package" class="w-4 h-4"></i><span>Préstamos</span></button>
       <button type="button" data-go="flujo" class="mob-link flex flex-col items-center gap-0.5 py-2"><i data-lucide="workflow" class="w-4 h-4"></i><span>Flujo</span></button>
+      <button type="button" data-go="gestion" data-admin class="mob-link hidden flex-col items-center gap-0.5 py-2"><i data-lucide="clipboard-check" class="w-4 h-4"></i><span>Gestión</span></button>
     </nav>
   </header>
+
+  <div id="preview-banner" class="hidden bg-cft-gold text-cft-navy">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs sm:text-sm font-semibold">
+      <span class="flex items-center gap-2"><i data-lucide="eye" class="w-4 h-4 flex-none"></i>Estás viendo el portal como estudiante. Lo que hagas se guarda con tu cuenta.</span>
+      <button type="button" data-action="modo" class="self-start sm:self-auto underline font-bold whitespace-nowrap">Volver a modo encargado</button>
+    </div>
+  </div>
 
   <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
@@ -284,6 +296,19 @@
         </ol>
       </div>
     </section>
+    <!-- ==================== GESTIÓN (ENCARGADO) ==================== -->
+    <section id="page-gestion" class="spa-page hidden space-y-6">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200 pb-4">
+        <div>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-cft-goldLight text-cft-navy border border-cft-gold text-[11px] font-bold uppercase rounded-full mb-2"><i data-lucide="shield-check" class="w-3.5 h-3.5"></i>Solo encargado de pañol</span>
+          <h1 class="text-2xl font-black text-gray-800">Panel del Encargado</h1>
+          <p class="text-sm text-gray-500">Inventario, proveedores y compras del pañol central, con los datos compartidos en vivo.</p>
+        </div>
+      </div>
+      <div id="kpis" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4"></div>
+      <div class="flex border-b border-gray-200 gap-6 overflow-x-auto no-scrollbar text-sm font-medium" role="tablist" id="g-tabs"></div>
+      <div id="g-body"></div>
+    </section>
   </main>
 
   <!-- FOOTER -->
@@ -404,7 +429,7 @@
 <dialog id="dlg-nuevo" aria-labelledby="dn-title">
   <form id="nuevo-form" novalidate class="pop bg-white rounded-3xl shadow-2xl w-[min(36rem,calc(100vw-2rem))] max-h-[calc(100dvh-2rem)] overflow-y-auto p-6 sm:p-8 space-y-5">
     <div class="flex justify-between items-center border-b border-gray-100 pb-4">
-      <h3 id="dn-title" class="text-xl font-bold text-gray-800">Agregar material al inventario</h3>
+      <div><h3 id="dn-title" class="text-xl font-bold text-gray-800">Agregar material al inventario</h3><p id="n-codigo-line" class="hidden text-xs font-mono text-gray-400 mt-1"></p></div>
       <button type="button" data-close class="text-gray-400 hover:text-gray-600" aria-label="Cerrar"><i data-lucide="x" class="w-6 h-6"></i></button>
     </div>
     <div><label for="n-nombre" class="block text-xs font-bold text-gray-700 uppercase mb-1">Nombre</label><input id="n-nombre" required placeholder="Ej: estación total" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
@@ -452,12 +477,68 @@
     </div>
     <div id="dk-summary" class="bg-cft-goldLight p-3 rounded-xl border border-cft-gold/30 text-xs text-cft-navy"></div>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div><label for="k-marca" class="block text-xs font-bold text-gray-700 uppercase mb-1">Marca / modelo</label><input id="k-marca" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
-      <div><label for="k-zona" class="block text-xs font-bold text-gray-700 uppercase mb-1">Ubicación</label><input id="k-zona" placeholder="Ej: estante 3B" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+      <div><label for="k-prov" class="block text-xs font-bold text-gray-700 uppercase mb-1">Proveedor</label><select id="k-prov" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></select></div>
+      <div><label for="k-cant" class="block text-xs font-bold text-gray-700 uppercase mb-1">Unidades recibidas</label><input id="k-cant" type="number" min="1" max="20" step="1" value="1" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
     </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div><label for="k-costo" class="block text-xs font-bold text-gray-700 uppercase mb-1">Costo unitario (CLP)</label><input id="k-costo" type="number" min="0" step="1" placeholder="Ej: 45990" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+      <div><label for="k-marca" class="block text-xs font-bold text-gray-700 uppercase mb-1">Marca / modelo</label><input id="k-marca" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+    </div>
+    <div><label for="k-zona" class="block text-xs font-bold text-gray-700 uppercase mb-1">Ubicación en bodega</label><input id="k-zona" placeholder="Ej: estante 3B" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+    <p class="text-xs text-gray-500">Cada unidad recibida se registra en el inventario con su propio código.</p>
     <div class="flex justify-end gap-3">
       <button type="button" data-close class="px-4 py-2.5 border border-gray-300 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100">Cancelar</button>
       <button type="submit" class="px-6 py-2.5 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition flex items-center gap-2 disabled:opacity-50"><i data-lucide="package-check" class="w-4 h-4"></i><span>Agregar al inventario</span></button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-proveedor" aria-labelledby="pv-title">
+  <form id="proveedor-form" novalidate class="pop bg-white rounded-3xl shadow-2xl w-[min(36rem,calc(100vw-2rem))] max-h-[calc(100dvh-2rem)] overflow-y-auto p-6 sm:p-8 space-y-5">
+    <div class="flex justify-between items-center border-b border-gray-100 pb-4">
+      <h3 id="pv-title" class="text-xl font-bold text-gray-800">Agregar proveedor</h3>
+      <button type="button" data-close class="text-gray-400 hover:text-gray-600" aria-label="Cerrar"><i data-lucide="x" class="w-6 h-6"></i></button>
+    </div>
+    <div><label for="pv-nombre" class="block text-xs font-bold text-gray-700 uppercase mb-1">Nombre o razón social</label><input id="pv-nombre" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div><label for="pv-rut" class="block text-xs font-bold text-gray-700 uppercase mb-1">RUT</label><input id="pv-rut" placeholder="76.123.456-7" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+      <div><label for="pv-rubro" class="block text-xs font-bold text-gray-700 uppercase mb-1">Rubro</label><input id="pv-rubro" placeholder="Ej: instrumentos de medición" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div><label for="pv-contacto" class="block text-xs font-bold text-gray-700 uppercase mb-1">Persona de contacto</label><input id="pv-contacto" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+      <div><label for="pv-telefono" class="block text-xs font-bold text-gray-700 uppercase mb-1">Teléfono</label><input id="pv-telefono" type="tel" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+    </div>
+    <div><label for="pv-email" class="block text-xs font-bold text-gray-700 uppercase mb-1">Correo</label><input id="pv-email" type="email" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+    <div><label for="pv-notas" class="block text-xs font-bold text-gray-700 uppercase mb-1">Notas</label><textarea id="pv-notas" rows="2" placeholder="Condiciones, plazos de entrega, carreras que atiende" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></textarea></div>
+    <p id="pv-error" class="hidden text-xs font-semibold text-rose-600" role="alert"></p>
+    <div class="flex justify-end gap-3">
+      <button type="button" data-close class="px-4 py-2.5 border border-gray-300 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100">Cancelar</button>
+      <button type="submit" class="px-6 py-2.5 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition flex items-center gap-2 disabled:opacity-50"><i data-lucide="building-2" class="w-4 h-4"></i><span>Guardar proveedor</span></button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-orden" aria-labelledby="or-title">
+  <form id="orden-form" novalidate class="pop bg-white rounded-3xl shadow-2xl w-[min(36rem,calc(100vw-2rem))] max-h-[calc(100dvh-2rem)] overflow-y-auto p-6 sm:p-8 space-y-5">
+    <div class="flex justify-between items-center border-b border-gray-100 pb-4">
+      <h3 id="or-title" class="text-xl font-bold text-gray-800">Nueva orden de compra</h3>
+      <button type="button" data-close class="text-gray-400 hover:text-gray-600" aria-label="Cerrar"><i data-lucide="x" class="w-6 h-6"></i></button>
+    </div>
+    <p class="text-xs text-gray-500">Para compras que decide el pañol directamente, sin una solicitud previa. Queda aprobada y lista para registrar su recepción.</p>
+    <div><label for="o-material" class="block text-xs font-bold text-gray-700 uppercase mb-1">Material</label><input id="o-material" required placeholder="Ej: multímetro digital" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div><label for="o-carrera" class="block text-xs font-bold text-gray-700 uppercase mb-1">Carrera</label><select id="o-carrera" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></select></div>
+      <div><label for="o-prov" class="block text-xs font-bold text-gray-700 uppercase mb-1">Proveedor</label><select id="o-prov" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></select></div>
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+      <div><label for="o-cant" class="block text-xs font-bold text-gray-700 uppercase mb-1">Cantidad</label><input id="o-cant" type="number" min="1" max="20" step="1" value="1" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+      <div><label for="o-costo" class="block text-xs font-bold text-gray-700 uppercase mb-1">Costo unitario (CLP)</label><input id="o-costo" type="number" min="0" step="1" placeholder="Ej: 45990" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+    </div>
+    <div><label for="o-notas" class="block text-xs font-bold text-gray-700 uppercase mb-1">Motivo o notas</label><textarea id="o-notas" rows="2" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></textarea></div>
+    <p id="o-error" class="hidden text-xs font-semibold text-rose-600" role="alert"></p>
+    <div class="flex justify-end gap-3">
+      <button type="button" data-close class="px-4 py-2.5 border border-gray-300 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100">Cancelar</button>
+      <button type="submit" class="px-6 py-2.5 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition flex items-center gap-2 disabled:opacity-50"><i data-lucide="receipt" class="w-4 h-4"></i><span>Crear orden</span></button>
     </div>
   </form>
 </dialog>
@@ -491,18 +572,21 @@
   ];
   var FEATURED = ["Electricidad y Energías Renovables","Minería y Metalurgia","Topografía","Logística Industrial","Mantenimiento Mecánico Industrial","Gastronomía y Cocina Internacional"];
   var NOMBRES = CARRERAS.map(function(c){ return c.nombre; });
-  var ROUTES = ["inicio","catalogo","solicitudes","prestamos","flujo"];
+  var ROUTES = ["inicio","catalogo","solicitudes","prestamos","flujo","gestion"];
   var ACTIVE = ["Pendiente","Lista para retiro","En préstamo"];
   var MESES = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
   var CART_KEY = "panol-bolsa-v1";
+  var VIEW_KEY = "panol-vista-v1";
 
   var state = {
-    inventario: [], solicitudes: [], legacy: [], compras: [],
-    loaded: { inv:false, sol:false, leg:false, com:false },
-    db: null, user: null, dbTried: false, me: null, userId: null, canManage: false, readOnly: false,
+    inventario: [], solicitudes: [], legacy: [], compras: [], proveedores: [],
+    loaded: { inv:false, sol:false, leg:false, com:false, prov:false },
+    db: null, user: null, dbTried: false, me: null, userId: null,
+    isAdmin: false, preview: null, roleKnown: false, canManage: false, readOnly: false,
     names: {}, smap: {},
     view: "inicio", f: { carrera:"", q:"", disp:"" }, tab: "todas",
-    cart: [], detalleId: null, devolverId: null, compraId: null
+    g: { tab:"inventario", q:"", car:"", est:"", provQ:"", compEst:"" },
+    cart: [], detalleId: null, devolverId: null, compraId: null, materialId: null, proveedorId: null
   };
 
   function $(id){ return document.getElementById(id); }
@@ -519,11 +603,21 @@
   function itemById(id){ return state.inventario.find(function(i){ return i.id === id; }); }
   function canWrite(){ return !!state.db && !state.readOnly; }
   function col(n){ return state.db.collection(n); }
-  function nextCodigo(){
+  function nextNum(){
     var max = 0;
     state.inventario.forEach(function(i){ var m = /^INS-(\d+)$/.exec(i.codigo || ""); if(m) max = Math.max(max, Number(m[1])); });
-    return "INS-" + String(max + 1).padStart(3, "0");
+    return max + 1;
   }
+  function codeOf(n){ return "INS-" + String(n).padStart(3, "0"); }
+  function nextCodigo(){ return codeOf(nextNum()); }
+  function clp(n){ var v = Number(n) || 0; try{ return new Intl.NumberFormat("es-CL", { style:"currency", currency:"CLP", maximumFractionDigits:0 }).format(v); }catch(e){ return "$" + Math.round(v); } }
+  function tsISO(ts){ return ts ? isoOf(new Date(ts)) : ""; }
+  function provById(id){ return id ? state.proveedores.find(function(p){ return p.id === id; }) : null; }
+
+  /* ---------- roles: real permission + owner preview ---------- */
+  function loadPreview(){ try{ state.preview = localStorage.getItem(VIEW_KEY) === "estudiante" ? "estudiante" : null; }catch(e){ state.preview = null; } }
+  function savePreview(){ try{ if(state.preview) localStorage.setItem(VIEW_KEY, state.preview); else localStorage.removeItem(VIEW_KEY); }catch(e){} }
+  function applyRole(){ state.canManage = state.isAdmin && state.preview !== "estudiante"; }
 
   /* ---------- requests model ---------- */
   function normLegacy(p){
@@ -567,7 +661,7 @@
     state.user.profiles(ids).then(function(ps){
       var changed = false;
       ids.forEach(function(id){ var n = ps[id] && ps[id].name; if(n){ state.names[id] = n; changed = true; } });
-      if(changed){ renderSolicitudes(); renderPrestamos(); refreshIcons(); }
+      if(changed){ renderSolicitudes(); renderPrestamos(); renderGTable(); refreshIcons(); }
     });
   }
 
@@ -623,7 +717,15 @@
     try{ history.replaceState(null, "", "#" + view); }catch(e){}
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
-  window.addEventListener("hashchange", function(){ var h = location.hash.slice(1); if(h && h !== state.view) go(h); });
+  function routeFromHash(h){
+    if(h === "estudiante"){ state.preview = "estudiante"; savePreview(); applyRole(); return "inicio"; }
+    if(h === "encargado"){ state.preview = null; savePreview(); applyRole(); return "gestion"; }
+    return ROUTES.indexOf(h) !== -1 ? h : null;
+  }
+  window.addEventListener("hashchange", function(){
+    var r = routeFromHash(location.hash.slice(1));
+    if(r){ gShell = null; renderAll(); if(r !== state.view) go(r); }
+  });
 
   /* ---------- builders ---------- */
   function visual(i, size){
@@ -676,7 +778,7 @@
     }
     var name = (state.me && state.me.name) || "Invitado";
     $("who-name").textContent = name;
-    $("who-role").textContent = state.canManage ? "Encargado de pañol" : "Estudiante / docente";
+    $("who-role").textContent = state.canManage ? "Encargado de pañol" : (state.isAdmin ? "Vista de estudiante" : "Estudiante / docente");
     if(state.me && state.me.avatarUrl){
       if(!av.querySelector("img")){ av.innerHTML = ""; var img = document.createElement("img"); img.alt = ""; img.className = "w-full h-full object-cover"; av.appendChild(img); }
       av.querySelector("img").src = state.me.avatarUrl;
@@ -913,10 +1015,164 @@
     }).join("");
   }
 
+  function renderRoleUI(){
+    document.querySelectorAll("[data-admin]").forEach(function(el){ el.classList.toggle("hidden", !state.canManage); el.classList.toggle("flex", state.canManage); });
+    var mob = $("mob-nav"); mob.classList.toggle("grid-cols-5", !state.canManage); mob.classList.toggle("grid-cols-6", state.canManage);
+    var bm = $("btn-modo"); bm.classList.toggle("hidden", !state.isAdmin); bm.classList.toggle("flex", state.isAdmin);
+    $("btn-modo-text").textContent = state.preview === "estudiante" ? "Volver a encargado" : "Ver como estudiante";
+    $("preview-banner").classList.toggle("hidden", !(state.isAdmin && state.preview === "estudiante"));
+  }
+
+  /* ---------- panel del encargado ---------- */
+  var gShell = null;
+  var G_TABS = [ { id:"inventario", label:"Inventario", icon:"boxes" }, { id:"proveedores", label:"Proveedores", icon:"building-2" }, { id:"compras", label:"Compras", icon:"receipt" } ];
+  var EST_FIS = { "Bueno":"bg-emerald-50 text-emerald-700", "Regular":"bg-amber-50 text-amber-700", "Necesita mantenimiento":"bg-orange-50 text-orange-700", "Fuera de servicio":"bg-gray-100 text-gray-500" };
+  var AVAIL_DOT = { "Disponible":"bg-emerald-500", "Reservado":"bg-amber-500", "Prestado":"bg-rose-500", "Fuera de servicio":"bg-gray-400" };
+  var INPUT = "px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy";
+  var BTN_NAVY = "px-4 py-2.5 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-50";
+  function tableWrap(minW, head, rows){
+    return '<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left text-sm text-gray-600 ' + minW + '"><thead class="bg-gray-50 text-xs font-bold text-gray-700 uppercase border-b border-gray-200"><tr>' +
+      head.map(function(h){ return '<th class="p-4' + (h.c ? " " + h.c : "") + '">' + h.t + "</th>"; }).join("") + '</tr></thead><tbody class="divide-y divide-gray-100">' + rows + "</tbody></table></div></div>";
+  }
+  function emptyRow(cols, text){ return '<tr><td colspan="' + cols + '" class="p-10 text-center text-gray-400 text-sm">' + text + "</td></tr>"; }
+
+  function renderGestion(){
+    var body = $("g-body");
+    if(!state.canManage){
+      $("kpis").innerHTML = ""; $("g-tabs").innerHTML = ""; gShell = null;
+      body.innerHTML = '<div class="bg-white p-8 rounded-3xl text-center text-gray-500 text-sm border border-gray-100">' + (state.roleKnown ? "Esta sección es solo para el encargado de pañol." : "Verificando permisos…") + "</div>";
+      return;
+    }
+    var ready = state.loaded.inv && state.loaded.sol && state.loaded.leg && state.loaded.com;
+    var inv = state.inventario, reqs = requests();
+    var kpis = [
+      { l:"Materiales", v: inv.length, i:"boxes", k:"inventario" },
+      { l:"Disponibles", v: inv.filter(function(x){ return itemStatus(x) === "Disponible"; }).length, i:"circle-check", t:"text-emerald-600", k:"inventario" },
+      { l:"Prestados", v: inv.filter(function(x){ return itemStatus(x) === "Prestado"; }).length, i:"package", k:"prestamos" },
+      { l:"Solicitudes pendientes", v: reqs.filter(function(r){ return r.estado === "Pendiente"; }).length, i:"inbox", t:"text-amber-600", k:"solicitudes" },
+      { l:"Préstamos atrasados", v: reqs.filter(isLate).length, i:"triangle-alert", t:"text-rose-600", k:"prestamos" },
+      { l:"Compras en curso", v: state.compras.filter(function(c){ return c.estado === "Pendiente" || c.estado === "Aprobada"; }).length, i:"receipt", k:"compras" }
+    ];
+    $("kpis").innerHTML = kpis.map(function(x){
+      return '<button type="button" data-kpi="' + x.k + '" class="text-left bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:border-cft-gold hover:shadow-md transition">' +
+        '<div class="flex items-start justify-between gap-2"><span class="text-[11px] font-bold text-gray-500 uppercase tracking-wide leading-snug">' + x.l + '</span><span class="text-cft-navy/60 flex-none">' + ic(x.i, "w-4 h-4") + "</span></div>" +
+        '<div class="text-3xl font-black mt-2 tabular-nums ' + (x.t || "text-gray-800") + '">' + (ready ? x.v : "—") + "</div></button>";
+    }).join("");
+    var counts = { inventario: inv.length, proveedores: state.proveedores.length, compras: state.compras.length };
+    $("g-tabs").innerHTML = G_TABS.map(function(t){
+      var on = state.g.tab === t.id;
+      return '<button type="button" role="tab" aria-selected="' + on + '" data-gtab="' + t.id + '" class="py-3 whitespace-nowrap flex items-center gap-2 border-b-2 ' + (on ? "text-cft-navy border-cft-navy font-bold" : "text-gray-500 border-transparent hover:text-gray-800") + '">' + ic(t.icon, "w-4 h-4") + esc(t.label) +
+        '<span class="text-[10px] font-bold px-1.5 rounded-full ' + (on ? "bg-cft-navy text-cft-gold" : "bg-gray-100 text-gray-500") + '">' + counts[t.id] + "</span></button>";
+    }).join("");
+    if(gShell !== state.g.tab){ gShell = state.g.tab; body.innerHTML = gestionShell(state.g.tab); }
+    renderGTable();
+  }
+
+  function gestionShell(tab){
+    if(tab === "inventario"){
+      return '<div class="flex flex-col lg:flex-row gap-3 lg:items-center justify-between mb-4">' +
+        '<div class="flex flex-col sm:flex-row gap-3 flex-1 min-w-0">' +
+          '<div class="relative flex-1 min-w-0 sm:max-w-xs"><i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-3.5"></i><label for="g-q" class="sr-only">Buscar en el inventario</label><input id="g-q" type="search" autocomplete="off" value="' + esc(state.g.q) + '" placeholder="Código, nombre o marca" class="w-full pl-9 ' + INPUT + '"></div>' +
+          '<label for="g-car" class="sr-only">Carrera</label><select id="g-car" class="' + INPUT + ' sm:max-w-[16rem]"><option value="">Todas las carreras</option>' + NOMBRES.map(function(n){ return '<option value="' + esc(n) + '"' + (state.g.car === n ? " selected" : "") + ">" + esc(n) + "</option>"; }).join("") + "</select>" +
+          '<label for="g-est" class="sr-only">Estado físico</label><select id="g-est" class="' + INPUT + '"><option value="">Todo estado físico</option>' + ["Bueno","Regular","Necesita mantenimiento","Fuera de servicio"].map(function(n){ return '<option' + (state.g.est === n ? " selected" : "") + ">" + n + "</option>"; }).join("") + "</select>" +
+        "</div>" +
+        '<button type="button" data-action="nuevo" class="' + BTN_NAVY + '">' + ic("plus") + "<span>Agregar material</span></button></div>" +
+        '<p id="g-count" class="text-xs text-gray-500 font-medium mb-3"></p><div id="g-table"></div>';
+    }
+    if(tab === "proveedores"){
+      return '<div class="flex flex-col sm:flex-row gap-3 sm:items-center justify-between mb-4">' +
+        '<div class="relative flex-1 min-w-0 sm:max-w-sm"><i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-3.5"></i><label for="prov-q" class="sr-only">Buscar proveedor</label><input id="prov-q" type="search" autocomplete="off" value="' + esc(state.g.provQ) + '" placeholder="Nombre, rubro o contacto" class="w-full pl-9 ' + INPUT + '"></div>' +
+        '<button type="button" data-action="nuevo-prov" class="' + BTN_NAVY + '">' + ic("plus") + "<span>Agregar proveedor</span></button></div>" +
+        '<p id="g-count" class="text-xs text-gray-500 font-medium mb-3"></p><div id="g-table"></div>';
+    }
+    return '<div class="flex flex-col sm:flex-row gap-3 sm:items-center justify-between mb-4">' +
+      '<label for="comp-estado" class="sr-only">Estado de la compra</label><select id="comp-estado" class="' + INPUT + ' sm:max-w-xs"><option value="">Todos los estados</option>' + ["Pendiente","Aprobada","Comprada","Rechazada"].map(function(n){ return '<option' + (state.g.compEst === n ? " selected" : "") + ">" + n + "</option>"; }).join("") + "</select>" +
+      '<button type="button" data-action="nueva-orden" class="' + BTN_NAVY + '">' + ic("receipt") + "<span>Nueva orden de compra</span></button></div>" +
+      '<div id="g-summary" class="mb-3"></div><div id="g-table"></div>';
+  }
+
+  function renderGTable(){
+    var box = $("g-table"); if(!box) return;
+    var tab = state.g.tab, cnt = $("g-count");
+    if(tab === "inventario"){
+      if(!state.loaded.inv){ box.innerHTML = tableWrap("min-w-[880px]", [{t:"Cargando"}], emptyRow(1, "Cargando inventario…")); return; }
+      var q = state.g.q.toLowerCase().trim();
+      var list = state.inventario.filter(function(i){
+        if(state.g.car && i.carrera !== state.g.car) return false;
+        if(state.g.est && (i.estadoFisico || "") !== state.g.est) return false;
+        if(q && [i.codigo, i.nombre, i.marcaModelo].join(" ").toLowerCase().indexOf(q) === -1) return false;
+        return true;
+      }).sort(function(a, b){ return String(a.codigo).localeCompare(String(b.codigo)); });
+      if(cnt) cnt.textContent = "Mostrando " + list.length + " de " + plural(state.inventario.length, "material", "materiales");
+      var rows = list.map(function(i){
+        var s = itemStatus(i);
+        return '<tr class="hover:bg-gray-50 transition">' +
+          '<td class="p-4 font-mono text-xs font-bold text-cft-navy whitespace-nowrap">' + esc(i.codigo || "S/C") + "</td>" +
+          '<td class="p-4"><span class="font-bold text-gray-800 block text-sm">' + esc(i.nombre) + "</span>" + (i.marcaModelo ? '<span class="text-xs text-gray-400">' + esc(i.marcaModelo) + "</span>" : "") + "</td>" +
+          '<td class="p-4 text-xs text-gray-600">' + esc(i.carrera) + "</td>" +
+          '<td class="p-4"><span class="px-2 py-0.5 rounded-full text-[11px] font-bold whitespace-nowrap ' + (EST_FIS[i.estadoFisico] || "bg-gray-100 text-gray-500") + '">' + esc(i.estadoFisico || "—") + "</span></td>" +
+          '<td class="p-4 text-xs text-gray-500">' + esc(i.zona || "Por asignar") + "</td>" +
+          '<td class="p-4"><span class="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-700 whitespace-nowrap"><span class="w-2 h-2 rounded-full ' + AVAIL_DOT[s] + '"></span>' + esc(s) + "</span></td>" +
+          '<td class="p-4 text-center"><button type="button" data-edit-material="' + esc(i.id) + '" class="px-3 py-1.5 border border-cft-navy text-cft-navy hover:bg-cft-lightBlue text-xs font-bold rounded-xl transition inline-flex items-center gap-1.5">' + ic("pencil", "w-3.5 h-3.5") + "Editar</button></td></tr>";
+      }).join("");
+      box.innerHTML = tableWrap("min-w-[880px]", [{t:"Código"},{t:"Material"},{t:"Carrera"},{t:"Estado físico"},{t:"Ubicación"},{t:"Disponibilidad"},{t:"Acción",c:"text-center"}], rows || emptyRow(7, "Ningún material calza con los filtros."));
+      return;
+    }
+    if(tab === "proveedores"){
+      if(!state.loaded.prov){ box.innerHTML = tableWrap("min-w-[760px]", [{t:"Cargando"}], emptyRow(1, "Cargando proveedores…")); return; }
+      var pq = state.g.provQ.toLowerCase().trim();
+      var provs = state.proveedores.filter(function(p){ return !pq || [p.nombre, p.rubro, p.contacto, p.rut].join(" ").toLowerCase().indexOf(pq) !== -1; })
+        .sort(function(a, b){ return String(a.nombre).localeCompare(String(b.nombre)); });
+      if(cnt) cnt.textContent = plural(provs.length, "proveedor", "proveedores");
+      if(!state.proveedores.length){
+        box.innerHTML = '<div class="bg-white rounded-3xl border border-dashed border-gray-300 p-10 text-center space-y-3">' + ic("building-2", "w-12 h-12 text-gray-300 mx-auto") + '<p class="font-bold text-gray-700 text-sm">Aún no hay proveedores registrados</p><p class="text-xs text-gray-500 max-w-sm mx-auto">Registra a quienes le venden al pañol para asociarlos a cada compra y llevar el historial de gastos por proveedor.</p><div><button type="button" data-action="nuevo-prov" class="mt-2 inline-flex ' + BTN_NAVY + '">' + ic("plus") + "<span>Agregar el primero</span></button></div></div>";
+        return;
+      }
+      var rowsP = provs.map(function(p){
+        var mine = state.compras.filter(function(c){ return c.proveedorId === p.id; });
+        var gasto = mine.filter(function(c){ return c.estado === "Comprada"; }).reduce(function(s, c){ return s + (Number(c.costoUnitario) || 0) * (Number(c.cantidad) || 1); }, 0);
+        return '<tr class="hover:bg-gray-50 transition">' +
+          '<td class="p-4"><span class="font-bold text-gray-800 block">' + esc(p.nombre) + "</span>" + (p.rubro ? '<span class="text-xs text-gray-400">' + esc(p.rubro) + "</span>" : "") + "</td>" +
+          '<td class="p-4 text-xs font-mono text-gray-500 whitespace-nowrap">' + esc(p.rut || "—") + "</td>" +
+          '<td class="p-4 text-xs text-gray-600">' + esc(p.contacto || "—") + (p.telefono ? '<span class="block text-gray-400">' + esc(p.telefono) + "</span>" : "") + "</td>" +
+          '<td class="p-4 text-xs text-gray-600 break-all">' + esc(p.email || "—") + "</td>" +
+          '<td class="p-4 text-xs text-gray-600 whitespace-nowrap"><span class="font-bold text-gray-800">' + mine.length + "</span> " + (mine.length === 1 ? "compra" : "compras") + (gasto ? '<span class="block text-gray-400">' + clp(gasto) + "</span>" : "") + "</td>" +
+          '<td class="p-4 text-center"><button type="button" data-edit-prov="' + esc(p.id) + '" class="px-3 py-1.5 border border-cft-navy text-cft-navy hover:bg-cft-lightBlue text-xs font-bold rounded-xl transition inline-flex items-center gap-1.5">' + ic("pencil", "w-3.5 h-3.5") + "Editar</button></td></tr>";
+      }).join("");
+      box.innerHTML = tableWrap("min-w-[760px]", [{t:"Proveedor"},{t:"RUT"},{t:"Contacto"},{t:"Correo"},{t:"Historial"},{t:"Acción",c:"text-center"}], rowsP || emptyRow(6, "Ningún proveedor calza con la búsqueda."));
+      return;
+    }
+    if(!state.loaded.com){ box.innerHTML = tableWrap("min-w-[900px]", [{t:"Cargando"}], emptyRow(1, "Cargando compras…")); return; }
+    var comps = state.compras.filter(function(c){ return !state.g.compEst || (c.estado || "Pendiente") === state.g.compEst; });
+    var total = state.compras.filter(function(c){ return c.estado === "Comprada"; }).reduce(function(s, c){ return s + (Number(c.costoUnitario) || 0) * (Number(c.cantidad) || 1); }, 0);
+    var sum = $("g-summary");
+    if(sum) sum.innerHTML = total ? '<div class="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl px-3 py-2 text-xs font-semibold">' + ic("wallet", "w-4 h-4") + "Total invertido en compras recibidas: <span class=\"font-black\">" + clp(total) + "</span></div>" : "";
+    var w = canWrite() ? "" : " disabled";
+    var rowsC = comps.map(function(c){
+      var e = c.estado || "Pendiente", p = provById(c.proveedorId), cant = Number(c.cantidad) || 1, cu = Number(c.costoUnitario) || 0, act = "";
+      if(e === "Pendiente") act = '<div class="flex justify-center gap-2"><button type="button" data-compra="rechazar" data-id="' + esc(c.id) + '" class="px-3 py-1.5 border border-gray-300 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 disabled:opacity-50"' + w + '>Rechazar</button><button type="button" data-compra="aprobar" data-id="' + esc(c.id) + '" class="px-3 py-1.5 bg-cft-navy text-cft-gold rounded-xl text-xs font-bold disabled:opacity-50"' + w + ">Aprobar</button></div>";
+      else if(e === "Aprobada") act = '<button type="button" data-compra="registrar" data-id="' + esc(c.id) + '" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold whitespace-nowrap disabled:opacity-50"' + w + ">Registrar recepción</button>";
+      else if(e === "Comprada") act = '<span class="text-[11px] font-mono text-gray-500">' + esc((c.inventarioCodigos || []).join(", ") || "En inventario") + "</span>";
+      else act = '<span class="text-xs text-gray-400">—</span>';
+      return '<tr class="hover:bg-gray-50 transition">' +
+        '<td class="p-4"><span class="font-bold text-gray-800 block">' + esc(c.material) + '</span><span class="text-xs text-gray-400">' + (c.origen === "orden" ? "Orden del pañol" : "Pedida por " + esc(personName(c) || "un usuario")) + "</span></td>" +
+        '<td class="p-4 text-xs text-gray-600">' + esc(c.carrera || "—") + "</td>" +
+        '<td class="p-4 text-xs text-gray-600">' + (p ? esc(p.nombre) : '<span class="text-gray-400">Sin asignar</span>') + "</td>" +
+        '<td class="p-4 text-xs text-gray-700 tabular-nums text-center">' + cant + "</td>" +
+        '<td class="p-4 text-xs text-gray-700 tabular-nums whitespace-nowrap">' + (cu ? clp(cu * cant) + '<span class="block text-gray-400">' + clp(cu) + " c/u</span>" : '<span class="text-gray-400">—</span>') + "</td>" +
+        '<td class="p-4">' + pill(e) + "</td>" +
+        '<td class="p-4 text-xs text-gray-500 whitespace-nowrap">' + esc(fmt(c.fechaCompra || tsISO(c.createdAt))) + "</td>" +
+        '<td class="p-4 text-center">' + act + "</td></tr>";
+    }).join("");
+    resolveNames(comps);
+    box.innerHTML = tableWrap("min-w-[960px]", [{t:"Material"},{t:"Carrera"},{t:"Proveedor"},{t:"Cant.",c:"text-center"},{t:"Costo"},{t:"Estado"},{t:"Fecha"},{t:"Acción",c:"text-center"}], rowsC || emptyRow(8, state.compras.length ? "No hay compras con ese estado." : "Aún no hay compras. Crea una orden o espera solicitudes de los usuarios."));
+  }
+
   function renderAll(){
     buildStatusMap();
-    renderWho(); renderStats(); renderCareers(); renderCatalog(); renderCart(); badges(); renderSolicitudes(); renderPrestamos();
+    renderRoleUI(); renderWho(); renderStats(); renderCareers(); renderCatalog(); renderCart(); badges(); renderSolicitudes(); renderPrestamos(); renderGestion();
     if(state.detalleId && $("dlg-detalle").open) fillDetalle();
+    if(state.view === "gestion" && state.roleKnown && !state.canManage) go("inicio");
     refreshIcons();
   }
 
@@ -1070,14 +1326,77 @@
       .catch(failed).then(function(){ busy(form, false); });
   });
 
+  function openMaterial(id){
+    var i = id ? itemById(id) : null;
+    state.materialId = i ? i.id : null;
+    $("nuevo-form").reset();
+    $("dn-title").textContent = i ? "Editar material" : "Agregar material al inventario";
+    var cl = $("n-codigo-line"); cl.textContent = i ? "Código " + (i.codigo || "S/C") + " · ingresado el " + fmt(i.fechaIngreso) : ""; cl.classList.toggle("hidden", !i);
+    $("n-nombre").value = i ? i.nombre : "";
+    $("n-marca").value = i ? (i.marcaModelo || "") : "";
+    $("n-carrera").value = i ? i.carrera : (state.g.car || state.f.carrera || NOMBRES[0]);
+    $("n-estado").value = i ? (i.estadoFisico || "Bueno") : "Bueno";
+    $("n-zona").value = i ? (i.zona || "") : "";
+    $("n-fecha").value = i ? (i.fechaIngreso || today()) : today();
+    $("n-obs").value = i ? (i.observaciones || "") : "";
+    err("n-error", "");
+    open("dlg-nuevo");
+  }
   $("nuevo-form").addEventListener("submit", function(ev){
     ev.preventDefault();
     var form = this, n = $("n-nombre").value.trim();
     if(!n){ err("n-error", "El material necesita un nombre."); return; }
+    var data = { nombre: n, marcaModelo: $("n-marca").value.trim(), carrera: $("n-carrera").value, estadoFisico: $("n-estado").value, zona: $("n-zona").value.trim(), fechaIngreso: $("n-fecha").value || today(), observaciones: $("n-obs").value.trim() };
     busy(form, true);
-    var codigo = nextCodigo();
-    col("inventario").add({ codigo: codigo, nombre: n, marcaModelo: $("n-marca").value.trim(), carrera: $("n-carrera").value, estadoFisico: $("n-estado").value, zona: $("n-zona").value.trim(), fechaIngreso: $("n-fecha").value || today(), observaciones: $("n-obs").value.trim(), createdAt: Date.now() })
-      .then(function(){ close("dlg-nuevo"); toast(n + " agregado como " + codigo + "."); })
+    var p, msg;
+    if(state.materialId){ data.updatedAt = Date.now(); p = col("inventario").doc(state.materialId).update(data); msg = n + " actualizado."; }
+    else { data.codigo = nextCodigo(); data.createdAt = Date.now(); p = col("inventario").add(data); msg = n + " agregado como " + data.codigo + "."; }
+    p.then(function(){ close("dlg-nuevo"); toast(msg); }).catch(failed).then(function(){ busy(form, false); });
+  });
+
+  function provOptions(sel, value){
+    sel.innerHTML = '<option value="">Sin proveedor asignado</option>' + state.proveedores.slice().sort(function(a, b){ return String(a.nombre).localeCompare(String(b.nombre)); })
+      .map(function(p){ return '<option value="' + esc(p.id) + '">' + esc(p.nombre) + "</option>"; }).join("");
+    sel.value = value || "";
+  }
+  function openProveedor(id){
+    var p = id ? provById(id) : null;
+    state.proveedorId = p ? p.id : null;
+    $("proveedor-form").reset();
+    $("pv-title").textContent = p ? "Editar proveedor" : "Agregar proveedor";
+    ["nombre","rut","rubro","contacto","telefono","email","notas"].forEach(function(k){ $("pv-" + k).value = p ? (p[k] || "") : ""; });
+    err("pv-error", "");
+    open("dlg-proveedor");
+  }
+  $("proveedor-form").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var form = this, nombre = $("pv-nombre").value.trim();
+    if(!nombre){ err("pv-error", "El proveedor necesita un nombre."); return; }
+    var email = $("pv-email").value.trim();
+    if(email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ err("pv-error", "Revisa el correo: no parece válido."); return; }
+    var data = { nombre: nombre, rut: $("pv-rut").value.trim(), rubro: $("pv-rubro").value.trim(), contacto: $("pv-contacto").value.trim(), telefono: $("pv-telefono").value.trim(), email: email, notas: $("pv-notas").value.trim(), updatedAt: Date.now() };
+    busy(form, true);
+    var p = state.proveedorId ? col("proveedores").doc(state.proveedorId).update(data) : col("proveedores").add(Object.assign({ createdAt: Date.now() }, data));
+    p.then(function(){ close("dlg-proveedor"); toast(state.proveedorId ? "Proveedor actualizado." : nombre + " agregado a proveedores."); }).catch(failed).then(function(){ busy(form, false); });
+  });
+
+  function openOrden(){
+    $("orden-form").reset();
+    fill($("o-carrera"), NOMBRES);
+    $("o-carrera").value = state.g.car || NOMBRES[0];
+    provOptions($("o-prov"), "");
+    $("o-cant").value = 1;
+    err("o-error", "");
+    open("dlg-orden");
+  }
+  $("orden-form").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var form = this, m = $("o-material").value.trim();
+    if(!m){ err("o-error", "Indica qué material se va a comprar."); return; }
+    var cant = Math.max(1, Math.min(20, parseInt($("o-cant").value, 10) || 1));
+    busy(form, true);
+    col("compras").add({ material: m, carrera: $("o-carrera").value, proveedorId: $("o-prov").value || null, cantidad: cant, costoUnitario: Number($("o-costo").value) || 0, justificacion: $("o-notas").value.trim(), origen: "orden", estado: "Aprobada", fechaAprobacion: today(), solicitadoPor: "", requesterId: state.userId || null, createdAt: Date.now() })
+      .then(function(){ close("dlg-orden"); toast("Orden de compra creada. Registra la recepción cuando llegue."); })
       .catch(failed).then(function(){ busy(form, false); });
   });
 
@@ -1093,11 +1412,21 @@
   $("comprado-form").addEventListener("submit", function(ev){
     ev.preventDefault();
     var form = this, c = state.compras.find(function(x){ return x.id === state.compraId; }); if(!c) return;
+    var n = Math.max(1, Math.min(20, parseInt($("k-cant").value, 10) || 1));
+    var costo = Number($("k-costo").value) || 0, provId = $("k-prov").value || null;
+    var start = nextNum(), ids = [], codes = [], chain = Promise.resolve();
     busy(form, true);
-    var codigo = nextCodigo();
-    col("inventario").add({ codigo: codigo, nombre: c.material, marcaModelo: $("k-marca").value.trim(), carrera: c.carrera, estadoFisico: "Bueno", zona: $("k-zona").value.trim(), fechaIngreso: today(), observaciones: "Ingresado desde una solicitud de compra.", createdAt: Date.now() })
-      .then(function(ref){ return col("compras").doc(c.id).update({ estado: "Comprada", inventarioId: ref.id }); })
-      .then(function(){ close("dlg-comprado"); toast(c.material + " ya está en el catálogo como " + codigo + "."); })
+    for(var k = 0; k < n; k++){
+      (function(k){
+        chain = chain.then(function(){
+          var codigo = codeOf(start + k);
+          return col("inventario").add({ codigo: codigo, nombre: c.material, marcaModelo: $("k-marca").value.trim(), carrera: c.carrera, estadoFisico: "Bueno", zona: $("k-zona").value.trim(), fechaIngreso: today(), observaciones: "Ingresado desde una compra" + (provById(provId) ? " a " + provById(provId).nombre : "") + ".", createdAt: Date.now() + k })
+            .then(function(ref){ ids.push(ref.id); codes.push(codigo); });
+        });
+      })(k);
+    }
+    chain.then(function(){ return col("compras").doc(c.id).update({ estado: "Comprada", inventarioId: ids[0], inventarioIds: ids, inventarioCodigos: codes, proveedorId: provId, cantidad: n, costoUnitario: costo, fechaCompra: today() }); })
+      .then(function(){ close("dlg-comprado"); toast(c.material + ": " + plural(n, "unidad ingresada", "unidades ingresadas") + " (" + codes[0] + (n > 1 ? " a " + codes[codes.length - 1] : "") + ")."); })
       .catch(failed).then(function(){ busy(form, false); });
   });
 
@@ -1124,7 +1453,10 @@
     if(kind === "registrar"){
       state.compraId = id;
       $("comprado-form").reset();
-      $("dk-summary").innerHTML = '<p class="font-bold">' + esc(c.material) + "</p><p>" + esc(c.carrera) + " · quedará registrado como " + esc(nextCodigo()) + "</p>";
+      $("dk-summary").innerHTML = '<p class="font-bold">' + esc(c.material) + "</p><p>" + esc(c.carrera) + " · la primera unidad quedará como " + esc(nextCodigo()) + "</p>";
+      provOptions($("k-prov"), c.proveedorId || "");
+      $("k-cant").value = Number(c.cantidad) || 1;
+      $("k-costo").value = c.costoUnitario ? c.costoUnitario : "";
       open("dlg-comprado"); return;
     }
     col("compras").doc(id).update({ estado: kind === "aprobar" ? "Aprobada" : "Rechazada" })
@@ -1147,15 +1479,40 @@
     if(t.hasAttribute("data-qr")){ openQR(t.getAttribute("data-qr")); return; }
     if(t.hasAttribute("data-req")){ reqAction(t.getAttribute("data-req"), t.getAttribute("data-id")); return; }
     if(t.hasAttribute("data-compra")){ compraAction(t.getAttribute("data-compra"), t.getAttribute("data-id")); return; }
+    if(t.hasAttribute("data-gtab")){ state.g.tab = t.getAttribute("data-gtab"); renderGestion(); refreshIcons(); return; }
+    if(t.hasAttribute("data-kpi")){
+      var kp = t.getAttribute("data-kpi");
+      if(kp === "inventario" || kp === "compras"){ state.g.tab = kp; renderGestion(); refreshIcons(); }
+      else { if(kp === "solicitudes") state.tab = "Pendiente"; renderAll(); go(kp); }
+      return;
+    }
+    if(t.hasAttribute("data-edit-material")){ openMaterial(t.getAttribute("data-edit-material")); return; }
+    if(t.hasAttribute("data-edit-prov")){ openProveedor(t.getAttribute("data-edit-prov")); return; }
     var a = t.getAttribute("data-action");
     if(a === "bolsa"){ close("dlg-detalle"); renderCart(); refreshIcons(); open("dlg-bolsa"); }
     else if(a === "compra") openCompra();
-    else if(a === "nuevo"){ $("nuevo-form").reset(); $("n-carrera").value = state.f.carrera || NOMBRES[0]; $("n-fecha").value = today(); err("n-error", ""); open("dlg-nuevo"); }
+    else if(a === "nuevo") openMaterial(null);
+    else if(a === "nuevo-prov") openProveedor(null);
+    else if(a === "nueva-orden") openOrden();
+    else if(a === "modo"){
+      state.preview = state.preview === "estudiante" ? null : "estudiante";
+      savePreview(); applyRole(); gShell = null; renderAll();
+      go(state.canManage ? "gestion" : "inicio");
+      toast(state.canManage ? "Volviste al modo encargado." : "Ahora ves el portal como lo ve un estudiante.", "eye");
+    }
+  });
+  document.addEventListener("input", function(ev){
+    var id = ev.target.id;
+    if(id === "g-q"){ state.g.q = ev.target.value; renderGTable(); refreshIcons(); }
+    else if(id === "prov-q"){ state.g.provQ = ev.target.value; renderGTable(); refreshIcons(); }
   });
   document.addEventListener("change", function(ev){
     var t = ev.target;
     if(t.name === "fcar"){ state.f.carrera = t.value; renderCatalog(); refreshIcons(); }
     else if(t.name === "fdisp"){ state.f.disp = t.value; renderCatalog(); refreshIcons(); }
+    else if(t.id === "g-car"){ state.g.car = t.value; renderGTable(); refreshIcons(); }
+    else if(t.id === "g-est"){ state.g.est = t.value; renderGTable(); refreshIcons(); }
+    else if(t.id === "comp-estado"){ state.g.compEst = t.value; renderGTable(); refreshIcons(); }
   });
   $("dd-add").addEventListener("click", function(){ var id = state.detalleId; close("dlg-detalle"); addToCart(id); });
   $("dlg-detalle").addEventListener("close", function(){ state.detalleId = null; });
@@ -1171,8 +1528,8 @@
   loadCart();
 
   /* ---------- boot ---------- */
-  var initial = location.hash.slice(1);
-  go(ROUTES.indexOf(initial) !== -1 ? initial : "inicio");
+  loadPreview();
+  go(routeFromHash(location.hash.slice(1)) || "inicio");
   renderAll();
 
   function subscribe(name, key, field){
@@ -1187,21 +1544,25 @@
     var c = window.claude, db = null, user = null;
     try{ db = c && c.use ? await c.use("db") : null; }catch(e){ db = null; }
     state.db = db; state.dbTried = true;
-    if(!db){ renderAll(); return; }
+    if(!db){ state.roleKnown = true; renderAll(); return; }
     try{ user = await c.use("user"); }catch(e){ user = null; }
     state.user = user;
     if(user){
       try{
         var me = await user.me();
-        state.me = me; state.userId = me.id; state.canManage = !!me.canEdit;
+        state.me = me; state.userId = me.id; state.isAdmin = !!me.canEdit;
         if(await user.can("data.write") === false) state.readOnly = true;
       }catch(e){}
     }
+    applyRole();
+    state.roleKnown = true;
     renderAll();
     subscribe("inventario", "inv", "inventario");
     subscribe("solicitudes", "sol", "solicitudes");
     subscribe("prestamos", "leg", "legacy");
     subscribe("compras", "com", "compras");
+    if(state.isAdmin) subscribe("proveedores", "prov", "proveedores");
+    else state.loaded.prov = true;
   })();
 })();
 </script>
