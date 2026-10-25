@@ -2,9 +2,8 @@
 <style>
 /* layout: navy hero portal (home / categorias / mis pedidos), card catalog below a career icon grid, light-blue quick-access band */
 :root{
-  --navy-900:#0E2347; --navy-700:#1B3F7A; --blue-600:#2F6FE4; --blue-500:#3E7CF0; --blue-50:#EAF2FD;
-  --yellow:#F6C500;
-  --gold:#C99A3B; --gold-ink:#8A6A22;
+  --navy-900:#1B365D; --navy-700:#0F213D;
+  --gold:#E5A813; --gold-light:#FFF8E7;
   --bg:#F6F8FC; --surface:#FFFFFF; --border:#E2E8F3;
   --ink:#16233D; --ink-muted:#5B6B85;
   --good:#1E8F5D; --good-bg:#E3F3EC;
@@ -15,9 +14,8 @@
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --navy-900:#14315C; --navy-700:#1F4677; --blue-600:#4C8DF5; --blue-500:#5B99FB; --blue-50:#152238;
-    --yellow:#FFD23F;
-    --gold:#DDB35F; --gold-ink:#E8C178;
+    --navy-900:#3C6098; --navy-700:#13263F;
+    --gold:#E8B84A; --gold-light:#2E2410;
     --bg:#0B1220; --surface:#121A2C; --border:#223049;
     --ink:#E7ECF6; --ink-muted:#8FA0BE;
     --good:#3FBE87; --good-bg:#16302A;
@@ -28,9 +26,8 @@
   }
 }
 :root[data-theme="dark"]{
-  --navy-900:#14315C; --navy-700:#1F4677; --blue-600:#4C8DF5; --blue-500:#5B99FB; --blue-50:#152238;
-  --yellow:#FFD23F;
-  --gold:#DDB35F; --gold-ink:#E8C178;
+  --navy-900:#3C6098; --navy-700:#13263F;
+  --gold:#E8B84A; --gold-light:#2E2410;
   --bg:#0B1220; --surface:#121A2C; --border:#223049;
   --ink:#E7ECF6; --ink-muted:#8FA0BE;
   --good:#3FBE87; --good-bg:#16302A;
@@ -42,7 +39,7 @@
 *{box-sizing:border-box;}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Inter",system-ui,sans-serif;}
 .mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;}
-a{color:var(--blue-600);text-decoration:none;}
+a{color:var(--navy-900);text-decoration:none;}
 button{font-family:inherit;}
 svg{display:block;}
 .icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
@@ -51,18 +48,22 @@ svg{display:block;}
 .topnav{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--border);border-top:3px solid var(--yellow);}
 .topnav-inner{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:20px;padding:12px max(16px, env(safe-area-inset-left,0px)) 12px max(16px, env(safe-area-inset-right,0px));}
 .logo{display:flex;align-items:center;gap:10px;flex:0 0 auto;}
-.logo-mark{width:34px;height:39px;flex:none;}
+.logo-mark{width:33px;height:43px;flex:none;}
 .logo-text{line-height:1.15;}
 .logo-text .l1{font-size:16px;font-weight:800;color:var(--navy-900);letter-spacing:.01em;}
 .logo-text .l2{font-size:10.5px;font-weight:600;color:var(--ink-muted);letter-spacing:.03em;text-transform:uppercase;}
 @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .logo-text .l1{color:var(--ink);} }
 :root[data-theme="dark"] .logo-text .l1{color:var(--ink);}
 .navlinks{display:flex;gap:4px;margin-left:12px;flex:1 1 auto;}
-.navlink{display:flex;align-items:center;gap:7px;padding:8px 12px;border-radius:8px;border:none;background:none;color:var(--ink-muted);font-weight:600;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;}
-.navlink.active{color:var(--blue-600);border-bottom-color:var(--blue-600);}
+.navlink{display:flex;align-items:center;gap:7px;padding:8px 12px;border-radius:10px;border:none;background:none;color:var(--ink-muted);font-weight:600;font-size:14px;cursor:pointer;}
+.navlink.active{color:var(--navy-900);background:var(--gold-light);}
 .navlink:hover{background:var(--neutral-bg);}
+.accred-badge{display:none;align-items:center;gap:10px;padding-left:14px;margin-left:4px;border-left:1px solid var(--border);}
+.accred-badge .line{font-size:10.5px;font-weight:800;color:var(--navy-900);letter-spacing:.02em;line-height:1.35;}
+.accred-badge .line.sub{font-weight:600;color:var(--ink-muted);}
+@media (min-width:1180px){ .accred-badge{display:flex;} }
 .profile{display:flex;align-items:center;gap:10px;flex:0 0 auto;padding:6px 8px;border-radius:10px;cursor:default;}
-.avatar{width:36px;height:36px;border-radius:50%;background:var(--navy-700);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none;}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--navy-900);color:var(--gold);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex:none;}
 .profile-text{line-height:1.2;}
 .profile-text .name{font-size:13px;font-weight:700;color:var(--ink);}
 .profile-text .role{font-size:11.5px;color:var(--ink-muted);}
@@ -83,7 +84,7 @@ main{max-width:1180px;margin:0 auto;padding:0 max(16px, env(safe-area-inset-left
 .search-box{display:flex;align-items:center;gap:8px;background:#fff;border-radius:999px;padding:6px 6px 6px 16px;max-width:520px;}
 .search-box input{flex:1;border:none;outline:none;font-size:14px;padding:8px 0;color:var(--ink);background:none;}
 .search-box .icon{color:var(--ink-muted);}
-.search-go{background:var(--blue-600);color:#fff;border:none;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;}
+.search-go{background:var(--gold);color:var(--navy-900);border:none;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;}
 .hero-art{display:flex;align-items:center;justify-content:center;}
 .hero-art svg{width:100%;height:auto;max-width:150px;}
 @media (max-width:760px){
@@ -100,18 +101,18 @@ main{max-width:1180px;margin:0 auto;padding:0 max(16px, env(safe-area-inset-left
 .career-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:18px;}
 .career-grid.full{grid-template-columns:repeat(5,1fr);}
 .career{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;background:none;border:none;cursor:pointer;padding:6px;}
-.career-icon{width:68px;height:68px;border-radius:50%;background:var(--blue-50);color:var(--navy-700);display:flex;align-items:center;justify-content:center;}
+.career-icon{width:68px;height:68px;border-radius:50%;background:var(--gold-light);color:var(--navy-900);display:flex;align-items:center;justify-content:center;transition:transform .15s;}
+.career:hover .career-icon{transform:scale(1.08);}
 .career-icon .icon{width:28px;height:28px;}
 .career-name{font-size:13px;font-weight:600;color:var(--ink);line-height:1.25;}
 @media (max-width:900px){ .career-grid{grid-template-columns:repeat(3,1fr);} .career-grid.full{grid-template-columns:repeat(3,1fr);} }
 @media (max-width:480px){ .career-grid{grid-template-columns:repeat(2,1fr);} .career-grid.full{grid-template-columns:repeat(2,1fr);} }
 
-.quick-band{background:var(--blue-50);border-radius:16px;padding:22px;}
 .quick-band h2{font-size:18px;font-weight:800;margin:0 0 14px;}
 .quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
 .quick-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;text-align:left;}
-.quick-card:hover{border-color:var(--blue-500);}
-.quick-ico{width:40px;height:40px;border-radius:10px;background:var(--blue-50);color:var(--navy-700);display:flex;align-items:center;justify-content:center;flex:none;}
+.quick-card:hover{border-color:var(--gold);}
+.quick-ico{width:40px;height:40px;border-radius:10px;background:var(--gold-light);color:var(--navy-900);display:flex;align-items:center;justify-content:center;flex:none;}
 .quick-title{font-weight:700;font-size:14.5px;margin:0 0 4px;}
 .quick-desc{font-size:12.5px;color:var(--ink-muted);line-height:1.35;}
 .quick-arrow{margin-left:auto;align-self:center;color:var(--ink-muted);}
@@ -121,9 +122,9 @@ main{max-width:1180px;margin:0 auto;padding:0 max(16px, env(safe-area-inset-left
 .catalog-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px;}
 .chip-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink-muted);background:none;border:none;cursor:pointer;padding:4px 0;}
 select,input,textarea{font-family:inherit;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 10px;}
-select:focus,input:focus,textarea:focus{outline:2px solid var(--blue-500);outline-offset:1px;}
+select:focus,input:focus,textarea:focus{outline:2px solid var(--navy-900);outline-offset:1px;}
 .btn{font-weight:700;font-size:13.5px;border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:8px;padding:9px 16px;cursor:pointer;}
-.btn-primary{background:var(--blue-600);color:#fff;border-color:var(--blue-600);}
+.btn-primary{background:var(--navy-900);color:var(--gold);border-color:var(--navy-900);}
 .btn-small{padding:6px 12px;font-size:12.5px;}
 .btn[disabled]{opacity:.5;cursor:not-allowed;}
 .btn-ghost{background:none;border-color:transparent;color:var(--ink-muted);}
@@ -171,7 +172,7 @@ dialog::backdrop{background:rgba(10,20,40,.5);}
 footer{border-top:1px solid var(--border);margin-top:48px;}
 .footer-inner{max-width:1180px;margin:0 auto;padding:22px max(16px, env(safe-area-inset-left,0px)) max(22px, env(safe-area-inset-bottom,0px)) max(16px, env(safe-area-inset-right,0px));display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
 .footer-brand{display:flex;align-items:center;gap:10px;}
-.footer-brand .logo-mark{width:24px;height:28px;}
+.footer-brand .logo-mark{width:23px;height:30px;}
 .footer-tag{font-size:13px;color:var(--ink-muted);}
 .footer-accred{font-size:11.5px;color:var(--ink-muted);margin-top:2px;}
 </style>
@@ -179,18 +180,24 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
 <div class="topnav">
   <div class="topnav-inner">
     <div class="logo">
-      <svg class="logo-mark" viewBox="0 0 40 46" aria-hidden="true">
-        <path d="M20 2 L36 8 V21 C36 31 29 38 20 44 C11 38 4 31 4 21 V8 Z" fill="var(--navy-900)" stroke="var(--gold)" stroke-width="2"/>
-        <path d="M20 11c2.3 2.7 3.6 5 3.6 7.2a3.6 3.6 0 1 1-7.2 0c0-2.2 1.3-4.5 3.6-7.2z" fill="var(--gold)"/>
-        <rect x="18.5" y="22.5" width="3" height="9" rx="1.3" fill="var(--gold)"/>
-        <path d="M14 32.5h12" stroke="var(--gold)" stroke-width="2.2" stroke-linecap="round"/>
+      <svg class="logo-mark" viewBox="0 0 35 46" aria-hidden="true">
+        <path d="M6.2 2 10.2 8.4 16.2 4.4 22.2 8.4 26.2 2 23 11.6 29.4 11.6 21.4 18 25.4 37.2 16.2 43.6 7 37.2 11 18 3 11.6 9.4 11.6Z" fill="none" stroke="var(--gold)" stroke-width="2"/>
+        <circle cx="16.2" cy="2.8" r="1.3" fill="var(--gold)"/>
+        <circle cx="6.2" cy="2" r="1" fill="var(--gold)"/>
+        <circle cx="26.2" cy="2" r="1" fill="var(--gold)"/>
+        <circle cx="10.2" cy="8.4" r="1" fill="var(--gold)"/>
+        <circle cx="22.2" cy="8.4" r="1" fill="var(--gold)"/>
       </svg>
       <div class="logo-text"><div class="l1">Juan Bohón</div><div class="l2">Centro de Formación Técnica</div></div>
+      <div class="accred-badge">
+        <div><div class="line">CFT ACREDITADO</div><div class="line">NIVEL AVANZADO</div></div>
+        <div><div class="line sub">Gestión institucional y</div><div class="line sub">docencia de pregrado</div></div>
+      </div>
     </div>
     <nav class="navlinks" role="tablist">
-      <button class="navlink" role="tab" data-view="home"><svg class="icon" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7"/><path d="M6 10v10h12V10"/><path d="M10 20v-6h4v6"/></svg>Inicio</button>
-      <button class="navlink" role="tab" data-view="categorias"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Categorías</button>
-      <button class="navlink" role="tab" data-view="mis-pedidos"><svg class="icon" viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M9.5 13.5h6"/><path d="M9.5 17h6"/></svg>Mis pedidos</button>
+      <button class="navlink" role="tab" data-view="home"><i data-lucide="home" class="icon"></i>Inicio</button>
+      <button class="navlink" role="tab" data-view="categorias"><i data-lucide="layout-grid" class="icon"></i>Categorías</button>
+      <button class="navlink" role="tab" data-view="mis-pedidos"><i data-lucide="file-text" class="icon"></i>Mis pedidos</button>
     </nav>
     <div class="profile">
       <div class="avatar" id="avatar-initials">?</div>
@@ -207,10 +214,10 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
         <h1>Tu pañol, conectado con tu carrera</h1>
         <p>Encuentra y solicita los materiales, herramientas y equipos para tus clases prácticas.</p>
         <form class="search-box" id="hero-search-form">
-          <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <i data-lucide="search" class="icon"></i>
           <input id="hero-search" placeholder="Buscar materiales, herramientas o equipos...">
           <button class="search-go" type="submit" aria-label="Buscar">
-            <svg class="icon" viewBox="0 0 24 24" style="stroke:#fff;width:18px;height:18px;"><path d="M5 12h14"/><path d="M13 5l7 7-7 7"/></svg>
+            <i data-lucide="arrow-right" class="icon" style="width:18px;height:18px;"></i>
           </button>
         </form>
       </div>
@@ -231,7 +238,7 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
     <div class="section">
       <div class="section-head">
         <h2>Explora por carrera</h2>
-        <a href="#categorias" class="see-all" data-nav="categorias">Ver todas las carreras <svg class="icon" style="width:14px;height:14px;" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M13 5l7 7-7 7"/></svg></a>
+        <a href="#categorias" class="see-all" data-nav="categorias">Ver todas las carreras <i data-lucide="arrow-right" class="icon" style="width:14px;height:14px;"></i></a>
       </div>
       <div class="career-grid" id="career-grid-home"></div>
     </div>
@@ -240,19 +247,19 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
       <h2>Accesos rápidos</h2>
       <div class="quick-grid">
         <button class="quick-card" id="qc-solicitar">
-          <div class="quick-ico"><svg class="icon" viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M12 12v6M9 15h6"/></svg></div>
+          <div class="quick-ico"><i data-lucide="file-plus-2" class="icon"></i></div>
           <div><div class="quick-title">Solicitar materiales</div><div class="quick-desc">Realiza una solicitud de materiales o equipos para tu carrera.</div></div>
-          <svg class="icon quick-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M13 5l7 7-7 7"/></svg>
+          <i data-lucide="arrow-right" class="icon quick-arrow"></i>
         </button>
         <button class="quick-card" id="qc-solicitudes">
-          <div class="quick-ico"><svg class="icon" viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M9.5 13.5h6"/><path d="M9.5 17h6"/></svg></div>
+          <div class="quick-ico"><i data-lucide="clipboard-list" class="icon"></i></div>
           <div><div class="quick-title">Mis solicitudes</div><div class="quick-desc">Revisa el estado de tus solicitudes y su historial.</div></div>
-          <svg class="icon quick-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M13 5l7 7-7 7"/></svg>
+          <i data-lucide="arrow-right" class="icon quick-arrow"></i>
         </button>
         <button class="quick-card" id="qc-prestamos">
-          <div class="quick-ico"><svg class="icon" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/></svg></div>
+          <div class="quick-ico"><i data-lucide="package" class="icon"></i></div>
           <div><div class="quick-title">Mis préstamos</div><div class="quick-desc">Consulta tus préstamos activos y fechas de devolución.</div></div>
-          <svg class="icon quick-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M13 5l7 7-7 7"/></svg>
+          <i data-lucide="arrow-right" class="icon quick-arrow"></i>
         </button>
       </div>
     </div>
@@ -266,7 +273,7 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
     </div>
 
     <div class="section" id="catalogo-wrap" style="display:none;">
-      <button class="chip-back" id="btn-back-categorias"><svg class="icon" style="width:16px;height:16px;" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="M11 5l-7 7 7 7"/></svg> Todas las categorías</button>
+      <button class="chip-back" id="btn-back-categorias"><i data-lucide="arrow-left" class="icon" style="width:16px;height:16px;"></i> Todas las categorías</button>
       <div class="section-head">
         <h2 id="catalogo-title">Carrera</h2>
         <button class="btn btn-primary btn-small" id="btn-nuevo-instrumento" style="display:none;">+ Agregar material</button>
@@ -305,11 +312,13 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
-      <svg class="logo-mark" viewBox="0 0 40 46" aria-hidden="true">
-        <path d="M20 2 L36 8 V21 C36 31 29 38 20 44 C11 38 4 31 4 21 V8 Z" fill="var(--navy-900)" stroke="var(--gold)" stroke-width="2"/>
-        <path d="M20 11c2.3 2.7 3.6 5 3.6 7.2a3.6 3.6 0 1 1-7.2 0c0-2.2 1.3-4.5 3.6-7.2z" fill="var(--gold)"/>
-        <rect x="18.5" y="22.5" width="3" height="9" rx="1.3" fill="var(--gold)"/>
-        <path d="M14 32.5h12" stroke="var(--gold)" stroke-width="2.2" stroke-linecap="round"/>
+      <svg class="logo-mark" viewBox="0 0 35 46" aria-hidden="true">
+        <path d="M6.2 2 10.2 8.4 16.2 4.4 22.2 8.4 26.2 2 23 11.6 29.4 11.6 21.4 18 25.4 37.2 16.2 43.6 7 37.2 11 18 3 11.6 9.4 11.6Z" fill="none" stroke="var(--gold)" stroke-width="2"/>
+        <circle cx="16.2" cy="2.8" r="1.3" fill="var(--gold)"/>
+        <circle cx="6.2" cy="2" r="1" fill="var(--gold)"/>
+        <circle cx="26.2" cy="2" r="1" fill="var(--gold)"/>
+        <circle cx="10.2" cy="8.4" r="1" fill="var(--gold)"/>
+        <circle cx="22.2" cy="8.4" r="1" fill="var(--gold)"/>
       </svg>
       <div class="logo-text"><div class="l1">Juan Bohón</div><div class="l2">Centro de Formación Técnica</div></div>
     </div>
@@ -409,58 +418,27 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
 </dialog>
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script src="https://unpkg.com/lucide@1.48.0/dist/umd/lucide.js"></script>
 <script>
 (function(){
   "use strict";
 
-  var ICONS = {
-    bolt: '<g fill="currentColor" stroke="none"><path d="M13 2 3 14h7l-1.5 8L21 10h-7l1-8z"/></g>',
-    sun: '<g fill="currentColor" stroke="none"><circle cx="12" cy="12" r="3.6"/></g>' +
-      '<g stroke="currentColor" stroke-width="1.8" stroke-linecap="round">' +
-      '<line x1="12" y1="6.2" x2="12" y2="3.4"/><line x1="15.8" y1="8.2" x2="18.2" y2="5.8"/>' +
-      '<line x1="17.8" y1="12" x2="20.6" y2="12"/><line x1="15.8" y1="15.8" x2="18.2" y2="18.2"/>' +
-      '<line x1="12" y1="17.8" x2="12" y2="20.6"/><line x1="8.2" y1="15.8" x2="5.8" y2="18.2"/>' +
-      '<line x1="6.2" y1="12" x2="3.4" y2="12"/><line x1="8.2" y1="8.2" x2="5.8" y2="5.8"/></g>',
-    gear: '<path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M20 12 16 5.07 8 5.07 4 12 8 18.93 16 18.93Z"/>' +
-      '<circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/>',
-    droplet: '<g fill="currentColor" stroke="none"><path d="M12 2c4.3 5 7.2 8.8 7.2 12.3A7.2 7.2 0 1 1 4.8 14.3C4.8 10.8 7.7 7 12 2z"/></g>',
-    sparkle: '<g fill="currentColor" stroke="none"><path d="M12 2 15 9 22 12 15 15 12 22 9 15 2 12 9 9Z"/></g>',
-    chef: '<g fill="currentColor" stroke="none"><ellipse cx="12" cy="9.3" rx="6.3" ry="5.3"/><rect x="7.3" y="13" width="9.4" height="5" rx="1"/><rect x="6.8" y="18.8" width="10.4" height="2.4" rx="1"/></g>',
-    gauge: '<circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/>' +
-      '<g stroke="currentColor" stroke-width="1.6" stroke-linecap="round">' +
-      '<path d="M12 4.6v1.8M12 17.6v1.8M4.6 12h1.8M17.6 12h1.8"/></g>' +
-      '<circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/>' +
-      '<path d="M12 12 15.5 7.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>',
-    truck: '<g fill="currentColor" stroke="none"><path d="M2 7.5h10.5v8H2z"/><path d="M12.5 10.5h4l3.5 3.5v1.5h-7.5z"/><circle cx="7" cy="18.3" r="2.1"/><circle cx="17" cy="18.3" r="2.1"/></g>',
-    mountain: '<g fill="currentColor" stroke="none"><path d="M2 20 8 5.5l4.2 6.5L15 8.5 22 20z"/></g>',
-    heavy: '<g fill="currentColor" stroke="none">' +
-      '<rect x="3" y="12.5" width="9.5" height="6.3" rx="1"/>' +
-      '<path d="M12.5 12.5h4.3l3.2 3.4v2.9h-7.5z"/>' +
-      '<rect x="1.3" y="17" width="3.2" height="3.2" rx="0.6"/>' +
-      '<circle cx="7.2" cy="20.6" r="2.1"/><circle cx="16.5" cy="20.6" r="2.1"/></g>',
-    tripod: '<g fill="currentColor" stroke="none"><circle cx="12" cy="6" r="2.4"/></g>' +
-      '<g stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="8.5" x2="12" y2="13"/>' +
-      '<line x1="12" y1="13" x2="5.5" y2="21"/><line x1="12" y1="13" x2="18.5" y2="21"/><line x1="12" y1="13" x2="12" y2="21"/></g>',
-    book: '<g fill="currentColor" stroke="none"><path d="M3 5.3c2.4-1.3 5.8-1.3 8 0v14.4c-2.2-1.3-5.6-1.3-8 0z"/><path d="M21 5.3c-2.4-1.3-5.8-1.3-8 0v14.4c2.2-1.3 5.6-1.3 8 0z"/></g>',
-    dot: '<g fill="currentColor" stroke="none"><circle cx="12" cy="12" r="8"/></g>'
-  };
-
   var CARRERAS = [
-    { nombre:"Administración de Procesos Mineros", icon:"mountain" },
-    { nombre:"Asistente de Educación Diferencial", icon:"book" },
+    { nombre:"Administración de Procesos Mineros", icon:"briefcase" },
+    { nombre:"Asistente de Educación Diferencial", icon:"book-open" },
     { nombre:"Cosmetología", icon:"droplet" },
-    { nombre:"Electricidad y Electrónica Industrial", icon:"bolt" },
+    { nombre:"Electricidad y Electrónica Industrial", icon:"zap" },
     { nombre:"Electricidad y Energías Renovables", icon:"sun" },
-    { nombre:"Electromecánica", icon:"gear" },
-    { nombre:"Estética Integral", icon:"sparkle" },
-    { nombre:"Gastronomía y Cocina Internacional", icon:"chef" },
+    { nombre:"Electromecánica", icon:"cog" },
+    { nombre:"Estética Integral", icon:"sparkles" },
+    { nombre:"Gastronomía y Cocina Internacional", icon:"chef-hat" },
     { nombre:"Instrumentación Automatización y Control Industrial", icon:"gauge" },
     { nombre:"Logística Industrial", icon:"truck" },
-    { nombre:"Mantenimiento Mecánico Industrial", icon:"gear" },
-    { nombre:"Mecánica en Maquinaria Pesada", icon:"heavy" },
-    { nombre:"Minería y Metalurgia", icon:"mountain" },
-    { nombre:"Operación y Mantención de Maquinaria Pesada", icon:"heavy" },
-    { nombre:"Topografía", icon:"tripod" }
+    { nombre:"Mantenimiento Mecánico Industrial", icon:"wrench" },
+    { nombre:"Mecánica en Maquinaria Pesada", icon:"hammer" },
+    { nombre:"Minería y Metalurgia", icon:"pickaxe" },
+    { nombre:"Operación y Mantención de Maquinaria Pesada", icon:"hard-hat" },
+    { nombre:"Topografía", icon:"compass" }
   ];
   var FEATURED = ["Electricidad y Energías Renovables","Minería y Metalurgia","Topografía","Logística Industrial","Mantenimiento Mecánico Industrial","Gastronomía y Cocina Internacional"];
   var CARRERA_NAMES = CARRERAS.map(function(c){ return c.nombre; });
@@ -497,8 +475,9 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
     return "pill-neutral";
   }
   function iconSvg(key, cls){
-    return '<svg class="icon ' + (cls||"") + '" viewBox="0 0 24 24">' + (ICONS[key] || ICONS.dot) + '</svg>';
+    return '<i data-lucide="' + (key||"circle") + '" class="icon ' + (cls||"") + '"></i>';
   }
+  function refreshIcons(){ if(window.lucide && lucide.createIcons) lucide.createIcons(); }
   function fillSelect(sel, options, placeholder){
     sel.innerHTML = "";
     if(placeholder){ var o0=document.createElement("option"); o0.value=""; o0.textContent=placeholder; sel.appendChild(o0); }
@@ -598,8 +577,10 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
   document.getElementById("career-grid-home").innerHTML = careerButtonsHtml(FEATURED);
   function renderCategoriasGrid(){
     document.getElementById("career-grid-full").innerHTML = careerButtonsHtml(CARRERA_NAMES);
+    refreshIcons();
   }
   renderCategoriasGrid();
+  refreshIcons();
   document.body.addEventListener("click", function(ev){
     var btn = ev.target.closest(".career");
     if(!btn) return;
