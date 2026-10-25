@@ -1,424 +1,473 @@
-<title>CFT Juan Bohón &middot; Bodega</title>
+<title>CFT Juan Bohón · Bodega</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          cft: {
+            navy: '#1B365D', darkNavy: '#0F213D', gold: '#E5A813', goldLight: '#FFF8E7',
+            blue: '#0066ff', lightBlue: '#e8f1ff', bg: '#f4f7fb', cardBg: '#ffffff', border: '#e2e8f0'
+          }
+        },
+        fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'] }
+      }
+    }
+  };
+</script>
 <style>
-/* layout: navy hero portal (home / categorias / mis pedidos), card catalog below a career icon grid, light-blue quick-access band */
-:root{
-  --navy-900:#1B365D; --navy-700:#0F213D;
-  --gold:#E5A813; --gold-light:#FFF8E7;
-  --bg:#F6F8FC; --surface:#FFFFFF; --border:#E2E8F3;
-  --ink:#16233D; --ink-muted:#5B6B85;
-  --good:#1E8F5D; --good-bg:#E3F3EC;
-  --warning:#C98A12; --warning-bg:#FBF0DB;
-  --critical:#C1432A; --critical-bg:#FAE6E0;
-  --neutral-bg:#EEF1F6;
-  color-scheme: light;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --navy-900:#3C6098; --navy-700:#13263F;
-    --gold:#E8B84A; --gold-light:#2E2410;
-    --bg:#0B1220; --surface:#121A2C; --border:#223049;
-    --ink:#E7ECF6; --ink-muted:#8FA0BE;
-    --good:#3FBE87; --good-bg:#16302A;
-    --warning:#E0A83D; --warning-bg:#332810;
-    --critical:#E2614A; --critical-bg:#361D18;
-    --neutral-bg:#182439;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"]{
-  --navy-900:#3C6098; --navy-700:#13263F;
-  --gold:#E8B84A; --gold-light:#2E2410;
-  --bg:#0B1220; --surface:#121A2C; --border:#223049;
-  --ink:#E7ECF6; --ink-muted:#8FA0BE;
-  --good:#3FBE87; --good-bg:#16302A;
-  --warning:#E0A83D; --warning-bg:#332810;
-  --critical:#E2614A; --critical-bg:#361D18;
-  --neutral-bg:#182439;
-  color-scheme: dark;
-}
-*{box-sizing:border-box;}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:"Inter",system-ui,sans-serif;}
-.mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;}
-a{color:var(--navy-900);text-decoration:none;}
-button{font-family:inherit;}
-svg{display:block;}
-.icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
-
-/* ---- top nav ---- */
-.topnav{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--border);border-top:3px solid var(--yellow);}
-.topnav-inner{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:20px;padding:12px max(16px, env(safe-area-inset-left,0px)) 12px max(16px, env(safe-area-inset-right,0px));}
-.logo{display:flex;align-items:center;gap:10px;flex:0 0 auto;}
-.logo-mark{width:33px;height:43px;flex:none;}
-.logo-text{line-height:1.15;}
-.logo-text .l1{font-size:16px;font-weight:800;color:var(--navy-900);letter-spacing:.01em;}
-.logo-text .l2{font-size:10.5px;font-weight:600;color:var(--ink-muted);letter-spacing:.03em;text-transform:uppercase;}
-@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .logo-text .l1{color:var(--ink);} }
-:root[data-theme="dark"] .logo-text .l1{color:var(--ink);}
-.navlinks{display:flex;gap:4px;margin-left:12px;flex:1 1 auto;}
-.navlink{display:flex;align-items:center;gap:7px;padding:8px 12px;border-radius:10px;border:none;background:none;color:var(--ink-muted);font-weight:600;font-size:14px;cursor:pointer;}
-.navlink.active{color:var(--navy-900);background:var(--gold-light);}
-.navlink:hover{background:var(--neutral-bg);}
-.accred-badge{display:none;align-items:center;gap:10px;padding-left:14px;margin-left:4px;border-left:1px solid var(--border);}
-.accred-badge .line{font-size:10.5px;font-weight:800;color:var(--navy-900);letter-spacing:.02em;line-height:1.35;}
-.accred-badge .line.sub{font-weight:600;color:var(--ink-muted);}
-@media (min-width:1180px){ .accred-badge{display:flex;} }
-.profile{display:flex;align-items:center;gap:10px;flex:0 0 auto;padding:6px 8px;border-radius:10px;cursor:default;}
-.avatar{width:36px;height:36px;border-radius:50%;background:var(--navy-900);color:var(--gold);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex:none;}
-.profile-text{line-height:1.2;}
-.profile-text .name{font-size:13px;font-weight:700;color:var(--ink);}
-.profile-text .role{font-size:11.5px;color:var(--ink-muted);}
-@media (max-width:640px){
-  .topnav-inner{flex-wrap:wrap;row-gap:8px;}
-  .navlinks{order:3;flex:1 1 100%;justify-content:space-between;margin-left:0;}
-  .profile-text{display:none;}
-}
-
-main{max-width:1180px;margin:0 auto;padding:0 max(16px, env(safe-area-inset-left,0px)) 60px max(16px, env(safe-area-inset-right,0px));}
-.view{display:none;}
-.view.active{display:block;}
-
-/* ---- hero ---- */
-.hero{margin-top:20px;border-radius:16px;overflow:hidden;background:linear-gradient(120deg,var(--navy-900),var(--navy-700) 65%);color:#fff;padding:40px 32px;display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;}
-.hero h1{font-size:34px;line-height:1.1;margin:0 0 10px;font-weight:800;}
-.hero p{font-size:15px;color:#C9D8F2;margin:0 0 20px;max-width:46ch;}
-.search-box{display:flex;align-items:center;gap:8px;background:#fff;border-radius:999px;padding:6px 6px 6px 16px;max-width:520px;}
-.search-box input{flex:1;border:none;outline:none;font-size:14px;padding:8px 0;color:var(--ink);background:none;}
-.search-box .icon{color:var(--ink-muted);}
-.search-go{background:var(--gold);color:var(--navy-900);border:none;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;}
-.hero-art{display:flex;align-items:center;justify-content:center;}
-.hero-art svg{width:100%;height:auto;max-width:150px;}
-@media (max-width:760px){
-  .hero{grid-template-columns:1fr;padding:28px 20px;}
-  .hero-art{display:none;}
-}
-
-/* ---- sections ---- */
-.section{margin-top:34px;}
-.section-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px;gap:12px;flex-wrap:wrap;}
-.section-head h2{font-size:20px;font-weight:800;color:var(--ink);margin:0;}
-.section-head .see-all{font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:4px;}
-
-.career-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:18px;}
-.career-grid.full{grid-template-columns:repeat(5,1fr);}
-.career{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;background:none;border:none;cursor:pointer;padding:6px;}
-.career-icon{width:68px;height:68px;border-radius:50%;background:var(--gold-light);color:var(--navy-900);display:flex;align-items:center;justify-content:center;transition:transform .15s;}
-.career:hover .career-icon{transform:scale(1.08);}
-.career-icon .icon{width:28px;height:28px;}
-.career-name{font-size:13px;font-weight:600;color:var(--ink);line-height:1.25;}
-@media (max-width:900px){ .career-grid{grid-template-columns:repeat(3,1fr);} .career-grid.full{grid-template-columns:repeat(3,1fr);} }
-@media (max-width:480px){ .career-grid{grid-template-columns:repeat(2,1fr);} .career-grid.full{grid-template-columns:repeat(2,1fr);} }
-
-.quick-band h2{font-size:18px;font-weight:800;margin:0 0 14px;}
-.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
-.quick-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;text-align:left;}
-.quick-card:hover{border-color:var(--gold);}
-.quick-ico{width:40px;height:40px;border-radius:10px;background:var(--gold-light);color:var(--navy-900);display:flex;align-items:center;justify-content:center;flex:none;}
-.quick-title{font-weight:700;font-size:14.5px;margin:0 0 4px;}
-.quick-desc{font-size:12.5px;color:var(--ink-muted);line-height:1.35;}
-.quick-arrow{margin-left:auto;align-self:center;color:var(--ink-muted);}
-@media (max-width:760px){ .quick-grid{grid-template-columns:1fr;} }
-
-/* ---- catalog ---- */
-.catalog-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px;}
-.chip-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink-muted);background:none;border:none;cursor:pointer;padding:4px 0;}
-select,input,textarea{font-family:inherit;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 10px;}
-select:focus,input:focus,textarea:focus{outline:2px solid var(--navy-900);outline-offset:1px;}
-.btn{font-weight:700;font-size:13.5px;border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:8px;padding:9px 16px;cursor:pointer;}
-.btn-primary{background:var(--navy-900);color:var(--gold);border-color:var(--navy-900);}
-.btn-small{padding:6px 12px;font-size:12.5px;}
-.btn[disabled]{opacity:.5;cursor:not-allowed;}
-.btn-ghost{background:none;border-color:transparent;color:var(--ink-muted);}
-
-.item-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;}
-.item-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px;}
-.item-card .name{font-weight:700;font-size:14.5px;}
-.item-card .sub{font-size:12px;color:var(--ink-muted);}
-.item-card .meta{display:flex;justify-content:space-between;align-items:center;margin-top:4px;}
-.item-card .btn{width:100%;}
-
-.list{display:flex;flex-direction:column;gap:8px;}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
-.card-row{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr auto;gap:12px;align-items:center;}
-.card-row>div{min-width:0;}
-.field-label{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-muted);margin-bottom:2px;}
-.field-value{font-size:13px;}
-@media (max-width:700px){ .card-row{grid-template-columns:1fr;gap:6px;} }
-
-.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap;}
-.pill-good{background:var(--good-bg);color:var(--good);}
-.pill-warning{background:var(--warning-bg);color:var(--warning);}
-.pill-critical{background:var(--critical-bg);color:var(--critical);}
-.pill-neutral{background:var(--neutral-bg);color:var(--ink-muted);}
-
-.filter-tabs{display:flex;gap:6px;background:var(--neutral-bg);padding:4px;border-radius:10px;width:fit-content;}
-.filter-tab{border:none;background:none;padding:7px 14px;border-radius:7px;font-weight:600;font-size:13px;color:var(--ink-muted);cursor:pointer;}
-.filter-tab.active{background:var(--surface);color:var(--ink);}
-
-.empty{border:1px dashed var(--border);border-radius:12px;padding:40px 20px;text-align:center;color:var(--ink-muted);}
-.empty h3{margin:0 0 6px;color:var(--ink);}
-.notice{font-size:13px;color:var(--ink-muted);padding:10px 0;}
-
-dialog{border:none;border-radius:14px;padding:0;background:var(--surface);color:var(--ink);max-width:520px;width:92vw;}
-dialog::backdrop{background:rgba(10,20,40,.5);}
-.dlg-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
-.dlg-head h2{margin:0;font-size:17px;}
-.dlg-body{padding:16px 20px;display:flex;flex-direction:column;gap:12px;max-height:60vh;overflow:auto;}
-.dlg-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;}
-.field{display:flex;flex-direction:column;gap:4px;}
-.field label{font-size:12px;color:var(--ink-muted);font-weight:600;}
-.field-2col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-@media (max-width:480px){ .field-2col{grid-template-columns:1fr;} }
-
-footer{border-top:1px solid var(--border);margin-top:48px;}
-.footer-inner{max-width:1180px;margin:0 auto;padding:22px max(16px, env(safe-area-inset-left,0px)) max(22px, env(safe-area-inset-bottom,0px)) max(16px, env(safe-area-inset-right,0px));display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
-.footer-brand{display:flex;align-items:center;gap:10px;}
-.footer-brand .logo-mark{width:23px;height:30px;}
-.footer-tag{font-size:13px;color:var(--ink-muted);}
-.footer-accred{font-size:11.5px;color:var(--ink-muted);margin-top:2px;}
+  /* single light theme by choice: the institutional portal look (navy + gold on cool white) */
+  :root { color-scheme: light; }
+  html { background: #f4f7fb; }
+  body { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; background: #f4f7fb; color: #1f2937; }
+  .blueprint { background-image: linear-gradient(rgba(27,54,93,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(27,54,93,.07) 1px, transparent 1px); background-size: 16px 16px; }
+  dialog { padding: 0; border: none; background: transparent; max-width: 100vw; max-height: 100dvh; overflow: visible; }
+  dialog::backdrop { background: rgba(17,24,39,.6); backdrop-filter: blur(3px); }
+  dialog.sheet { margin: 0 0 0 auto; height: 100dvh; max-height: 100dvh; }
+  dialog[open] .pop { animation: pop .18s ease-out; }
+  dialog.sheet[open] .slide { animation: slide .24s ease-out; }
+  @keyframes pop { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
+  @keyframes slide { from { transform: translateX(100%); } to { transform: none; } }
+  #qr img, #qr canvas { display: block; margin: 0 auto; }
+  #toast { position: fixed; inset: auto auto 24px 50%; transform: translateX(-50%); margin: 0; border: 0; }
+  #toast:popover-open { display: flex; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
 
-<div class="topnav">
-  <div class="topnav-inner">
-    <div class="logo">
-      <svg class="logo-mark" viewBox="0 0 35 46" aria-hidden="true">
-        <path d="M6.2 2 10.2 8.4 16.2 4.4 22.2 8.4 26.2 2 23 11.6 29.4 11.6 21.4 18 25.4 37.2 16.2 43.6 7 37.2 11 18 3 11.6 9.4 11.6Z" fill="none" stroke="var(--gold)" stroke-width="2"/>
-        <circle cx="16.2" cy="2.8" r="1.3" fill="var(--gold)"/>
-        <circle cx="6.2" cy="2" r="1" fill="var(--gold)"/>
-        <circle cx="26.2" cy="2" r="1" fill="var(--gold)"/>
-        <circle cx="10.2" cy="8.4" r="1" fill="var(--gold)"/>
-        <circle cx="22.2" cy="8.4" r="1" fill="var(--gold)"/>
-      </svg>
-      <div class="logo-text"><div class="l1">Juan Bohón</div><div class="l2">Centro de Formación Técnica</div></div>
-      <div class="accred-badge">
-        <div><div class="line">CFT ACREDITADO</div><div class="line">NIVEL AVANZADO</div></div>
-        <div><div class="line sub">Gestión institucional y</div><div class="line sub">docencia de pregrado</div></div>
+<div id="app" class="flex flex-col min-h-screen bg-cft-bg antialiased selection:bg-cft-gold selection:text-cft-navy">
+
+  <!-- HEADER INSTITUCIONAL -->
+  <header class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-20 lg:h-24 gap-3">
+
+        <button type="button" data-go="inicio" class="flex items-center py-2 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-cft-gold" aria-label="CFT Juan Bohón, ir al inicio">
+          <svg class="h-12 w-auto sm:hidden" viewBox="10 0 172 120" fill="none" aria-hidden="true">
+            <path d="M70 12 L80 28 L95 18 L110 28 L120 12 L112 36 L128 36 L108 52 L118 100 L95 116 L72 100 L82 52 L62 36 L78 36 Z" stroke="#E5A813" stroke-width="4.5" fill="none" stroke-linejoin="round"/>
+            <circle cx="95" cy="14" r="3.5" fill="#E5A813"/><circle cx="70" cy="12" r="2.5" fill="#E5A813"/><circle cx="120" cy="12" r="2.5" fill="#E5A813"/><circle cx="80" cy="28" r="2.5" fill="#E5A813"/><circle cx="110" cy="28" r="2.5" fill="#E5A813"/>
+            <text x="95" y="62" text-anchor="middle" font-family="Inter, sans-serif" font-weight="900" font-size="28" fill="#1B365D" letter-spacing="-0.5">JUAN</text>
+            <text x="95" y="88" text-anchor="middle" font-family="Inter, sans-serif" font-weight="900" font-size="28" fill="#1B365D" letter-spacing="-0.5">BOHON</text>
+            <text x="95" y="103" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="8.5" fill="#1B365D" letter-spacing="0.8">CENTRO DE FORMACIÓN TÉCNICA</text>
+          </svg>
+          <svg class="hidden sm:block h-14 lg:h-16 w-auto" viewBox="0 0 380 120" fill="none" aria-hidden="true">
+            <path d="M70 12 L80 28 L95 18 L110 28 L120 12 L112 36 L128 36 L108 52 L118 100 L95 116 L72 100 L82 52 L62 36 L78 36 Z" stroke="#E5A813" stroke-width="4.5" fill="none" stroke-linejoin="round"/>
+            <circle cx="95" cy="14" r="3.5" fill="#E5A813"/><circle cx="70" cy="12" r="2.5" fill="#E5A813"/><circle cx="120" cy="12" r="2.5" fill="#E5A813"/><circle cx="80" cy="28" r="2.5" fill="#E5A813"/><circle cx="110" cy="28" r="2.5" fill="#E5A813"/>
+            <text x="95" y="62" text-anchor="middle" font-family="Inter, sans-serif" font-weight="900" font-size="28" fill="#1B365D" letter-spacing="-0.5">JUAN</text>
+            <text x="95" y="88" text-anchor="middle" font-family="Inter, sans-serif" font-weight="900" font-size="28" fill="#1B365D" letter-spacing="-0.5">BOHON</text>
+            <text x="95" y="103" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="8.5" fill="#1B365D" letter-spacing="0.8">CENTRO DE FORMACIÓN TÉCNICA</text>
+            <line x1="195" y1="28" x2="195" y2="92" stroke="#CBD5E1" stroke-width="1.5"/>
+            <path d="M220 70 L235 40 L248 70 L241 70 L235 56 L229 70 Z" fill="#1B365D"/>
+            <path d="M242 42 L256 70 L250 70 L242 54 L238 62 L244 48 Z" fill="#1B365D"/>
+            <text x="238" y="82" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="7" fill="#1B365D">Comisión Nacional</text>
+            <text x="238" y="90" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="7" fill="#1B365D">de Acreditación</text>
+            <text x="238" y="98" text-anchor="middle" font-family="Inter, sans-serif" font-weight="800" font-size="6.5" fill="#1B365D">CNA - Chile</text>
+            <line x1="280" y1="28" x2="280" y2="92" stroke="#CBD5E1" stroke-width="1.5"/>
+            <text x="290" y="38" font-family="Inter, sans-serif" font-weight="900" font-size="11" fill="#1B365D">CFT ACREDITADO</text>
+            <text x="290" y="52" font-family="Inter, sans-serif" font-weight="900" font-size="11" fill="#1B365D">NIVEL AVANZADO</text>
+            <text x="290" y="65" font-family="Inter, sans-serif" font-weight="600" font-size="7.5" fill="#475569">GESTIÓN INSTITUCIONAL</text>
+            <text x="290" y="74" font-family="Inter, sans-serif" font-weight="600" font-size="7.5" fill="#475569">Y DOCENCIA DE PREGRADO</text>
+            <text x="290" y="86" font-family="Inter, sans-serif" font-weight="800" font-size="8.5" fill="#1B365D">HASTA ABRIL DE 2027</text>
+          </svg>
+        </button>
+
+        <nav class="hidden xl:flex gap-1 2xl:gap-3 h-full items-center whitespace-nowrap" aria-label="Secciones">
+          <button type="button" data-go="inicio" class="nav-link px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-cft-navy flex items-center gap-2 transition"><i data-lucide="home" class="w-4 h-4"></i><span>Inicio</span></button>
+          <button type="button" data-go="catalogo" class="nav-link px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-cft-navy flex items-center gap-2 transition"><i data-lucide="layout-grid" class="w-4 h-4"></i><span>Categorías</span></button>
+          <button type="button" data-go="solicitudes" class="nav-link relative px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-cft-navy flex items-center gap-2 transition"><i data-lucide="file-text" class="w-4 h-4"></i><span>Mis solicitudes</span><span data-badge="solicitudes" class="hidden absolute -top-1 -right-1 bg-cft-gold text-cft-navy text-[10px] font-black min-w-[1rem] h-4 px-1 rounded-full items-center justify-center shadow">0</span></button>
+          <button type="button" data-go="prestamos" class="nav-link px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-cft-navy flex items-center gap-2 transition"><i data-lucide="package" class="w-4 h-4"></i><span>Mis préstamos</span></button>
+          <button type="button" data-go="flujo" class="nav-link px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-cft-navy flex items-center gap-2 transition"><i data-lucide="workflow" class="w-4 h-4"></i><span>Flujo Pañol</span></button>
+        </nav>
+
+        <div class="flex items-center gap-3 sm:gap-4">
+          <button type="button" data-action="bolsa" class="relative p-2.5 text-cft-navy hover:bg-cft-goldLight rounded-xl transition-all border border-gray-200 bg-white" aria-label="Abrir bolsa de solicitud">
+            <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+            <span id="cart-counter" class="absolute -top-1 -right-1 bg-cft-gold text-cft-navy text-xs font-black w-5 h-5 rounded-full flex items-center justify-center shadow">0</span>
+          </button>
+          <div class="pl-3 border-l border-gray-200 flex items-center gap-3">
+            <div id="avatar" class="w-10 h-10 rounded-full bg-cft-navy text-cft-gold font-bold flex items-center justify-center text-sm shadow border-2 border-cft-gold overflow-hidden flex-none">·</div>
+            <div class="hidden md:block text-left leading-tight whitespace-nowrap">
+              <span id="who-name" class="block text-sm font-bold text-gray-800">Conectando…</span>
+              <span id="who-role" class="block text-xs font-medium text-gray-500">&nbsp;</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <nav class="navlinks" role="tablist">
-      <button class="navlink" role="tab" data-view="home"><i data-lucide="home" class="icon"></i>Inicio</button>
-      <button class="navlink" role="tab" data-view="categorias"><i data-lucide="layout-grid" class="icon"></i>Categorías</button>
-      <button class="navlink" role="tab" data-view="mis-pedidos"><i data-lucide="file-text" class="icon"></i>Mis pedidos</button>
+
+    <!-- Menú móvil -->
+    <nav class="xl:hidden grid grid-cols-5 border-t border-gray-100 bg-white text-[11px] sm:text-xs text-gray-600" aria-label="Secciones">
+      <button type="button" data-go="inicio" class="mob-link flex flex-col items-center gap-0.5 py-2"><i data-lucide="home" class="w-4 h-4"></i><span>Inicio</span></button>
+      <button type="button" data-go="catalogo" class="mob-link flex flex-col items-center gap-0.5 py-2"><i data-lucide="layout-grid" class="w-4 h-4"></i><span>Catálogo</span></button>
+      <button type="button" data-go="solicitudes" class="mob-link relative flex flex-col items-center gap-0.5 py-2"><i data-lucide="file-text" class="w-4 h-4"></i><span>Solicitudes</span><span data-badge="solicitudes" class="hidden absolute top-1 right-[22%] bg-cft-gold text-cft-navy text-[9px] font-black min-w-[0.9rem] h-[0.9rem] px-0.5 rounded-full items-center justify-center">0</span></button>
+      <button type="button" data-go="prestamos" class="mob-link flex flex-col items-center gap-0.5 py-2"><i data-lucide="package" class="w-4 h-4"></i><span>Préstamos</span></button>
+      <button type="button" data-go="flujo" class="mob-link flex flex-col items-center gap-0.5 py-2"><i data-lucide="workflow" class="w-4 h-4"></i><span>Flujo</span></button>
     </nav>
-    <div class="profile">
-      <div class="avatar" id="avatar-initials">?</div>
-      <div class="profile-text"><div class="name" id="profile-name">Cargando...</div><div class="role" id="profile-role">&nbsp;</div></div>
+  </header>
+
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ==================== INICIO ==================== -->
+    <section id="page-inicio" class="spa-page space-y-10">
+      <div class="relative bg-gradient-to-r from-cft-navy via-cft-darkNavy to-blue-950 rounded-3xl p-8 sm:p-12 text-white overflow-hidden shadow-xl border-b-4 border-cft-gold">
+        <div class="absolute inset-0 opacity-[0.07] pointer-events-none" style="background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);background-size:32px 32px;-webkit-mask-image:radial-gradient(ellipse at 90% 20%,#000,transparent 65%);mask-image:radial-gradient(ellipse at 90% 20%,#000,transparent 65%)"></div>
+        <div class="absolute -right-10 -bottom-16 w-80 h-80 rounded-full border-[28px] border-cft-gold/10 pointer-events-none hidden md:block"></div>
+        <div class="relative z-10 grid lg:grid-cols-[minmax(0,1fr)_auto] gap-8 items-end">
+          <div class="max-w-2xl space-y-4">
+            <span class="inline-block px-3 py-1 bg-cft-gold/20 border border-cft-gold/40 text-cft-gold rounded-full text-xs font-bold uppercase tracking-wide">Pañol oficial · CFT acreditado nivel avanzado</span>
+            <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight">Tu pañol, conectado con tu carrera</h1>
+            <p class="text-gray-200 text-base sm:text-lg">Encuentra y solicita los materiales, herramientas y equipos necesarios para tus clases prácticas y talleres.</p>
+            <form id="hero-search" class="pt-4" role="search">
+              <div class="relative flex items-center bg-white rounded-2xl p-2 shadow-lg max-w-xl">
+                <i data-lucide="search" class="w-6 h-6 text-gray-400 ml-3 flex-none"></i>
+                <label for="hero-q" class="sr-only">Buscar en el pañol</label>
+                <input type="search" id="hero-q" autocomplete="off" placeholder="Buscar multímetros, estación total, transpaleta…" class="w-full min-w-0 pl-3 pr-4 py-2 text-gray-800 bg-transparent outline-none text-sm font-medium placeholder-gray-400">
+                <button type="submit" class="bg-cft-gold hover:bg-amber-500 text-cft-navy px-5 py-2.5 rounded-xl text-sm font-bold transition flex-none">Buscar</button>
+              </div>
+            </form>
+          </div>
+          <dl class="grid grid-cols-3 gap-3 lg:w-80">
+            <div class="bg-white/[0.07] border border-white/15 rounded-2xl p-3 sm:p-4 min-w-0"><dt class="text-[11px] font-semibold text-gray-300 sm:uppercase sm:tracking-wide">Materiales</dt><dd id="st-total" class="text-2xl sm:text-3xl font-black mt-1 tabular-nums">—</dd></div>
+            <div class="bg-white/[0.07] border border-white/15 rounded-2xl p-3 sm:p-4 min-w-0"><dt class="text-[11px] font-semibold text-gray-300 sm:uppercase sm:tracking-wide">Disponibles</dt><dd id="st-disp" class="text-2xl sm:text-3xl font-black mt-1 text-cft-gold tabular-nums">—</dd></div>
+            <div class="bg-white/[0.07] border border-white/15 rounded-2xl p-3 sm:p-4 min-w-0"><dt class="text-[11px] font-semibold text-gray-300 sm:uppercase sm:tracking-wide">Prestados</dt><dd id="st-out" class="text-2xl sm:text-3xl font-black mt-1 tabular-nums">—</dd></div>
+          </dl>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div class="flex justify-between items-center gap-4">
+          <h2 class="text-2xl font-bold text-gray-800">Explora por carrera</h2>
+          <button type="button" data-carrera="" class="text-sm font-semibold text-cft-navy hover:underline flex items-center gap-1 flex-none"><span>Ver todas las carreras</span><i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+        </div>
+        <div id="career-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4"></div>
+      </div>
+
+      <div class="space-y-4">
+        <h2 class="text-2xl font-bold text-gray-800">Accesos rápidos</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <button type="button" data-go="catalogo" class="text-left cursor-pointer group bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-cft-gold transition flex items-center gap-4">
+            <div class="p-4 bg-cft-goldLight rounded-2xl text-cft-navy group-hover:bg-cft-navy group-hover:text-cft-gold transition"><i data-lucide="package-plus" class="w-8 h-8"></i></div>
+            <div class="flex-grow"><h3 class="font-bold text-gray-800 group-hover:text-cft-navy transition">Solicitar materiales</h3><p class="text-xs text-gray-500 mt-1">Agrega equipos a tu bolsa y envía la solicitud para tu clase.</p></div>
+            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400 group-hover:text-cft-navy flex-none"></i>
+          </button>
+          <button type="button" data-go="solicitudes" class="text-left cursor-pointer group bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-cft-gold transition flex items-center gap-4">
+            <div class="p-4 bg-cft-goldLight rounded-2xl text-cft-navy group-hover:bg-cft-navy group-hover:text-cft-gold transition"><i data-lucide="clipboard-list" class="w-8 h-8"></i></div>
+            <div class="flex-grow"><h3 class="font-bold text-gray-800 group-hover:text-cft-navy transition">Mis solicitudes</h3><p class="text-xs text-gray-500 mt-1">Revisa el estado de tus solicitudes y tu pase de retiro.</p></div>
+            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400 group-hover:text-cft-navy flex-none"></i>
+          </button>
+          <button type="button" data-go="prestamos" class="text-left cursor-pointer group bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-cft-gold transition flex items-center gap-4">
+            <div class="p-4 bg-cft-goldLight rounded-2xl text-cft-navy group-hover:bg-cft-navy group-hover:text-cft-gold transition"><i data-lucide="clock" class="w-8 h-8"></i></div>
+            <div class="flex-grow"><h3 class="font-bold text-gray-800 group-hover:text-cft-navy transition">Mis préstamos</h3><p class="text-xs text-gray-500 mt-1">Consulta tus préstamos activos y fechas de devolución.</p></div>
+            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400 group-hover:text-cft-navy flex-none"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== CATÁLOGO ==================== -->
+    <section id="page-catalogo" class="spa-page hidden space-y-6">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200 pb-4">
+        <div>
+          <h1 class="text-2xl font-black text-gray-800">Catálogo de Materiales y Equipos</h1>
+          <p class="text-sm text-gray-500">Explora el inventario del pañol CFT Juan Bohón con su disponibilidad en tiempo real.</p>
+        </div>
+        <div class="flex items-center gap-3 flex-wrap">
+          <div id="active-career-pill" class="hidden items-center bg-cft-goldLight text-cft-navy border border-cft-gold pl-3 pr-1.5 py-1.5 rounded-full text-xs font-bold gap-2">
+            <span id="active-career-text">Carrera</span>
+            <button type="button" data-clear="carrera" class="w-5 h-5 rounded-full hover:bg-white flex items-center justify-center hover:text-red-600" aria-label="Quitar filtro de carrera"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+          </div>
+          <button type="button" id="btn-nuevo" data-action="nuevo" class="hidden px-4 py-2 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i><span>Agregar material</span></button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-[17.5rem_minmax(0,1fr)] gap-8">
+        <aside class="space-y-6 min-w-0">
+          <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-3">
+            <label for="catalog-search" class="text-xs font-bold text-gray-700 uppercase tracking-wider block">Búsqueda rápida</label>
+            <div class="relative">
+              <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-3"></i>
+              <input type="search" id="catalog-search" autocomplete="off" placeholder="Buscar por código, nombre…" class="w-full pl-9 pr-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-cft-navy focus:bg-white">
+            </div>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-3">
+            <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Filtrar por carrera</h3>
+            <div class="space-y-1 text-sm max-h-80 overflow-y-auto overflow-x-hidden pr-1" id="career-filter-list" role="radiogroup" aria-label="Carrera"></div>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-3">
+            <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Disponibilidad</h3>
+            <div class="space-y-1 text-sm" id="disp-filter-list" role="radiogroup" aria-label="Disponibilidad"></div>
+          </div>
+          <div class="bg-cft-goldLight p-5 rounded-2xl border border-dashed border-cft-gold space-y-3">
+            <h3 class="font-bold text-cft-navy text-sm">¿No encuentras un material?</h3>
+            <p class="text-xs text-gray-600">Pide que el pañol lo compre. El encargado revisa cada solicitud y, al llegar, lo ingresa al catálogo.</p>
+            <button type="button" data-action="compra" class="w-full py-2.5 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition flex items-center justify-center gap-2"><i data-lucide="shopping-cart" class="w-4 h-4"></i><span>Solicitar compra</span></button>
+          </div>
+        </aside>
+
+        <div class="min-w-0 space-y-4">
+          <div class="flex justify-between items-center text-xs text-gray-500 font-medium gap-3">
+            <span id="catalog-count-text">Cargando inventario…</span>
+            <button type="button" data-clear="all" class="text-cft-navy font-bold hover:underline">Limpiar todos los filtros</button>
+          </div>
+          <div id="catalog-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SOLICITUDES ==================== -->
+    <section id="page-solicitudes" class="spa-page hidden space-y-6">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200 pb-4">
+        <div>
+          <h1 id="sol-title" class="text-2xl font-black text-gray-800">Mis Solicitudes</h1>
+          <p id="sol-sub" class="text-sm text-gray-500">Revisa el estado de tus reservas de materiales y accede a tu pase QR de retiro.</p>
+        </div>
+        <button type="button" data-go="catalogo" class="self-start md:self-auto px-4 py-2.5 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition flex items-center gap-2"><i data-lucide="package-plus" class="w-4 h-4"></i><span>Nueva solicitud</span></button>
+      </div>
+      <div class="flex border-b border-gray-200 gap-6 overflow-x-auto no-scrollbar text-sm font-medium" role="tablist" id="req-tabs"></div>
+      <div id="requests-list" class="space-y-4"></div>
+    </section>
+
+    <!-- ==================== PRÉSTAMOS ==================== -->
+    <section id="page-prestamos" class="spa-page hidden space-y-6">
+      <div class="border-b border-gray-200 pb-4">
+        <h1 id="loan-title" class="text-2xl font-black text-gray-800">Mis Préstamos Activos y Devoluciones</h1>
+        <p id="loan-sub" class="text-sm text-gray-500">Herramientas que tienes actualmente en tu posesión, con su fecha de devolución.</p>
+      </div>
+      <div id="loan-banner"></div>
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-gray-600 min-w-[720px]">
+            <thead class="bg-gray-50 text-xs font-bold text-gray-700 uppercase border-b border-gray-200">
+              <tr>
+                <th class="p-4">Código / Equipo</th>
+                <th class="p-4">Carrera / Taller</th>
+                <th class="p-4">Retiro</th>
+                <th class="p-4">Devolución requerida</th>
+                <th class="p-4">Estado</th>
+                <th class="p-4 text-center">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="loans-table-body" class="divide-y divide-gray-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== FLUJO ==================== -->
+    <section id="page-flujo" class="spa-page hidden space-y-10">
+      <div class="text-center max-w-3xl mx-auto space-y-3 pt-2">
+        <span class="inline-block px-3 py-1 bg-cft-goldLight text-cft-navy border border-cft-gold text-xs font-bold uppercase rounded-full">Proceso operativo del pañol</span>
+        <h1 class="text-3xl font-black text-cft-navy">Flujo de Préstamo y Ciclo de Vida del Material</h1>
+        <p class="text-sm text-gray-600">El recorrido completo desde que buscas una herramienta hasta su devolución segura en la bodega CFT Juan Bohón.</p>
+      </div>
+
+      <ol class="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <li class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-cft-gold transition"><div class="w-10 h-10 rounded-xl bg-cft-navy text-cft-gold flex items-center justify-center font-bold text-lg mb-4">1</div><h3 class="font-bold text-gray-800 text-base mb-2">Búsqueda y selección</h3><p class="text-xs text-gray-500 leading-relaxed">Navegas por carrera o código y verificas la disponibilidad en tiempo real.</p><span class="inline-flex items-center gap-1 mt-4 px-2 py-0.5 rounded-full bg-gray-100 text-[11px] font-bold text-gray-600"><i data-lucide="user" class="w-3 h-3"></i>Estudiante o docente</span></li>
+        <li class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-cft-gold transition"><div class="w-10 h-10 rounded-xl bg-cft-navy text-cft-gold flex items-center justify-center font-bold text-lg mb-4">2</div><h3 class="font-bold text-gray-800 text-base mb-2">Bolsa y solicitud</h3><p class="text-xs text-gray-500 leading-relaxed">Agregas los equipos a tu bolsa e indicas asignatura, profesor a cargo y fechas.</p><span class="inline-flex items-center gap-1 mt-4 px-2 py-0.5 rounded-full bg-gray-100 text-[11px] font-bold text-gray-600"><i data-lucide="user" class="w-3 h-3"></i>Estudiante o docente</span></li>
+        <li class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-cft-gold transition"><div class="w-10 h-10 rounded-xl bg-cft-navy text-cft-gold flex items-center justify-center font-bold text-lg mb-4">3</div><h3 class="font-bold text-gray-800 text-base mb-2">Aprobación y pase QR</h3><p class="text-xs text-gray-500 leading-relaxed">El encargado aprueba y reserva los equipos. Tu pase digital con QR queda listo para el retiro.</p><span class="inline-flex items-center gap-1 mt-4 px-2 py-0.5 rounded-full bg-cft-goldLight text-[11px] font-bold text-cft-navy"><i data-lucide="shield-check" class="w-3 h-3"></i>Encargado de pañol</span></li>
+        <li class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-cft-gold transition"><div class="w-10 h-10 rounded-xl bg-cft-navy text-cft-gold flex items-center justify-center font-bold text-lg mb-4">4</div><h3 class="font-bold text-gray-800 text-base mb-2">Retiro físico en pañol</h3><p class="text-xs text-gray-500 leading-relaxed">Muestras el pase, el encargado verifica el estado del equipo y te lo entrega.</p><span class="inline-flex items-center gap-1 mt-4 px-2 py-0.5 rounded-full bg-cft-goldLight text-[11px] font-bold text-cft-navy"><i data-lucide="shield-check" class="w-3 h-3"></i>Encargado de pañol</span></li>
+        <li class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-cft-gold transition"><div class="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-bold text-lg mb-4">5</div><h3 class="font-bold text-gray-800 text-base mb-2">Devolución y cierre</h3><p class="text-xs text-gray-500 leading-relaxed">Se inspecciona el material devuelto, se registra su estado y vuelve a quedar disponible.</p><span class="inline-flex items-center gap-1 mt-4 px-2 py-0.5 rounded-full bg-gray-100 text-[11px] font-bold text-gray-600"><i data-lucide="users" class="w-3 h-3"></i>Ambos</span></li>
+      </ol>
+
+      <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 sm:p-8 space-y-6">
+        <div class="flex items-start gap-4">
+          <div class="p-3 bg-cft-goldLight rounded-2xl text-cft-navy flex-none"><i data-lucide="shopping-cart" class="w-6 h-6"></i></div>
+          <div><h2 class="text-xl font-black text-cft-navy">¿Y si el pañol no tiene el material?</h2><p class="text-sm text-gray-500 mt-1">Cualquier persona puede pedir una compra. Así crece el inventario compartido de todas las carreras.</p></div>
+        </div>
+        <ol class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <li class="rounded-2xl bg-gray-50 border border-gray-100 p-5"><span class="text-xs font-black text-cft-gold">PASO A</span><h3 class="font-bold text-gray-800 mt-1">Pides la compra</h3><p class="text-xs text-gray-500 mt-1 leading-relaxed">Desde el catálogo describes el material y para qué lo necesitas.</p></li>
+          <li class="rounded-2xl bg-gray-50 border border-gray-100 p-5"><span class="text-xs font-black text-cft-gold">PASO B</span><h3 class="font-bold text-gray-800 mt-1">Revisión</h3><p class="text-xs text-gray-500 mt-1 leading-relaxed">El encargado aprueba o rechaza la solicitud.</p></li>
+          <li class="rounded-2xl bg-gray-50 border border-gray-100 p-5"><span class="text-xs font-black text-cft-gold">PASO C</span><h3 class="font-bold text-gray-800 mt-1">Compra y registro</h3><p class="text-xs text-gray-500 mt-1 leading-relaxed">Cuando llega, se ingresa al inventario con su código.</p></li>
+          <li class="rounded-2xl bg-emerald-50 border border-emerald-100 p-5"><span class="text-xs font-black text-emerald-600">PASO D</span><h3 class="font-bold text-gray-800 mt-1">Listo para préstamo</h3><p class="text-xs text-gray-500 mt-1 leading-relaxed">Aparece en el catálogo de su carrera para todos.</p></li>
+        </ol>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-gray-200 mt-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row justify-between items-center gap-6">
+      <svg class="h-14 w-auto max-w-full" viewBox="0 0 380 120" fill="none" aria-label="CFT Juan Bohón, acreditado nivel avanzado por la CNA-Chile" role="img">
+        <path d="M70 12 L80 28 L95 18 L110 28 L120 12 L112 36 L128 36 L108 52 L118 100 L95 116 L72 100 L82 52 L62 36 L78 36 Z" stroke="#E5A813" stroke-width="4.5" fill="none" stroke-linejoin="round"/>
+        <circle cx="95" cy="14" r="3.5" fill="#E5A813"/><circle cx="70" cy="12" r="2.5" fill="#E5A813"/><circle cx="120" cy="12" r="2.5" fill="#E5A813"/><circle cx="80" cy="28" r="2.5" fill="#E5A813"/><circle cx="110" cy="28" r="2.5" fill="#E5A813"/>
+        <text x="95" y="62" text-anchor="middle" font-family="Inter, sans-serif" font-weight="900" font-size="28" fill="#1B365D" letter-spacing="-0.5">JUAN</text>
+        <text x="95" y="88" text-anchor="middle" font-family="Inter, sans-serif" font-weight="900" font-size="28" fill="#1B365D" letter-spacing="-0.5">BOHON</text>
+        <text x="95" y="103" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="8.5" fill="#1B365D" letter-spacing="0.8">CENTRO DE FORMACIÓN TÉCNICA</text>
+        <line x1="195" y1="28" x2="195" y2="92" stroke="#CBD5E1" stroke-width="1.5"/>
+        <path d="M220 70 L235 40 L248 70 L241 70 L235 56 L229 70 Z" fill="#1B365D"/>
+        <path d="M242 42 L256 70 L250 70 L242 54 L238 62 L244 48 Z" fill="#1B365D"/>
+        <text x="238" y="82" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="7" fill="#1B365D">Comisión Nacional</text>
+        <text x="238" y="90" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="7" fill="#1B365D">de Acreditación</text>
+        <text x="238" y="98" text-anchor="middle" font-family="Inter, sans-serif" font-weight="800" font-size="6.5" fill="#1B365D">CNA - Chile</text>
+        <line x1="280" y1="28" x2="280" y2="92" stroke="#CBD5E1" stroke-width="1.5"/>
+        <text x="290" y="38" font-family="Inter, sans-serif" font-weight="900" font-size="11" fill="#1B365D">CFT ACREDITADO</text>
+        <text x="290" y="52" font-family="Inter, sans-serif" font-weight="900" font-size="11" fill="#1B365D">NIVEL AVANZADO</text>
+        <text x="290" y="65" font-family="Inter, sans-serif" font-weight="600" font-size="7.5" fill="#475569">GESTIÓN INSTITUCIONAL</text>
+        <text x="290" y="74" font-family="Inter, sans-serif" font-weight="600" font-size="7.5" fill="#475569">Y DOCENCIA DE PREGRADO</text>
+        <text x="290" y="86" font-family="Inter, sans-serif" font-weight="800" font-size="8.5" fill="#1B365D">HASTA ABRIL DE 2027</text>
+      </svg>
+      <div class="text-xs text-gray-500 text-center lg:text-right font-medium">© 2026 Centro de Formación Técnica Juan Bohón.<br>Acreditado por la Comisión Nacional de Acreditación (CNA-Chile).</div>
     </div>
-  </div>
+  </footer>
 </div>
 
-<main>
-  <!-- HOME -->
-  <div id="view-home" class="view active">
-    <div class="hero">
-      <div>
-        <h1>Tu pañol, conectado con tu carrera</h1>
-        <p>Encuentra y solicita los materiales, herramientas y equipos para tus clases prácticas.</p>
-        <form class="search-box" id="hero-search-form">
-          <i data-lucide="search" class="icon"></i>
-          <input id="hero-search" placeholder="Buscar materiales, herramientas o equipos...">
-          <button class="search-go" type="submit" aria-label="Buscar">
-            <i data-lucide="arrow-right" class="icon" style="width:18px;height:18px;"></i>
-          </button>
-        </form>
-      </div>
-      <div class="hero-art">
-        <svg viewBox="0 0 220 220" aria-hidden="true">
-          <circle cx="110" cy="110" r="100" fill="rgba(255,255,255,.08)"/>
-          <circle cx="110" cy="110" r="74" fill="rgba(255,255,255,.08)"/>
-          <ellipse cx="110" cy="116" rx="50" ry="10" fill="#fff" opacity=".95"/>
-          <path d="M110 55a38 38 0 0 1 38 38v16H72V93a38 38 0 0 1 38-38z" fill="#fff" opacity=".97"/>
-          <rect x="103" y="42" width="14" height="16" rx="4" fill="#fff" opacity=".97"/>
-          <path d="M80 93a30 30 0 0 1 60 0" fill="none" stroke="var(--navy-900)" stroke-width="2.5" stroke-linecap="round" opacity=".5"/>
-          <circle cx="166" cy="150" r="11" fill="var(--yellow)"/>
-          <path d="M160 150l4 4 7-8" stroke="var(--navy-900)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        </svg>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-head">
-        <h2>Explora por carrera</h2>
-        <a href="#categorias" class="see-all" data-nav="categorias">Ver todas las carreras <i data-lucide="arrow-right" class="icon" style="width:14px;height:14px;"></i></a>
-      </div>
-      <div class="career-grid" id="career-grid-home"></div>
-    </div>
-
-    <div class="section quick-band">
-      <h2>Accesos rápidos</h2>
-      <div class="quick-grid">
-        <button class="quick-card" id="qc-solicitar">
-          <div class="quick-ico"><i data-lucide="file-plus-2" class="icon"></i></div>
-          <div><div class="quick-title">Solicitar materiales</div><div class="quick-desc">Realiza una solicitud de materiales o equipos para tu carrera.</div></div>
-          <i data-lucide="arrow-right" class="icon quick-arrow"></i>
-        </button>
-        <button class="quick-card" id="qc-solicitudes">
-          <div class="quick-ico"><i data-lucide="clipboard-list" class="icon"></i></div>
-          <div><div class="quick-title">Mis solicitudes</div><div class="quick-desc">Revisa el estado de tus solicitudes y su historial.</div></div>
-          <i data-lucide="arrow-right" class="icon quick-arrow"></i>
-        </button>
-        <button class="quick-card" id="qc-prestamos">
-          <div class="quick-ico"><i data-lucide="package" class="icon"></i></div>
-          <div><div class="quick-title">Mis préstamos</div><div class="quick-desc">Consulta tus préstamos activos y fechas de devolución.</div></div>
-          <i data-lucide="arrow-right" class="icon quick-arrow"></i>
-        </button>
-      </div>
+<!-- ==================== MODALES ==================== -->
+<dialog id="dlg-detalle" aria-labelledby="dd-name">
+  <div class="pop bg-white rounded-3xl overflow-hidden shadow-2xl w-[min(42rem,calc(100vw-2rem))] max-h-[calc(100dvh-2rem)] flex flex-col">
+    <div class="p-6 sm:p-8 overflow-y-auto" id="dd-body"></div>
+    <div class="bg-gray-50 px-6 py-4 flex justify-end gap-3 border-t border-gray-100">
+      <button type="button" data-close class="px-4 py-2 border border-gray-300 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100">Cerrar</button>
+      <button type="button" id="dd-add" class="px-5 py-2 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"><i data-lucide="plus" class="w-4 h-4"></i><span>Añadir a la solicitud</span></button>
     </div>
   </div>
+</dialog>
 
-  <!-- CATEGORIAS -->
-  <div id="view-categorias" class="view">
-    <div class="section" id="categorias-grid-wrap">
-      <div class="section-head"><h2>Categorías</h2></div>
-      <div class="career-grid full" id="career-grid-full"></div>
+<dialog id="dlg-bolsa" class="sheet" aria-labelledby="bolsa-title">
+  <div class="slide w-screen max-w-md h-full bg-white shadow-2xl flex flex-col">
+    <div class="p-6 bg-cft-navy text-white flex items-center justify-between">
+      <div class="flex items-center gap-2"><i data-lucide="shopping-bag" class="w-5 h-5 text-cft-gold"></i><h2 id="bolsa-title" class="text-lg font-bold">Bolsa de Solicitud de Pañol</h2></div>
+      <button type="button" data-close class="text-gray-300 hover:text-white" aria-label="Cerrar bolsa"><i data-lucide="x" class="w-6 h-6"></i></button>
     </div>
-
-    <div class="section" id="catalogo-wrap" style="display:none;">
-      <button class="chip-back" id="btn-back-categorias"><i data-lucide="arrow-left" class="icon" style="width:16px;height:16px;"></i> Todas las categorías</button>
-      <div class="section-head">
-        <h2 id="catalogo-title">Carrera</h2>
-        <button class="btn btn-primary btn-small" id="btn-nuevo-instrumento" style="display:none;">+ Agregar material</button>
-      </div>
-      <div class="catalog-toolbar">
-        <input id="catalogo-search" placeholder="Buscar en esta categoría...">
-        <select id="filtro-disponibilidad">
-          <option value="">Disponibilidad: todas</option>
-          <option value="Disponible">Disponible</option>
-          <option value="Prestado">Prestado</option>
-        </select>
-        <button class="btn btn-small" id="btn-solicitar-compra">¿No está lo que buscas? Pide su compra</button>
-      </div>
-      <div id="item-grid" class="item-grid"><div class="notice">Cargando...</div></div>
+    <div class="flex-1 overflow-y-auto p-6 space-y-4" id="cart-items"></div>
+    <div class="p-6 border-t border-gray-100 bg-gray-50 space-y-4">
+      <div class="flex justify-between text-sm font-bold text-gray-800"><span>Total de equipos:</span><span id="cart-total">0</span></div>
+      <button type="button" id="btn-checkout" class="w-full py-3 bg-cft-gold hover:bg-amber-500 text-cft-navy font-black text-sm rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled><span>Continuar a formulario de reserva</span><i data-lucide="arrow-right" class="w-4 h-4"></i></button>
     </div>
   </div>
+</dialog>
 
-  <!-- MIS PEDIDOS -->
-  <div id="view-mis-pedidos" class="view">
-    <div class="section-head"><h2>Mis pedidos</h2></div>
-    <div class="filter-tabs" id="pedidos-tipo">
-      <button class="filter-tab active" data-tipo="prestamos">Préstamos</button>
-      <button class="filter-tab" data-tipo="compras">Solicitudes de compra</button>
-    </div>
-    <div style="height:10px;"></div>
-    <div class="filter-tabs" id="pedidos-filtros">
-      <button class="filter-tab active" data-f="activos">Activos</button>
-      <button class="filter-tab" data-f="todos">Todos</button>
-      <button class="filter-tab" data-f="historial">Historial</button>
-    </div>
-    <div style="height:14px;"></div>
-    <div id="lista-pedidos" class="list"><div class="notice">Cargando...</div></div>
-  </div>
-</main>
-
-<footer>
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <svg class="logo-mark" viewBox="0 0 35 46" aria-hidden="true">
-        <path d="M6.2 2 10.2 8.4 16.2 4.4 22.2 8.4 26.2 2 23 11.6 29.4 11.6 21.4 18 25.4 37.2 16.2 43.6 7 37.2 11 18 3 11.6 9.4 11.6Z" fill="none" stroke="var(--gold)" stroke-width="2"/>
-        <circle cx="16.2" cy="2.8" r="1.3" fill="var(--gold)"/>
-        <circle cx="6.2" cy="2" r="1" fill="var(--gold)"/>
-        <circle cx="26.2" cy="2" r="1" fill="var(--gold)"/>
-        <circle cx="10.2" cy="8.4" r="1" fill="var(--gold)"/>
-        <circle cx="22.2" cy="8.4" r="1" fill="var(--gold)"/>
-      </svg>
-      <div class="logo-text"><div class="l1">Juan Bohón</div><div class="l2">Centro de Formación Técnica</div></div>
+<dialog id="dlg-checkout" aria-labelledby="ck-title">
+  <form id="checkout-form" novalidate class="pop bg-white rounded-3xl shadow-2xl w-[min(36rem,calc(100vw-2rem))] max-h-[calc(100dvh-2rem)] overflow-y-auto p-6 sm:p-8 space-y-5">
+    <div class="flex justify-between items-center border-b border-gray-100 pb-4">
+      <h3 id="ck-title" class="text-xl font-bold text-gray-800">Formulario de Solicitud de Pañol</h3>
+      <button type="button" data-close class="text-gray-400 hover:text-gray-600" aria-label="Cerrar"><i data-lucide="x" class="w-6 h-6"></i></button>
     </div>
     <div>
-      <div class="footer-tag">Formación técnica que impulsa tu futuro</div>
-      <div class="footer-accred">CFT acreditado nivel avanzado &middot; CNA-Chile &middot; gestión institucional y docencia de pregrado, vigente hasta abril de 2027</div>
+      <label for="f-carrera" class="block text-xs font-bold text-gray-700 uppercase mb-1">Carrera</label>
+      <select id="f-carrera" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></select>
     </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div><label for="f-asignatura" class="block text-xs font-bold text-gray-700 uppercase mb-1">Asignatura / taller</label><input id="f-asignatura" required placeholder="Ej: Topografía aplicada" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+      <div><label for="f-profesor" class="block text-xs font-bold text-gray-700 uppercase mb-1">Profesor a cargo</label><input id="f-profesor" required placeholder="Nombre del docente" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+      <div><label for="f-retiro" class="block text-xs font-bold text-gray-700 uppercase mb-1">Fecha de retiro</label><input type="date" id="f-retiro" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+      <div><label for="f-devol" class="block text-xs font-bold text-gray-700 uppercase mb-1">Fecha de devolución</label><input type="date" id="f-devol" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+    </div>
+    <div><label for="f-nombre" class="block text-xs font-bold text-gray-700 uppercase mb-1">Quién retira <span class="font-medium normal-case text-gray-400">(opcional)</span></label><input id="f-nombre" placeholder="Si retira otra persona, escribe su nombre" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+    <div class="bg-cft-goldLight p-4 rounded-2xl border border-cft-gold/30 text-xs text-cft-navy space-y-2">
+      <span class="font-bold block">Resumen del pedido</span>
+      <div id="checkout-summary" class="space-y-1"></div>
+    </div>
+    <p id="ck-error" class="hidden text-xs font-semibold text-rose-600" role="alert"></p>
+    <div class="pt-1 flex justify-end gap-3">
+      <button type="button" data-close class="px-4 py-2.5 border border-gray-300 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100">Cancelar</button>
+      <button type="submit" class="px-6 py-2.5 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition flex items-center gap-2 disabled:opacity-50"><i data-lucide="circle-check" class="w-4 h-4"></i><span>Confirmar y generar solicitud</span></button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-qr" aria-labelledby="qr-title">
+  <div class="pop bg-white rounded-3xl shadow-2xl w-[min(24rem,calc(100vw-2rem))] p-6 text-center space-y-4">
+    <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto"><i data-lucide="qr-code" class="w-7 h-7"></i></div>
+    <div><h3 id="qr-title" class="text-xl font-black text-gray-800">Pase Digital de Retiro</h3><p class="text-xs text-gray-500">Muestra este código al encargado del pañol para retirar tus materiales.</p></div>
+    <div id="qr" class="bg-gray-50 p-4 rounded-2xl border border-gray-200 flex justify-center items-center min-h-[200px]"></div>
+    <div class="text-xs bg-cft-lightBlue text-cft-navy p-3 rounded-xl space-y-1">
+      <p class="font-bold" id="qr-id">Solicitud</p>
+      <p id="qr-details" class="text-[11px] text-gray-600"></p>
+      <p id="qr-status"></p>
+    </div>
+    <button type="button" data-close class="w-full py-2.5 bg-cft-navy hover:bg-cft-darkNavy text-white font-bold text-xs rounded-xl transition">Cerrar pase</button>
   </div>
-</footer>
+</dialog>
 
-<dialog id="dlg-instrumento">
-  <form id="form-instrumento">
-    <div class="dlg-head"><h2>Agregar material</h2><button type="button" class="btn btn-ghost btn-small" data-close>Cerrar</button></div>
-    <div class="dlg-body">
-      <div class="field"><label for="f-nombre">Nombre *</label><input id="f-nombre" required placeholder="Ej: Estacion total"></div>
-      <div class="field-2col">
-        <div class="field"><label for="f-marca">Marca / modelo</label><input id="f-marca" placeholder="Ej: Leica TS06"></div>
-        <div class="field"><label for="f-carrera">Carrera *</label><select id="f-carrera" required></select></div>
-      </div>
-      <div class="field-2col">
-        <div class="field"><label for="f-estado">Estado físico</label>
-          <select id="f-estado"><option>Bueno</option><option>Regular</option><option>Necesita mantenimiento</option><option>Fuera de servicio</option></select>
-        </div>
-        <div class="field"><label for="f-zona">Zona / ubicación</label><input id="f-zona" placeholder="Ej: Estante 3B"></div>
-      </div>
-      <div class="field"><label for="f-fecha">Fecha de ingreso</label><input id="f-fecha" type="date"></div>
-      <div class="field"><label for="f-obs">Observaciones</label><textarea id="f-obs" rows="2"></textarea></div>
+<dialog id="dlg-compra" aria-labelledby="dc-title">
+  <form id="compra-form" novalidate class="pop bg-white rounded-3xl shadow-2xl w-[min(34rem,calc(100vw-2rem))] max-h-[calc(100dvh-2rem)] overflow-y-auto p-6 sm:p-8 space-y-5">
+    <div class="flex justify-between items-center border-b border-gray-100 pb-4">
+      <h3 id="dc-title" class="text-xl font-bold text-gray-800">Solicitar compra de material</h3>
+      <button type="button" data-close class="text-gray-400 hover:text-gray-600" aria-label="Cerrar"><i data-lucide="x" class="w-6 h-6"></i></button>
     </div>
-    <div class="dlg-foot"><button type="button" class="btn" data-close>Cancelar</button><button type="submit" class="btn btn-primary">Guardar</button></div>
+    <p class="text-xs text-gray-500">Para materiales que aún no están en el inventario. El encargado de bodega revisa, aprueba y registra la compra.</p>
+    <div><label for="c-material" class="block text-xs font-bold text-gray-700 uppercase mb-1">Material que necesitas</label><input id="c-material" required placeholder="Ej: pinza amperométrica" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+    <div><label for="c-carrera" class="block text-xs font-bold text-gray-700 uppercase mb-1">Carrera</label><select id="c-carrera" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></select></div>
+    <div><label for="c-just" class="block text-xs font-bold text-gray-700 uppercase mb-1">¿Para qué se usará?</label><textarea id="c-just" rows="3" placeholder="Asignatura, actividad práctica o cantidad estimada" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></textarea></div>
+    <p id="c-error" class="hidden text-xs font-semibold text-rose-600" role="alert"></p>
+    <div class="flex justify-end gap-3">
+      <button type="button" data-close class="px-4 py-2.5 border border-gray-300 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100">Cancelar</button>
+      <button type="submit" class="px-6 py-2.5 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition flex items-center gap-2 disabled:opacity-50"><i data-lucide="send" class="w-4 h-4"></i><span>Enviar solicitud de compra</span></button>
+    </div>
   </form>
 </dialog>
 
-<dialog id="dlg-prestamo">
-  <form id="form-prestamo">
-    <div class="dlg-head"><h2>Solicitar material</h2><button type="button" class="btn btn-ghost btn-small" data-close>Cerrar</button></div>
-    <div class="dlg-body">
-      <div class="field"><label for="p-instrumento">Material disponible *</label><select id="p-instrumento" required></select></div>
-      <div class="field-2col">
-        <div class="field"><label for="p-carrera">Carrera solicitante *</label><select id="p-carrera" required></select></div>
-        <div class="field"><label for="p-nombre">Solicitado por</label><input id="p-nombre" placeholder="Nombre"></div>
-      </div>
-      <div class="field-2col">
-        <div class="field"><label for="p-entrega">Fecha de entrega</label><input id="p-entrega" type="date"></div>
-        <div class="field"><label for="p-devolucion">Devolución estimada *</label><input id="p-devolucion" type="date" required></div>
-      </div>
-      <div class="field"><label for="p-obs">Observaciones</label><textarea id="p-obs" rows="2"></textarea></div>
+<dialog id="dlg-nuevo" aria-labelledby="dn-title">
+  <form id="nuevo-form" novalidate class="pop bg-white rounded-3xl shadow-2xl w-[min(36rem,calc(100vw-2rem))] max-h-[calc(100dvh-2rem)] overflow-y-auto p-6 sm:p-8 space-y-5">
+    <div class="flex justify-between items-center border-b border-gray-100 pb-4">
+      <h3 id="dn-title" class="text-xl font-bold text-gray-800">Agregar material al inventario</h3>
+      <button type="button" data-close class="text-gray-400 hover:text-gray-600" aria-label="Cerrar"><i data-lucide="x" class="w-6 h-6"></i></button>
     </div>
-    <div class="dlg-foot"><button type="button" class="btn" data-close>Cancelar</button><button type="submit" class="btn btn-primary">Enviar solicitud</button></div>
+    <div><label for="n-nombre" class="block text-xs font-bold text-gray-700 uppercase mb-1">Nombre</label><input id="n-nombre" required placeholder="Ej: estación total" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div><label for="n-marca" class="block text-xs font-bold text-gray-700 uppercase mb-1">Marca / modelo</label><input id="n-marca" placeholder="Ej: Leica TS06" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+      <div><label for="n-carrera" class="block text-xs font-bold text-gray-700 uppercase mb-1">Carrera</label><select id="n-carrera" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></select></div>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div><label for="n-estado" class="block text-xs font-bold text-gray-700 uppercase mb-1">Estado físico</label><select id="n-estado" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"><option>Bueno</option><option>Regular</option><option>Necesita mantenimiento</option><option>Fuera de servicio</option></select></div>
+      <div><label for="n-zona" class="block text-xs font-bold text-gray-700 uppercase mb-1">Ubicación</label><input id="n-zona" placeholder="Ej: estante 3B" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div><label for="n-fecha" class="block text-xs font-bold text-gray-700 uppercase mb-1">Fecha de ingreso</label><input type="date" id="n-fecha" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+      <div><label for="n-obs" class="block text-xs font-bold text-gray-700 uppercase mb-1">Observaciones</label><input id="n-obs" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+    </div>
+    <p id="n-error" class="hidden text-xs font-semibold text-rose-600" role="alert"></p>
+    <div class="flex justify-end gap-3">
+      <button type="button" data-close class="px-4 py-2.5 border border-gray-300 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100">Cancelar</button>
+      <button type="submit" class="px-6 py-2.5 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition flex items-center gap-2 disabled:opacity-50"><i data-lucide="plus" class="w-4 h-4"></i><span>Guardar material</span></button>
+    </div>
   </form>
 </dialog>
 
-<dialog id="dlg-compra">
-  <form id="form-compra">
-    <div class="dlg-head"><h2>Solicitar compra de material</h2><button type="button" class="btn btn-ghost btn-small" data-close>Cerrar</button></div>
-    <div class="dlg-body">
-      <p class="notice" style="padding:0;margin:0 0 4px;">Para materiales que no existen aún en el inventario. El encargado de bodega revisa, aprueba y registra la compra.</p>
-      <div class="field"><label for="c-material">Material deseado *</label><input id="c-material" required placeholder="Ej: Pinza amperométrica"></div>
-      <div class="field-2col">
-        <div class="field"><label for="c-carrera">Carrera *</label><select id="c-carrera" required></select></div>
-        <div class="field"><label for="c-nombre">Solicitado por</label><input id="c-nombre" placeholder="Nombre"></div>
-      </div>
-      <div class="field"><label for="c-justificacion">Justificación</label><textarea id="c-justificacion" rows="2" placeholder="¿Para qué se usará?"></textarea></div>
+<dialog id="dlg-devolucion" aria-labelledby="dv-title">
+  <form id="devolucion-form" novalidate class="pop bg-white rounded-3xl shadow-2xl w-[min(30rem,calc(100vw-2rem))] p-6 sm:p-8 space-y-5">
+    <div class="flex justify-between items-center border-b border-gray-100 pb-4">
+      <h3 id="dv-title" class="text-xl font-bold text-gray-800">Registrar devolución</h3>
+      <button type="button" data-close class="text-gray-400 hover:text-gray-600" aria-label="Cerrar"><i data-lucide="x" class="w-6 h-6"></i></button>
     </div>
-    <div class="dlg-foot"><button type="button" class="btn" data-close>Cancelar</button><button type="submit" class="btn btn-primary">Enviar solicitud de compra</button></div>
+    <div id="dv-summary" class="bg-gray-50 p-3 rounded-xl border border-gray-200 text-xs space-y-1"></div>
+    <div><label for="d-estado" class="block text-xs font-bold text-gray-700 uppercase mb-1">Estado al devolver</label><select id="d-estado" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"><option>Bueno</option><option>Con daños menores</option><option>Dañado</option><option>Incompleto</option></select></div>
+    <div><label for="d-obs" class="block text-xs font-bold text-gray-700 uppercase mb-1">Observaciones</label><textarea id="d-obs" rows="2" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></textarea></div>
+    <div class="flex justify-end gap-3">
+      <button type="button" data-close class="px-4 py-2.5 border border-gray-300 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100">Cancelar</button>
+      <button type="submit" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 disabled:opacity-50"><i data-lucide="circle-check" class="w-4 h-4"></i><span>Confirmar devolución</span></button>
+    </div>
   </form>
 </dialog>
 
-<dialog id="dlg-marcar-comprado">
-  <form id="form-marcar-comprado">
-    <div class="dlg-head"><h2>Registrar compra en el inventario</h2><button type="button" class="btn btn-ghost btn-small" data-close>Cerrar</button></div>
-    <div class="dlg-body">
-      <p class="notice" style="padding:0;margin:0 0 4px;" id="mc-resumen"></p>
-      <div class="field-2col">
-        <div class="field"><label for="mc-marca">Marca / modelo</label><input id="mc-marca" placeholder="Ej: Fluke 117"></div>
-        <div class="field"><label for="mc-estado">Estado físico</label>
-          <select id="mc-estado"><option>Bueno</option><option>Regular</option></select>
-        </div>
-      </div>
-      <div class="field-2col">
-        <div class="field"><label for="mc-zona">Zona / ubicación</label><input id="mc-zona" placeholder="Ej: Estante 3B"></div>
-        <div class="field"><label for="mc-fecha">Fecha de ingreso</label><input id="mc-fecha" type="date"></div>
-      </div>
+<dialog id="dlg-comprado" aria-labelledby="dk-title">
+  <form id="comprado-form" novalidate class="pop bg-white rounded-3xl shadow-2xl w-[min(32rem,calc(100vw-2rem))] p-6 sm:p-8 space-y-5">
+    <div class="flex justify-between items-center border-b border-gray-100 pb-4">
+      <h3 id="dk-title" class="text-xl font-bold text-gray-800">Registrar compra en el inventario</h3>
+      <button type="button" data-close class="text-gray-400 hover:text-gray-600" aria-label="Cerrar"><i data-lucide="x" class="w-6 h-6"></i></button>
     </div>
-    <div class="dlg-foot"><button type="button" class="btn" data-close>Cancelar</button><button type="submit" class="btn btn-primary">Agregar al inventario</button></div>
+    <div id="dk-summary" class="bg-cft-goldLight p-3 rounded-xl border border-cft-gold/30 text-xs text-cft-navy"></div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div><label for="k-marca" class="block text-xs font-bold text-gray-700 uppercase mb-1">Marca / modelo</label><input id="k-marca" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+      <div><label for="k-zona" class="block text-xs font-bold text-gray-700 uppercase mb-1">Ubicación</label><input id="k-zona" placeholder="Ej: estante 3B" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+    </div>
+    <div class="flex justify-end gap-3">
+      <button type="button" data-close class="px-4 py-2.5 border border-gray-300 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100">Cancelar</button>
+      <button type="submit" class="px-6 py-2.5 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition flex items-center gap-2 disabled:opacity-50"><i data-lucide="package-check" class="w-4 h-4"></i><span>Agregar al inventario</span></button>
+    </div>
   </form>
 </dialog>
 
-<dialog id="dlg-devolver">
-  <form id="form-devolver">
-    <div class="dlg-head"><h2>Registrar devolución</h2><button type="button" class="btn btn-ghost btn-small" data-close>Cerrar</button></div>
-    <div class="dlg-body">
-      <div class="field"><label for="d-estado">Estado al devolver *</label><select id="d-estado" required><option>Bueno</option><option>Dañado</option><option>Perdido</option></select></div>
-      <div class="field"><label for="d-obs">Observaciones</label><textarea id="d-obs" rows="2"></textarea></div>
-    </div>
-    <div class="dlg-foot"><button type="button" class="btn" data-close>Cancelar</button><button type="submit" class="btn btn-primary">Confirmar devolución</button></div>
-  </form>
-</dialog>
+<div id="toast" popover="manual" role="status" aria-live="polite" class="z-[60] max-w-[calc(100vw-2rem)] bg-cft-navy text-white rounded-2xl px-4 py-3 shadow-2xl items-center gap-3 text-sm font-semibold">
+  <span id="toast-icon" class="text-cft-gold flex-none"></span><span id="toast-text"></span>
+</div>
 
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <script src="https://unpkg.com/lucide@1.48.0/dist/umd/lucide.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 (function(){
   "use strict";
@@ -431,503 +480,728 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
     { nombre:"Electricidad y Energías Renovables", icon:"sun" },
     { nombre:"Electromecánica", icon:"cog" },
     { nombre:"Estética Integral", icon:"sparkles" },
-    { nombre:"Gastronomía y Cocina Internacional", icon:"chef-hat" },
+    { nombre:"Gastronomía y Cocina Internacional", icon:"utensils" },
     { nombre:"Instrumentación Automatización y Control Industrial", icon:"gauge" },
     { nombre:"Logística Industrial", icon:"truck" },
-    { nombre:"Mantenimiento Mecánico Industrial", icon:"wrench" },
-    { nombre:"Mecánica en Maquinaria Pesada", icon:"hammer" },
+    { nombre:"Mantenimiento Mecánico Industrial", icon:"settings" },
+    { nombre:"Mecánica en Maquinaria Pesada", icon:"wrench" },
     { nombre:"Minería y Metalurgia", icon:"pickaxe" },
     { nombre:"Operación y Mantención de Maquinaria Pesada", icon:"hard-hat" },
     { nombre:"Topografía", icon:"compass" }
   ];
   var FEATURED = ["Electricidad y Energías Renovables","Minería y Metalurgia","Topografía","Logística Industrial","Mantenimiento Mecánico Industrial","Gastronomía y Cocina Internacional"];
-  var CARRERA_NAMES = CARRERAS.map(function(c){ return c.nombre; });
+  var NOMBRES = CARRERAS.map(function(c){ return c.nombre; });
+  var ROUTES = ["inicio","catalogo","solicitudes","prestamos","flujo"];
+  var ACTIVE = ["Pendiente","Lista para retiro","En préstamo"];
+  var MESES = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+  var CART_KEY = "panol-bolsa-v1";
 
-  var state = { inventario: [], prestamos: [], compras: [], dbOk: false, readOnly: false, canManage: false, userId: null,
-                view: "home", selectedCarrera: null, pedidosTipo: "prestamos", pedidosFiltro: "activos" };
-
-  function todayISO(){ return new Date().toISOString().slice(0,10); }
-  function fmtDate(iso){
-    if(!iso) return "–";
-    var d = new Date(iso + "T00:00:00");
-    if(isNaN(d.getTime())) return iso;
-    return d.toLocaleDateString("es-CL", { day:"2-digit", month:"2-digit", year:"numeric" });
-  }
-  function escapeHtml(s){
-    return String(s==null?"":s).replace(/[&<>"']/g, function(c){
-      return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c];
-    });
-  }
-  function estadoPrestamo(p){
-    if(p.fechaDevolucionReal) return "Devuelto";
-    var hoy = new Date(todayISO());
-    var est = new Date(p.fechaDevolucionEstimada || todayISO());
-    return hoy.getTime() > est.getTime() ? "Atrasado" : "Activo";
-  }
-  function disponibilidad(instrumentoId){
-    var activo = state.prestamos.some(function(p){ return p.instrumentoId === instrumentoId && !p.fechaDevolucionReal; });
-    return activo ? "Prestado" : "Disponible";
-  }
-  function pillFor(estado){
-    if(estado === "Disponible" || estado === "Activo" || estado === "Devuelto" || estado === "Comprada") return "pill-good";
-    if(estado === "Prestado" || estado === "Pendiente") return "pill-warning";
-    if(estado === "Atrasado" || estado === "Rechazada") return "pill-critical";
-    return "pill-neutral";
-  }
-  function iconSvg(key, cls){
-    return '<i data-lucide="' + (key||"circle") + '" class="icon ' + (cls||"") + '"></i>';
-  }
-  function refreshIcons(){ if(window.lucide && lucide.createIcons) lucide.createIcons(); }
-  function fillSelect(sel, options, placeholder){
-    sel.innerHTML = "";
-    if(placeholder){ var o0=document.createElement("option"); o0.value=""; o0.textContent=placeholder; sel.appendChild(o0); }
-    options.forEach(function(opt){ var o=document.createElement("option"); o.value=opt; o.textContent=opt; sel.appendChild(o); });
-  }
-
-  // ---- nav / routing ----
-  var navButtons = Array.prototype.slice.call(document.querySelectorAll(".navlink"));
-  var views = { home: document.getElementById("view-home"), categorias: document.getElementById("view-categorias"), "mis-pedidos": document.getElementById("view-mis-pedidos") };
-
-  function goTo(view){
-    state.view = view;
-    navButtons.forEach(function(b){ b.classList.toggle("active", b.dataset.view === view); });
-    Object.keys(views).forEach(function(k){ views[k].classList.toggle("active", k === view); });
-    if(view === "mis-pedidos") renderPedidos();
-    if(view === "categorias" && !state.selectedCarrera) renderCategoriasGrid();
-    try{ history.replaceState(null, "", "#" + view); }catch(e){}
-  }
-  navButtons.forEach(function(b){ b.addEventListener("click", function(){ goTo(b.dataset.view); }); });
-  document.querySelectorAll("[data-nav]").forEach(function(el){
-    el.addEventListener("click", function(ev){ ev.preventDefault(); goTo(el.getAttribute("data-nav")); });
-  });
-
-  // ---- dialogs ----
-  function wireDialog(dlg){ dlg.querySelectorAll("[data-close]").forEach(function(b){ b.addEventListener("click", function(){ dlg.close(); }); }); }
-  var dlgInstrumento = document.getElementById("dlg-instrumento");
-  var dlgPrestamo = document.getElementById("dlg-prestamo");
-  var dlgDevolver = document.getElementById("dlg-devolver");
-  var dlgCompra = document.getElementById("dlg-compra");
-  var dlgMarcarComprado = document.getElementById("dlg-marcar-comprado");
-  [dlgInstrumento, dlgPrestamo, dlgDevolver, dlgCompra, dlgMarcarComprado].forEach(wireDialog);
-
-  fillSelect(document.getElementById("f-carrera"), CARRERA_NAMES);
-  fillSelect(document.getElementById("p-carrera"), CARRERA_NAMES);
-  fillSelect(document.getElementById("c-carrera"), CARRERA_NAMES);
-  document.getElementById("f-fecha").value = todayISO();
-  document.getElementById("p-entrega").value = todayISO();
-
-  function openSolicitar(preselectId){
-    var sel = document.getElementById("p-instrumento");
-    var disponibles = state.inventario.filter(function(i){ return disponibilidad(i.id) === "Disponible"; });
-    sel.innerHTML = "";
-    if(disponibles.length === 0){
-      var o = document.createElement("option"); o.value=""; o.textContent = "No hay materiales disponibles"; sel.appendChild(o);
-    } else {
-      disponibles.forEach(function(i){
-        var o = document.createElement("option");
-        o.value = i.id; o.textContent = (i.codigo ? i.codigo + " · " : "") + i.nombre + " (" + i.carrera + ")";
-        sel.appendChild(o);
-      });
-      if(preselectId) sel.value = preselectId;
-    }
-    document.getElementById("form-prestamo").reset();
-    if(preselectId) sel.value = preselectId;
-    document.getElementById("p-entrega").value = todayISO();
-    dlgPrestamo.showModal();
-  }
-  document.getElementById("qc-solicitar").addEventListener("click", function(){ openSolicitar(null); });
-  document.getElementById("qc-solicitudes").addEventListener("click", function(){ state.pedidosTipo = "compras"; state.pedidosFiltro = "activos"; goTo("mis-pedidos"); });
-  document.getElementById("qc-prestamos").addEventListener("click", function(){ state.pedidosTipo = "prestamos"; state.pedidosFiltro = "activos"; goTo("mis-pedidos"); });
-
-  function openSolicitarCompra(){
-    document.getElementById("form-compra").reset();
-    if(state.selectedCarrera && state.selectedCarrera !== "__ALL__") document.getElementById("c-carrera").value = state.selectedCarrera;
-    var q = document.getElementById("catalogo-search").value.trim();
-    if(q) document.getElementById("c-material").value = q;
-    dlgCompra.showModal();
-  }
-  document.getElementById("btn-solicitar-compra").addEventListener("click", openSolicitarCompra);
-
-  document.getElementById("hero-search-form").addEventListener("submit", function(ev){
-    ev.preventDefault();
-    var q = document.getElementById("hero-search").value.trim();
-    state.selectedCarrera = null;
-    goTo("categorias");
-    openCatalogAll();
-    document.getElementById("catalogo-search").value = q;
-    renderItemGrid();
-  });
-
-  document.getElementById("btn-nuevo-instrumento").addEventListener("click", function(){
-    document.getElementById("form-instrumento").reset();
-    document.getElementById("f-fecha").value = todayISO();
-    if(state.selectedCarrera) document.getElementById("f-carrera").value = state.selectedCarrera;
-    dlgInstrumento.showModal();
-  });
-
-  // ---- career grids ----
-  function careerButtonsHtml(list){
-    return list.map(function(name){
-      var c = CARRERAS.find(function(x){ return x.nombre === name; });
-      return '<button class="career" data-carrera="' + escapeHtml(name) + '">' +
-        '<span class="career-icon">' + iconSvg(c ? c.icon : "dot") + '</span>' +
-        '<span class="career-name">' + escapeHtml(name) + '</span></button>';
-    }).join("");
-  }
-  document.getElementById("career-grid-home").innerHTML = careerButtonsHtml(FEATURED);
-  function renderCategoriasGrid(){
-    document.getElementById("career-grid-full").innerHTML = careerButtonsHtml(CARRERA_NAMES);
-    refreshIcons();
-  }
-  renderCategoriasGrid();
-  refreshIcons();
-  document.body.addEventListener("click", function(ev){
-    var btn = ev.target.closest(".career");
-    if(!btn) return;
-    var carrera = btn.getAttribute("data-carrera");
-    state.selectedCarrera = carrera;
-    goTo("categorias");
-    openCatalogFor(carrera);
-  });
-
-  function openCatalogFor(carrera){
-    document.getElementById("categorias-grid-wrap").style.display = "none";
-    document.getElementById("catalogo-wrap").style.display = "";
-    document.getElementById("catalogo-title").textContent = carrera;
-    document.getElementById("catalogo-search").value = "";
-    document.getElementById("btn-nuevo-instrumento").style.display = state.canManage ? "" : "none";
-    renderItemGrid();
-  }
-  function openCatalogAll(){
-    state.selectedCarrera = "__ALL__";
-    document.getElementById("categorias-grid-wrap").style.display = "none";
-    document.getElementById("catalogo-wrap").style.display = "";
-    document.getElementById("catalogo-title").textContent = "Todos los materiales";
-    document.getElementById("btn-nuevo-instrumento").style.display = state.canManage ? "" : "none";
-  }
-  document.getElementById("btn-back-categorias").addEventListener("click", function(){
-    state.selectedCarrera = null;
-    document.getElementById("categorias-grid-wrap").style.display = "";
-    document.getElementById("catalogo-wrap").style.display = "none";
-  });
-  document.getElementById("catalogo-search").addEventListener("input", renderItemGrid);
-  document.getElementById("filtro-disponibilidad").addEventListener("change", renderItemGrid);
-
-  function renderItemGrid(){
-    var cont = document.getElementById("item-grid");
-    if(!state.dbOk){ cont.innerHTML = '<div class="notice">Conectando con el almacén de datos...</div>'; return; }
-    var q = (document.getElementById("catalogo-search").value || "").toLowerCase().trim();
-    var dispF = document.getElementById("filtro-disponibilidad").value;
-    var items = state.inventario.filter(function(i){
-      if(state.selectedCarrera && state.selectedCarrera !== "__ALL__" && i.carrera !== state.selectedCarrera) return false;
-      if(dispF && disponibilidad(i.id) !== dispF) return false;
-      if(q && (i.nombre||"").toLowerCase().indexOf(q) === -1 && (i.marcaModelo||"").toLowerCase().indexOf(q) === -1 && (i.carrera||"").toLowerCase().indexOf(q) === -1) return false;
-      return true;
-    });
-    if(state.inventario.length === 0){
-      cont.innerHTML = '<div class="empty"><h3>Aún no hay materiales registrados</h3><p>' + (state.canManage ? 'Agrega el primero con "Agregar material".' : 'Vuelve pronto: el encargado de bodega está cargando el inventario.') + '</p></div>';
-      return;
-    }
-    if(items.length === 0){ cont.innerHTML = '<div class="empty"><p>Ningún material calza con la búsqueda.</p></div>'; return; }
-    cont.innerHTML = items.map(function(i){
-      var disp = disponibilidad(i.id);
-      return '<div class="item-card">' +
-        '<div class="name">' + escapeHtml(i.nombre) + '</div>' +
-        '<div class="sub mono">' + escapeHtml(i.codigo||"") + (i.marcaModelo ? " · " + escapeHtml(i.marcaModelo) : "") + '</div>' +
-        '<div class="sub">' + escapeHtml(i.carrera||"") + '</div>' +
-        '<div class="meta"><span class="pill ' + pillFor(disp) + '">' + disp + '</span></div>' +
-        '<button class="btn btn-primary btn-small" data-solicitar="' + i.id + '"' + (disp !== "Disponible" ? " disabled" : "") + '>' + (disp === "Disponible" ? "Solicitar" : "No disponible") + '</button>' +
-      '</div>';
-    }).join("");
-  }
-  document.getElementById("item-grid").addEventListener("click", function(ev){
-    var btn = ev.target.closest("[data-solicitar]");
-    if(!btn || btn.disabled) return;
-    openSolicitar(btn.getAttribute("data-solicitar"));
-  });
-
-  // ---- mis pedidos ----
-  var FILTRO_LABELS = {
-    prestamos: { activos: "Activos", todos: "Todos", historial: "Historial" },
-    compras: { activos: "Pendientes", todos: "Todas", historial: "Resueltas" }
+  var state = {
+    inventario: [], solicitudes: [], legacy: [], compras: [],
+    loaded: { inv:false, sol:false, leg:false, com:false },
+    db: null, user: null, dbTried: false, me: null, userId: null, canManage: false, readOnly: false,
+    names: {}, smap: {},
+    view: "inicio", f: { carrera:"", q:"", disp:"" }, tab: "todas",
+    cart: [], detalleId: null, devolverId: null, compraId: null
   };
-  function updateFiltroLabels(){
-    var labels = FILTRO_LABELS[state.pedidosTipo];
-    Array.prototype.forEach.call(document.querySelectorAll("#pedidos-filtros .filter-tab"), function(b){
-      b.textContent = labels[b.dataset.f];
+
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]; }); }
+  function pad(n){ return (n < 10 ? "0" : "") + n; }
+  function isoOf(d){ return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+  function today(){ return isoOf(new Date()); }
+  function plusDays(iso, n){ var p = (iso || today()).split("-"); var d = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2])); d.setDate(d.getDate() + n); return isoOf(d); }
+  function fmt(iso){ if(!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return "—"; var p = iso.split("-"); return Number(p[2]) + " " + MESES[Number(p[1]) - 1] + " " + p[0]; }
+  function ic(name, cls){ return '<i data-lucide="' + name + '" class="' + (cls || "w-4 h-4") + '"></i>'; }
+  function iconFor(c){ var x = CARRERAS.find(function(k){ return k.nombre === c; }); return x ? x.icon : "package"; }
+  function refreshIcons(){ if(window.lucide && window.lucide.createIcons) window.lucide.createIcons(); }
+  function plural(n, a, b){ return n + " " + (n === 1 ? a : b); }
+  function itemById(id){ return state.inventario.find(function(i){ return i.id === id; }); }
+  function canWrite(){ return !!state.db && !state.readOnly; }
+  function col(n){ return state.db.collection(n); }
+  function nextCodigo(){
+    var max = 0;
+    state.inventario.forEach(function(i){ var m = /^INS-(\d+)$/.exec(i.codigo || ""); if(m) max = Math.max(max, Number(m[1])); });
+    return "INS-" + String(max + 1).padStart(3, "0");
+  }
+
+  /* ---------- requests model ---------- */
+  function normLegacy(p){
+    var it = itemById(p.instrumentoId);
+    return {
+      id: p.id, _src: "prestamos", codigo: "PR-" + String(p.id).slice(0, 5).toUpperCase(),
+      items: [{ id: p.instrumentoId, codigo: p.instrumentoCodigo || "", nombre: p.instrumentoNombre || (it && it.nombre) || "Material", carrera: (it && it.carrera) || p.carreraSolicitante || "" }],
+      carrera: p.carreraSolicitante || "", asignatura: p.observaciones || "", profesor: "", solicitadoPor: p.solicitadoPor || "",
+      requesterId: p.requesterId || null, fechaRetiro: p.fechaEntrega, fechaDevolucion: p.fechaDevolucionEstimada,
+      fechaEntregaReal: p.fechaEntrega, fechaDevolucionReal: p.fechaDevolucionReal || null,
+      estado: p.fechaDevolucionReal ? "Devuelta" : "En préstamo", estadoDevolucion: p.estadoAlDevolver || "",
+      prorroga: p.prorroga || "", createdAt: p.createdAt || 0
+    };
+  }
+  function requests(){
+    return state.solicitudes.concat(state.legacy.map(normLegacy)).sort(function(a, b){ return (b.createdAt || 0) - (a.createdAt || 0); });
+  }
+  function reqById(id){ return requests().find(function(r){ return r.id === id; }); }
+  function isLate(r){ return r.estado === "En préstamo" && r.fechaDevolucion && r.fechaDevolucion < today(); }
+  function shownEstado(r){ return isLate(r) ? "Atrasado" : r.estado; }
+  function buildStatusMap(){
+    var m = {};
+    requests().forEach(function(r){
+      if(ACTIVE.indexOf(r.estado) === -1) return;
+      (r.items || []).forEach(function(it){
+        if(r.estado === "En préstamo") m[it.id] = "Prestado";
+        else if(m[it.id] !== "Prestado") m[it.id] = "Reservado";
+      });
+    });
+    state.smap = m;
+  }
+  function itemStatus(i){ if(i.estadoFisico === "Fuera de servicio") return "Fuera de servicio"; return state.smap[i.id] || "Disponible"; }
+  function mine(list){ if(state.canManage || !state.userId) return list; return list.filter(function(x){ return x.requesterId === state.userId; }); }
+  function personName(x){ return (x.requesterId && state.names[x.requesterId]) || x.solicitadoPor || ""; }
+  function resolveNames(list){
+    if(!state.user || !state.canManage) return;
+    var ids = [];
+    list.forEach(function(x){ if(x.requesterId && !(x.requesterId in state.names) && ids.indexOf(x.requesterId) === -1) ids.push(x.requesterId); });
+    if(!ids.length) return;
+    ids.forEach(function(id){ state.names[id] = ""; });
+    state.user.profiles(ids).then(function(ps){
+      var changed = false;
+      ids.forEach(function(id){ var n = ps[id] && ps[id].name; if(n){ state.names[id] = n; changed = true; } });
+      if(changed){ renderSolicitudes(); renderPrestamos(); refreshIcons(); }
     });
   }
-  document.getElementById("pedidos-tipo").addEventListener("click", function(ev){
-    var btn = ev.target.closest(".filter-tab");
-    if(!btn) return;
-    state.pedidosTipo = btn.dataset.tipo;
-    Array.prototype.forEach.call(document.querySelectorAll("#pedidos-tipo .filter-tab"), function(b){ b.classList.toggle("active", b === btn); });
-    updateFiltroLabels();
-    renderPedidos();
-  });
-  document.getElementById("pedidos-filtros").addEventListener("click", function(ev){
-    var btn = ev.target.closest(".filter-tab");
-    if(!btn) return;
-    state.pedidosFiltro = btn.dataset.f;
-    Array.prototype.forEach.call(document.querySelectorAll("#pedidos-filtros .filter-tab"), function(b){ b.classList.toggle("active", b === btn); });
-    renderPedidos();
-  });
-  function renderPedidosPrestamos(cont){
-    var base = state.prestamos;
-    if(!state.canManage && state.userId){ base = base.filter(function(p){ return p.requesterId === state.userId; }); }
-    var items = base.filter(function(p){
-      var est = estadoPrestamo(p);
-      if(state.pedidosFiltro === "activos") return est === "Activo" || est === "Atrasado";
-      if(state.pedidosFiltro === "historial") return est === "Devuelto";
-      return true;
+
+  var STATUS_PILL = {
+    "Pendiente": "bg-amber-100 text-amber-700",
+    "Lista para retiro": "bg-emerald-100 text-emerald-700",
+    "En préstamo": "bg-cft-lightBlue text-cft-navy",
+    "Atrasado": "bg-rose-100 text-rose-700",
+    "Devuelta": "bg-gray-100 text-gray-600",
+    "Rechazada": "bg-rose-50 text-rose-600",
+    "Cancelada": "bg-gray-100 text-gray-500",
+    "Aprobada": "bg-cft-lightBlue text-cft-navy",
+    "Comprada": "bg-emerald-100 text-emerald-700"
+  };
+  function pill(e){ return '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold whitespace-nowrap ' + (STATUS_PILL[e] || "bg-gray-100 text-gray-600") + '">' + esc(e) + "</span>"; }
+  var AVAIL = { "Disponible":"bg-emerald-500", "Reservado":"bg-amber-500", "Prestado":"bg-rose-500", "Fuera de servicio":"bg-gray-500" };
+
+  /* ---------- cart (per-viewer convenience) ---------- */
+  function loadCart(){ try{ var v = JSON.parse(localStorage.getItem(CART_KEY) || "[]"); state.cart = Array.isArray(v) ? v : []; }catch(e){ state.cart = []; } }
+  function saveCart(){ try{ localStorage.setItem(CART_KEY, JSON.stringify(state.cart)); }catch(e){} }
+  function inCart(id){ return state.cart.indexOf(id) !== -1; }
+
+  /* ---------- toast ---------- */
+  var tt = null;
+  var HAS_POPOVER = typeof HTMLElement !== "undefined" && "popover" in HTMLElement.prototype;
+  if(!HAS_POPOVER) $("toast").style.display = "none";
+  function toast(msg, icon){
+    $("toast-icon").innerHTML = ic(icon || "circle-check", "w-5 h-5");
+    $("toast-text").textContent = msg;
+    var t = $("toast");
+    if(HAS_POPOVER){ try{ if(t.matches(":popover-open")) t.hidePopover(); t.showPopover(); }catch(e){} }
+    else t.style.display = "flex";
+    refreshIcons();
+    clearTimeout(tt);
+    tt = setTimeout(function(){ if(HAS_POPOVER){ try{ t.hidePopover(); }catch(e){} } else t.style.display = "none"; }, 3800);
+  }
+
+  /* ---------- routing ---------- */
+  function go(view){
+    if(ROUTES.indexOf(view) === -1) view = "inicio";
+    state.view = view;
+    ROUTES.forEach(function(r){ $("page-" + r).classList.toggle("hidden", r !== view); });
+    document.querySelectorAll(".nav-link").forEach(function(b){
+      var on = b.getAttribute("data-go") === view;
+      b.classList.toggle("bg-cft-lightBlue", on); b.classList.toggle("text-cft-navy", on); b.classList.toggle("font-bold", on); b.classList.toggle("text-gray-600", !on);
+      if(on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
     });
-    if(state.prestamos.length === 0){
-      cont.innerHTML = '<div class="empty"><h3>Aún no hay préstamos</h3><p>Usa "Solicitar materiales" para pedir prestado tu primer equipo.</p></div>';
+    document.querySelectorAll(".mob-link").forEach(function(b){
+      var on = b.getAttribute("data-go") === view;
+      b.classList.toggle("text-cft-navy", on); b.classList.toggle("font-bold", on);
+      if(on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+    });
+    try{ history.replaceState(null, "", "#" + view); }catch(e){}
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  window.addEventListener("hashchange", function(){ var h = location.hash.slice(1); if(h && h !== state.view) go(h); });
+
+  /* ---------- builders ---------- */
+  function visual(i, size){
+    var big = size === "lg";
+    return '<div class="relative ' + (big ? "h-60" : "h-44") + ' overflow-hidden bg-gradient-to-br from-cft-lightBlue via-white to-cft-goldLight">' +
+      '<div class="absolute inset-0 blueprint"></div>' +
+      '<div class="absolute inset-0 flex items-center justify-center"><div class="' + (big ? "w-24 h-24" : "w-20 h-20") + ' rounded-2xl bg-white shadow-md border border-gray-100 text-cft-navy flex items-center justify-center group-hover:scale-110 transition duration-300">' + ic(iconFor(i.carrera), big ? "w-12 h-12" : "w-10 h-10") + "</div></div>" +
+      '<span class="absolute bottom-3 right-3 font-mono text-[11px] font-bold text-cft-navy/40">' + esc(i.codigo || "") + "</span></div>";
+  }
+  function productCard(i){
+    var s = itemStatus(i), ok = s === "Disponible", added = inCart(i.id);
+    var btn;
+    if(added) btn = '<button type="button" data-action="bolsa" class="py-2 px-3 bg-cft-goldLight text-cft-navy border border-cft-gold rounded-xl text-xs font-bold transition flex items-center gap-1">' + ic("check", "w-3.5 h-3.5") + "<span>En la bolsa</span></button>";
+    else if(ok) btn = '<button type="button" data-add="' + esc(i.id) + '" class="py-2 px-3 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"' + (canWrite() ? "" : " disabled") + ">" + ic("plus", "w-3.5 h-3.5") + "<span>Solicitar</span></button>";
+    else btn = '<button type="button" disabled class="py-2 px-3 bg-gray-100 text-gray-400 rounded-xl text-xs font-bold cursor-not-allowed">' + esc(s) + "</button>";
+    return '<article class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition flex flex-col justify-between overflow-hidden group">' +
+      '<button type="button" data-detalle="' + esc(i.id) + '" class="relative block text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-cft-gold" aria-label="Ver detalle de ' + esc(i.nombre) + '">' + visual(i) +
+        '<span class="absolute top-3 left-3 max-w-[62%] truncate bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold text-cft-navy uppercase shadow-sm">' + esc(i.carrera) + "</span>" +
+        '<span class="absolute top-3 right-3 ' + AVAIL[s] + ' text-white px-2 py-0.5 rounded-full text-[10px] font-bold">' + esc(s) + "</span>" +
+      "</button>" +
+      '<div class="p-5 flex-1 flex flex-col justify-between gap-4">' +
+        "<div>" +
+          '<span class="text-[11px] font-mono text-gray-400 block">' + esc(i.codigo || "S/C") + " • " + esc(i.estadoFisico ? "Estado " + i.estadoFisico.toLowerCase() : "Sin estado") + "</span>" +
+          '<h3 class="font-bold text-gray-800 text-sm line-clamp-2 mt-1 leading-snug">' + esc(i.nombre) + (i.marcaModelo ? ' <span class="font-medium text-gray-500">· ' + esc(i.marcaModelo) + "</span>" : "") + "</h3>" +
+        "</div>" +
+        '<div class="pt-3 border-t border-gray-100 flex items-center justify-between gap-2">' +
+          '<button type="button" data-detalle="' + esc(i.id) + '" class="flex-1 py-2 px-3 border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 hover:bg-gray-50 transition">Ver detalle</button>' + btn +
+        "</div>" +
+      "</div></article>";
+  }
+  function emptyCard(icon, title, text, extra){
+    return '<div class="col-span-full py-12 px-6 text-center space-y-3 bg-white rounded-3xl border border-gray-100">' + ic(icon, "w-12 h-12 text-gray-300 mx-auto") +
+      '<p class="text-gray-700 font-bold text-sm">' + esc(title) + '</p><p class="text-xs text-gray-500 max-w-sm mx-auto">' + esc(text) + "</p>" + (extra || "") + "</div>";
+  }
+  function skeletonCards(n){
+    var s = "";
+    for(var k = 0; k < n; k++) s += '<div class="bg-white rounded-2xl border border-gray-100 overflow-hidden animate-pulse" aria-hidden="true"><div class="h-44 bg-gray-100"></div><div class="p-5 space-y-3"><div class="h-3 w-1/3 bg-gray-100 rounded"></div><div class="h-4 w-4/5 bg-gray-100 rounded"></div><div class="h-9 bg-gray-100 rounded-xl"></div></div></div>';
+    return s;
+  }
+  var NO_DB = "Abre esta página dentro de Claude, con tu sesión iniciada, para ver el inventario en vivo.";
+
+  /* ---------- renderers ---------- */
+  function renderWho(){
+    var av = $("avatar");
+    if(!state.db){
+      $("who-name").textContent = state.dbTried ? "Sin conexión" : "Conectando…";
+      $("who-role").textContent = state.dbTried ? "Abre la página en Claude" : "";
+      av.textContent = "?";
       return;
     }
-    if(items.length === 0){ cont.innerHTML = '<div class="empty"><p>No hay pedidos en este filtro.</p></div>'; return; }
-    cont.innerHTML = items.map(function(p){
-      var est = estadoPrestamo(p);
-      var accion = (state.canManage && est !== "Devuelto")
-        ? '<button class="btn btn-small" data-devolver="' + p.id + '">Marcar devuelto</button>'
-        : (est === "Devuelto" ? '<span class="sub">' + escapeHtml(p.estadoAlDevolver||"") + '</span>' : "");
-      return '<div class="card"><div class="card-row">' +
-        '<div><div class="name" style="font-weight:700;">' + escapeHtml(p.instrumentoNombre||"–") + '</div><div class="sub mono">' + escapeHtml(p.instrumentoCodigo||"") + '</div></div>' +
-        '<div><div class="field-label">Carrera</div><div class="field-value">' + escapeHtml(p.carreraSolicitante||"–") + '</div></div>' +
-        '<div><div class="field-label">Entrega / devolucion est.</div><div class="field-value mono">' + fmtDate(p.fechaEntrega) + ' → ' + fmtDate(p.fechaDevolucionEstimada) + '</div></div>' +
-        '<div><div class="field-label">Estado</div><span class="pill ' + pillFor(est) + '">' + est + '</span></div>' +
-        '<div>' + accion + '</div>' +
-      '</div></div>';
+    var name = (state.me && state.me.name) || "Invitado";
+    $("who-name").textContent = name;
+    $("who-role").textContent = state.canManage ? "Encargado de pañol" : "Estudiante / docente";
+    if(state.me && state.me.avatarUrl){
+      if(!av.querySelector("img")){ av.innerHTML = ""; var img = document.createElement("img"); img.alt = ""; img.className = "w-full h-full object-cover"; av.appendChild(img); }
+      av.querySelector("img").src = state.me.avatarUrl;
+    } else {
+      av.textContent = name.split(/\s+/).filter(Boolean).slice(0, 2).map(function(w){ return w[0].toUpperCase(); }).join("") || "·";
+    }
+  }
+
+  function renderStats(){
+    if(!state.loaded.inv || !state.loaded.sol || !state.loaded.leg){ return; }
+    var total = state.inventario.length;
+    var disp = state.inventario.filter(function(i){ return itemStatus(i) === "Disponible"; }).length;
+    var out = state.inventario.filter(function(i){ return itemStatus(i) === "Prestado"; }).length;
+    $("st-total").textContent = total; $("st-disp").textContent = disp; $("st-out").textContent = out;
+  }
+
+  function renderCareers(){
+    var c = {};
+    state.inventario.forEach(function(i){ c[i.carrera] = (c[i.carrera] || 0) + 1; });
+    $("career-grid").innerHTML = FEATURED.map(function(n){
+      return '<button type="button" data-carrera="' + esc(n) + '" class="cursor-pointer group bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md hover:border-cft-gold transition text-center flex flex-col items-center justify-start gap-3">' +
+        '<div class="w-16 h-16 rounded-full bg-amber-50 text-cft-navy flex items-center justify-center group-hover:scale-110 transition">' + ic(iconFor(n), "w-8 h-8") + "</div>" +
+        '<span class="text-xs font-bold text-gray-800 group-hover:text-cft-navy transition leading-snug">' + esc(n) + "</span>" +
+        '<span class="text-[11px] font-medium text-gray-400">' + (state.loaded.inv ? plural(c[n] || 0, "material", "materiales") : "&nbsp;") + "</span></button>";
     }).join("");
   }
-  function renderPedidosCompras(cont){
-    var base = state.compras;
-    if(!state.canManage && state.userId){ base = base.filter(function(c){ return c.requesterId === state.userId; }); }
-    var items = base.filter(function(c){
-      var est = c.estado || "Pendiente";
-      if(state.pedidosFiltro === "activos") return est === "Pendiente" || est === "Aprobada";
-      if(state.pedidosFiltro === "historial") return est === "Comprada" || est === "Rechazada";
+
+  function filtered(){
+    var q = state.f.q.toLowerCase().trim();
+    return state.inventario.filter(function(i){
+      if(state.f.carrera && i.carrera !== state.f.carrera) return false;
+      if(state.f.disp){ var s = itemStatus(i); if(state.f.disp === "Disponible" ? s !== "Disponible" : s === "Disponible") return false; }
+      if(q && [i.nombre, i.marcaModelo, i.codigo, i.carrera].join(" ").toLowerCase().indexOf(q) === -1) return false;
       return true;
-    });
-    if(state.compras.length === 0){
-      cont.innerHTML = '<div class="empty"><h3>Aún no hay solicitudes de compra</h3><p>Usa "¿No está lo que buscas? Pide su compra" dentro de una categoría.</p></div>';
+    }).sort(function(a, b){ return String(a.codigo).localeCompare(String(b.codigo)); });
+  }
+
+  function radio(name, value, label, checked, count){
+    return '<label class="flex items-center gap-2 cursor-pointer hover:text-cft-navy rounded-lg px-2 py-1.5 ' + (checked ? "bg-cft-goldLight text-cft-navy font-semibold" : "text-gray-700") + '">' +
+      '<input type="radio" name="' + name + '" value="' + esc(value) + '"' + (checked ? " checked" : "") + ' class="accent-[#1B365D] flex-none">' +
+      '<span class="leading-snug">' + esc(label) + "</span>" + (count != null ? '<span class="ml-auto pl-2 text-[11px] font-mono text-gray-400">' + count + "</span>" : "") + "</label>";
+  }
+
+  function renderCatalog(){
+    var c = {};
+    state.inventario.forEach(function(i){ c[i.carrera] = (c[i.carrera] || 0) + 1; });
+    var showN = state.loaded.inv;
+    $("career-filter-list").innerHTML = radio("fcar", "", "Todas las carreras", state.f.carrera === "", showN ? state.inventario.length : null) +
+      NOMBRES.map(function(n){ return radio("fcar", n, n, state.f.carrera === n, showN ? (c[n] || 0) : null); }).join("");
+    $("disp-filter-list").innerHTML = radio("fdisp", "", "Todas", state.f.disp === "") + radio("fdisp", "Disponible", "Disponibles ahora", state.f.disp === "Disponible") + radio("fdisp", "Ocupado", "Reservados o prestados", state.f.disp === "Ocupado");
+    if($("catalog-search").value !== state.f.q) $("catalog-search").value = state.f.q;
+    var pillEl = $("active-career-pill");
+    pillEl.classList.toggle("hidden", !state.f.carrera); pillEl.classList.toggle("flex", !!state.f.carrera);
+    $("active-career-text").textContent = "Carrera: " + state.f.carrera;
+    var bn = $("btn-nuevo"); bn.classList.toggle("hidden", !state.canManage); bn.classList.toggle("flex", state.canManage);
+
+    var g = $("catalog-grid");
+    if(!state.db && state.dbTried){ $("catalog-count-text").textContent = "Sin conexión"; g.innerHTML = emptyCard("plug-zap", "Sin conexión con el inventario", NO_DB); return; }
+    if(!state.loaded.inv){ $("catalog-count-text").textContent = "Cargando inventario…"; g.innerHTML = skeletonCards(6); return; }
+    var items = filtered(), total = state.inventario.length;
+    $("catalog-count-text").textContent = "Mostrando " + items.length + " de " + plural(total, "material", "materiales");
+    if(!total){ g.innerHTML = emptyCard("package-open", "Aún no hay materiales registrados", state.canManage ? "Agrega el primero con “Agregar material”." : "El encargado de bodega está cargando el inventario."); return; }
+    if(!items.length){
+      g.innerHTML = emptyCard("package-x", "No se encontraron materiales con los filtros aplicados.", "Prueba con otra búsqueda o carrera. Si el pañol no lo tiene, puedes pedir que lo compre.",
+        '<div class="flex justify-center gap-4 pt-1"><button type="button" data-clear="all" class="text-xs text-cft-navy underline font-semibold">Limpiar búsqueda</button><button type="button" data-action="compra" class="text-xs text-cft-navy underline font-semibold">Solicitar compra</button></div>');
       return;
     }
-    if(items.length === 0){ cont.innerHTML = '<div class="empty"><p>No hay solicitudes en este filtro.</p></div>'; return; }
-    cont.innerHTML = items.map(function(c){
-      var est = c.estado || "Pendiente";
-      var accion = "";
-      if(state.canManage){
-        if(est === "Pendiente") accion = '<button class="btn btn-small" data-aprobar="' + c.id + '">Aprobar</button> <button class="btn btn-small btn-ghost" data-rechazar="' + c.id + '">Rechazar</button>';
-        else if(est === "Aprobada") accion = '<button class="btn btn-small" data-comprado="' + c.id + '">Marcar comprado</button>';
+    g.innerHTML = items.map(productCard).join("");
+  }
+
+  function renderCart(){
+    var valid = state.cart.filter(function(id){ return itemById(id); });
+    $("cart-counter").textContent = valid.length;
+    $("cart-total").textContent = valid.length;
+    $("btn-checkout").disabled = !valid.length || !canWrite();
+    var box = $("cart-items");
+    if(!valid.length){
+      box.innerHTML = '<div class="text-center py-12 space-y-3">' + ic("shopping-bag", "w-12 h-12 text-gray-300 mx-auto") + '<p class="text-gray-500 font-bold text-sm">Tu bolsa de materiales está vacía.</p><p class="text-xs text-gray-400">Navega por el catálogo y añade lo que necesites para tu clase.</p><button type="button" data-go="catalogo" data-close class="mt-2 text-xs font-bold text-cft-navy underline">Ir al catálogo</button></div>';
+      return;
+    }
+    box.innerHTML = valid.map(function(id){
+      var i = itemById(id), s = itemStatus(i);
+      return '<div class="p-4 bg-gray-50 rounded-2xl border border-gray-200 flex items-center gap-3">' +
+        '<div class="w-14 h-14 rounded-xl bg-white border border-gray-200 text-cft-navy flex items-center justify-center flex-none blueprint">' + ic(iconFor(i.carrera), "w-6 h-6") + "</div>" +
+        '<div class="flex-1 min-w-0"><h4 class="font-bold text-xs text-gray-800 line-clamp-1">' + esc(i.nombre) + '</h4><span class="text-[10px] text-gray-400 font-mono">' + esc(i.codigo || "") + "</span>" +
+        '<p class="text-[11px] mt-1 ' + (s === "Disponible" ? "text-emerald-600" : "text-rose-600 font-semibold") + '">' + (s === "Disponible" ? esc(i.carrera) : "Ya no está disponible: quítalo de la bolsa") + "</p></div>" +
+        '<button type="button" data-remove="' + esc(id) + '" class="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-white" aria-label="Quitar ' + esc(i.nombre) + '">' + ic("trash-2", "w-4 h-4") + "</button></div>";
+    }).join("");
+  }
+
+  function badges(){
+    var reqs = mine(requests());
+    var n = state.canManage ? reqs.filter(function(r){ return r.estado === "Pendiente"; }).length : reqs.filter(function(r){ return r.estado === "Pendiente" || r.estado === "Lista para retiro"; }).length;
+    document.querySelectorAll('[data-badge="solicitudes"]').forEach(function(b){ b.textContent = n; b.classList.toggle("hidden", !n); b.classList.toggle("flex", !!n); });
+  }
+
+  var TABS = [
+    { id:"todas", label:"Todas" },
+    { id:"Pendiente", label:"Pendientes" },
+    { id:"Lista para retiro", label:"Listas para retiro" },
+    { id:"En préstamo", label:"En préstamo" },
+    { id:"cerradas", label:"Completadas" },
+    { id:"compras", label:"Compras" }
+  ];
+  function renderSolicitudes(){
+    $("sol-title").textContent = state.canManage ? "Solicitudes del Pañol" : "Mis Solicitudes";
+    $("sol-sub").textContent = state.canManage ? "Aprueba, entrega y cierra las solicitudes de todas las carreras." : "Revisa el estado de tus reservas de materiales y accede a tu pase QR de retiro.";
+    var reqs = mine(requests()), comps = mine(state.compras);
+    var countFor = function(t){
+      if(t === "todas") return reqs.length;
+      if(t === "cerradas") return reqs.filter(function(r){ return ACTIVE.indexOf(r.estado) === -1; }).length;
+      if(t === "compras") return comps.length;
+      return reqs.filter(function(r){ return r.estado === t; }).length;
+    };
+    $("req-tabs").innerHTML = TABS.map(function(t){
+      var on = state.tab === t.id, n = countFor(t.id);
+      return '<button type="button" role="tab" aria-selected="' + on + '" data-tab="' + esc(t.id) + '" class="py-3 whitespace-nowrap flex items-center gap-1.5 border-b-2 ' + (on ? "text-cft-navy border-cft-navy font-bold" : "text-gray-500 border-transparent hover:text-gray-800") + '">' + esc(t.label) +
+        (n ? '<span class="text-[10px] font-bold px-1.5 rounded-full ' + (on ? "bg-cft-navy text-cft-gold" : "bg-gray-100 text-gray-500") + '">' + n + "</span>" : "") + "</button>";
+    }).join("");
+
+    var box = $("requests-list");
+    if(!state.db && state.dbTried){ box.innerHTML = emptyCard("plug-zap", "Sin conexión", NO_DB); return; }
+    if(!state.loaded.sol || !state.loaded.leg || !state.loaded.com){ box.innerHTML = '<div class="bg-white p-8 rounded-3xl text-center text-gray-400 text-sm border border-gray-100">Cargando solicitudes…</div>'; return; }
+
+    if(state.tab === "compras"){ renderCompras(box, comps); return; }
+    var list = reqs.filter(function(r){
+      if(state.tab === "todas") return true;
+      if(state.tab === "cerradas") return ACTIVE.indexOf(r.estado) === -1;
+      return r.estado === state.tab;
+    });
+    resolveNames(list);
+    if(!list.length){
+      box.innerHTML = '<div class="bg-white p-8 rounded-3xl text-center text-gray-500 text-sm border border-gray-100 space-y-3">' + (reqs.length ? "No hay solicitudes registradas en esta categoría." : "Aún no has hecho solicitudes. Agrega equipos a tu bolsa desde el catálogo.") +
+        (reqs.length ? "" : '<div><button type="button" data-go="catalogo" class="mt-2 px-4 py-2 bg-cft-navy text-cft-gold rounded-xl text-xs font-bold">Ir al catálogo</button></div>') + "</div>";
+      return;
+    }
+    box.innerHTML = list.map(requestCard).join("");
+  }
+
+  function requestCard(r){
+    var e = shownEstado(r), who = state.canManage ? personName(r) : "";
+    var actions = [];
+    var w = canWrite() ? "" : " disabled";
+    var btnNavy = "px-4 py-2 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition flex items-center gap-2 disabled:opacity-50";
+    var btnGhost = "px-4 py-2 border border-gray-300 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition disabled:opacity-50";
+    if(state.canManage){
+      if(r.estado === "Pendiente"){ actions.push('<button type="button" data-req="rechazar" data-id="' + esc(r.id) + '" class="' + btnGhost + '"' + w + ">Rechazar</button>"); actions.push('<button type="button" data-req="aprobar" data-id="' + esc(r.id) + '" class="' + btnNavy + '"' + w + ">" + ic("check") + "<span>Aprobar y reservar</span></button>"); }
+      if(r.estado === "Lista para retiro") actions.push('<button type="button" data-req="entregar" data-id="' + esc(r.id) + '" class="' + btnNavy + '"' + w + ">" + ic("hand-helping") + "<span>Entregar equipos</span></button>");
+      if(r.estado === "En préstamo"){
+        if(r.prorroga === "Solicitada") actions.push('<button type="button" data-req="extender" data-id="' + esc(r.id) + '" class="' + btnGhost + '"' + w + ">Extender 7 días</button>");
+        actions.push('<button type="button" data-req="devolver" data-id="' + esc(r.id) + '" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 disabled:opacity-50"' + w + ">" + ic("undo-2") + "<span>Registrar devolución</span></button>");
       }
-      return '<div class="card"><div class="card-row">' +
-        '<div><div class="name" style="font-weight:700;">' + escapeHtml(c.material||"–") + '</div><div class="sub">' + escapeHtml(c.solicitadoPor||"") + '</div></div>' +
-        '<div><div class="field-label">Carrera</div><div class="field-value">' + escapeHtml(c.carrera||"–") + '</div></div>' +
-        '<div><div class="field-label">Justificación</div><div class="field-value">' + escapeHtml(c.justificacion||"–") + '</div></div>' +
-        '<div><div class="field-label">Estado</div><span class="pill ' + pillFor(est) + '">' + est + '</span></div>' +
-        '<div>' + accion + '</div>' +
-      '</div></div>';
+    } else if((r.estado === "Pendiente" || r.estado === "Lista para retiro") && r._src !== "prestamos"){
+      actions.push('<button type="button" data-req="cancelar" data-id="' + esc(r.id) + '" class="' + btnGhost + '"' + w + ">Cancelar</button>");
+    }
+    if(ACTIVE.indexOf(r.estado) !== -1) actions.push('<button type="button" data-qr="' + esc(r.id) + '" class="' + btnNavy + '">' + ic("qr-code") + "<span>Ver pase QR</span></button>");
+
+    var closing = "";
+    if(r.estado === "Devuelta") closing = '<p class="text-xs text-gray-500">Devuelta el ' + esc(fmt(r.fechaDevolucionReal)) + (r.estadoDevolucion ? " · estado: " + esc(r.estadoDevolucion.toLowerCase()) : "") + "</p>";
+    if(r.estado === "Rechazada") closing = '<p class="text-xs text-rose-600">El encargado rechazó esta solicitud.</p>';
+    if(r.estado === "Cancelada") closing = '<p class="text-xs text-gray-500">Cancelada por quien la pidió.</p>';
+    if(r.prorroga === "Solicitada" && r.estado === "En préstamo") closing = '<p class="text-xs text-amber-700 font-semibold">Prórroga solicitada, esperando al encargado.</p>';
+
+    return '<article class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm space-y-4">' +
+      '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 pb-3">' +
+        '<div class="flex items-center gap-3 flex-wrap"><span class="font-black text-cft-navy text-base">' + esc(r.codigo) + "</span>" + pill(e) + (who ? '<span class="text-xs text-gray-500 flex items-center gap-1">' + ic("user", "w-3.5 h-3.5") + esc(who) + "</span>" : "") + "</div>" +
+        '<span class="text-xs text-gray-400 font-medium">Retiro: ' + esc(fmt(r.fechaRetiro)) + " · Devolución: " + '<span class="' + (isLate(r) ? "text-rose-600 font-bold" : "") + '">' + esc(fmt(r.fechaDevolucion)) + "</span></span>" +
+      "</div>" +
+      '<div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">' +
+        '<div><span class="text-gray-400 block">Carrera:</span><span class="font-bold text-gray-800">' + esc(r.carrera || "—") + "</span></div>" +
+        '<div><span class="text-gray-400 block">Asignatura / taller:</span><span class="font-bold text-gray-800">' + esc(r.asignatura || "—") + "</span></div>" +
+        '<div><span class="text-gray-400 block">Profesor a cargo:</span><span class="font-bold text-gray-800">' + esc(r.profesor || "—") + "</span></div>" +
+      "</div>" +
+      '<div class="bg-gray-50 p-3 rounded-xl border border-gray-200 text-xs space-y-1"><span class="font-bold text-gray-700 block">Materiales solicitados:</span>' +
+        (r.items || []).map(function(it){ return '<p class="text-gray-600">• ' + esc(it.nombre) + ' <span class="font-mono text-gray-400">' + esc(it.codigo || "") + "</span></p>"; }).join("") + "</div>" +
+      (closing || actions.length ? '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1"><div>' + closing + '</div><div class="flex flex-wrap justify-end gap-2">' + actions.join("") + "</div></div>" : "") +
+    "</article>";
+  }
+
+  function renderCompras(box, comps){
+    resolveNames(comps);
+    var head = '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-cft-goldLight border border-dashed border-cft-gold rounded-2xl p-4"><p class="text-xs text-cft-navy"><span class="font-bold">¿Falta algo en el pañol?</span> Pide su compra y sigue aquí la revisión del encargado.</p><button type="button" data-action="compra" class="px-4 py-2 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold flex items-center gap-2 self-start disabled:opacity-50"' + (canWrite() ? "" : " disabled") + ">" + ic("shopping-cart") + "<span>Solicitar compra</span></button></div>";
+    if(!comps.length){ box.innerHTML = head + '<div class="bg-white p-8 rounded-3xl text-center text-gray-500 text-sm border border-gray-100">Aún no hay solicitudes de compra.</div>'; return; }
+    var w = canWrite() ? "" : " disabled";
+    box.innerHTML = head + comps.map(function(c){
+      var e = c.estado || "Pendiente", who = state.canManage ? personName(c) : "", act = "";
+      if(state.canManage && e === "Pendiente") act = '<button type="button" data-compra="rechazar" data-id="' + esc(c.id) + '" class="px-4 py-2 border border-gray-300 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 disabled:opacity-50"' + w + '>Rechazar</button><button type="button" data-compra="aprobar" data-id="' + esc(c.id) + '" class="px-4 py-2 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold flex items-center gap-2 disabled:opacity-50"' + w + ">" + ic("check") + "<span>Aprobar</span></button>";
+      else if(state.canManage && e === "Aprobada") act = '<button type="button" data-compra="registrar" data-id="' + esc(c.id) + '" class="px-4 py-2 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold flex items-center gap-2 disabled:opacity-50"' + w + ">" + ic("package-check") + "<span>Registrar compra</span></button>";
+      var note = e === "Pendiente" ? "Esperando revisión del encargado." : e === "Aprobada" ? "Aprobada, en proceso de compra." : e === "Comprada" ? "Ya está en el catálogo." : "No se comprará.";
+      return '<article class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm space-y-3">' +
+        '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 pb-3"><div class="flex items-center gap-3 flex-wrap"><span class="font-black text-cft-navy text-base">' + esc(c.material) + "</span>" + pill(e) + (who ? '<span class="text-xs text-gray-500 flex items-center gap-1">' + ic("user", "w-3.5 h-3.5") + esc(who) + "</span>" : "") + '</div><span class="text-xs text-gray-400 font-medium">' + esc(c.carrera) + "</span></div>" +
+        (c.justificacion ? '<p class="text-xs text-gray-600"><span class="text-gray-400">Uso: </span>' + esc(c.justificacion) + "</p>" : "") +
+        '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3"><p class="text-xs text-gray-500">' + note + '</p><div class="flex flex-wrap justify-end gap-2">' + act + "</div></div></article>";
     }).join("");
   }
-  function renderPedidos(){
-    var cont = document.getElementById("lista-pedidos");
-    if(!state.dbOk){ cont.innerHTML = '<div class="notice">Conectando con el almacén de datos...</div>'; return; }
-    if(state.pedidosTipo === "compras") renderPedidosCompras(cont); else renderPedidosPrestamos(cont);
+
+  function renderPrestamos(){
+    $("loan-title").textContent = state.canManage ? "Préstamos Activos del Pañol" : "Mis Préstamos Activos y Devoluciones";
+    $("loan-sub").textContent = state.canManage ? "Equipos que están fuera del pañol, con su fecha de devolución." : "Herramientas que tienes actualmente en tu posesión, con su fecha de devolución.";
+    var active = mine(requests()).filter(function(r){ return r.estado === "En préstamo"; });
+    var late = active.filter(isLate);
+    $("loan-banner").innerHTML = late.length
+      ? '<div class="bg-rose-50 border border-rose-200 rounded-2xl p-4 flex items-start gap-3 text-rose-900">' + ic("triangle-alert", "w-5 h-5 text-rose-600 mt-0.5 flex-none") + '<div class="text-xs sm:text-sm"><span class="font-bold">' + plural(late.length, "préstamo atrasado", "préstamos atrasados") + ".</span> " + (state.canManage ? "Contacta a quien retiró los equipos para que los devuelva." : "Devuélvelos en el pañol lo antes posible para no bloquear a otras carreras.") + "</div></div>"
+      : '<div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3 text-amber-900">' + ic("triangle-alert", "w-5 h-5 text-amber-600 mt-0.5 flex-none") + '<div class="text-xs sm:text-sm"><span class="font-bold">Recordatorio de devolución:</span> devuelve los equipos a tiempo, antes del cierre de taller, para que otras carreras puedan usarlos.</div></div>';
+
+    var tb = $("loans-table-body");
+    if(!state.db && state.dbTried){ tb.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-gray-400 text-sm">' + esc(NO_DB) + "</td></tr>"; return; }
+    if(!state.loaded.sol || !state.loaded.leg){ tb.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-gray-400 text-sm">Cargando préstamos…</td></tr>'; return; }
+    resolveNames(active);
+    var rows = [];
+    active.forEach(function(r){ (r.items || []).forEach(function(it){ rows.push({ r:r, it:it }); }); });
+    if(!rows.length){ tb.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-gray-400 text-sm">' + (state.canManage ? "No hay equipos fuera del pañol en este momento." : "No tienes préstamos activos en este momento.") + "</td></tr>"; return; }
+    var w = canWrite() ? "" : " disabled";
+    tb.innerHTML = rows.map(function(x){
+      var r = x.r, it = x.it, l = isLate(r), act;
+      if(state.canManage){
+        act = '<div class="flex justify-center gap-2">' + (r.prorroga === "Solicitada" ? '<button type="button" data-req="extender" data-id="' + esc(r.id) + '" class="px-3 py-1.5 border border-cft-navy text-cft-navy hover:bg-cft-lightBlue text-xs font-bold rounded-xl disabled:opacity-50"' + w + ">Extender</button>" : "") +
+          '<button type="button" data-req="devolver" data-id="' + esc(r.id) + '" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl disabled:opacity-50"' + w + ">Devolución</button></div>";
+      } else if(r.prorroga === "Solicitada"){
+        act = '<span class="text-xs font-semibold text-amber-700">Prórroga solicitada</span>';
+      } else if(r.prorroga === "Aprobada"){
+        act = '<span class="text-xs font-semibold text-emerald-700">Prórroga aprobada</span>';
+      } else {
+        act = '<button type="button" data-req="prorroga" data-id="' + esc(r.id) + '" class="px-3 py-1.5 border border-cft-navy text-cft-navy hover:bg-cft-lightBlue text-xs font-bold rounded-xl transition disabled:opacity-50"' + w + ">Prorrogar</button>";
+      }
+      var who = state.canManage ? personName(r) : "";
+      return '<tr class="hover:bg-gray-50 transition">' +
+        '<td class="p-4"><span class="font-bold text-gray-800 block text-xs sm:text-sm">' + esc(it.nombre) + '</span><span class="text-[10px] text-gray-400 font-mono">' + esc(it.codigo || "") + " · " + esc(r.codigo) + "</span></td>" +
+        '<td class="p-4 text-xs font-medium text-gray-600">' + esc(r.carrera || it.carrera || "—") + (r.asignatura ? '<span class="block text-gray-400">' + esc(r.asignatura) + "</span>" : "") + (who ? '<span class="block text-gray-400">' + esc(who) + "</span>" : "") + "</td>" +
+        '<td class="p-4 text-xs text-gray-500">' + esc(fmt(r.fechaEntregaReal || r.fechaRetiro)) + "</td>" +
+        '<td class="p-4 text-xs font-bold ' + (l ? "text-rose-600" : "text-amber-600") + '">' + esc(fmt(r.fechaDevolucion)) + "</td>" +
+        '<td class="p-4">' + (l ? '<span class="px-2 py-0.5 bg-rose-100 text-rose-700 text-[11px] font-bold rounded-full">Atrasado</span>' : '<span class="px-2 py-0.5 bg-cft-lightBlue text-cft-navy text-[11px] font-bold rounded-full">En posesión</span>') + "</td>" +
+        '<td class="p-4 text-center">' + act + "</td></tr>";
+    }).join("");
   }
-  document.getElementById("lista-pedidos").addEventListener("click", function(ev){
-    var btnDev = ev.target.closest("[data-devolver]");
-    if(btnDev){
-      dlgDevolver.dataset.prestamoId = btnDev.getAttribute("data-devolver");
-      document.getElementById("form-devolver").reset();
-      dlgDevolver.showModal();
-      return;
-    }
-    var btnAp = ev.target.closest("[data-aprobar]");
-    if(btnAp){
-      window.__db.collection("compras").doc(btnAp.getAttribute("data-aprobar")).update({ estado: "Aprobada" })
-        .catch(function(e){ if(e && e.code === "invalid_argument") markReadOnly(); else console.error(e); });
-      return;
-    }
-    var btnRe = ev.target.closest("[data-rechazar]");
-    if(btnRe){
-      window.__db.collection("compras").doc(btnRe.getAttribute("data-rechazar")).update({ estado: "Rechazada" })
-        .catch(function(e){ if(e && e.code === "invalid_argument") markReadOnly(); else console.error(e); });
-      return;
-    }
-    var btnCo = ev.target.closest("[data-comprado]");
-    if(btnCo){
-      var id = btnCo.getAttribute("data-comprado");
-      var compra = state.compras.find(function(c){ return c.id === id; });
-      if(!compra) return;
-      dlgMarcarComprado.dataset.compraId = id;
-      document.getElementById("form-marcar-comprado").reset();
-      document.getElementById("mc-resumen").textContent = compra.material + " · " + compra.carrera;
-      document.getElementById("mc-fecha").value = todayISO();
-      dlgMarcarComprado.showModal();
-    }
-  });
 
   function renderAll(){
-    if(state.view === "categorias" && state.selectedCarrera) renderItemGrid();
-    if(state.view === "mis-pedidos") renderPedidos();
+    buildStatusMap();
+    renderWho(); renderStats(); renderCareers(); renderCatalog(); renderCart(); badges(); renderSolicitudes(); renderPrestamos();
+    if(state.detalleId && $("dlg-detalle").open) fillDetalle();
+    refreshIcons();
   }
 
-  // ---- writes ----
-  function markReadOnly(){
-    state.readOnly = true;
-    document.getElementById("btn-nuevo-instrumento").disabled = true;
-    document.getElementById("btn-solicitar-compra").disabled = true;
+  /* ---------- dialogs ---------- */
+  function open(id){ var d = $(id); if(!d.open) d.showModal(); refreshIcons(); }
+  function close(id){ var d = $(id); if(d.open) d.close(); }
+  function err(id, msg){ var e = $(id); e.textContent = msg || ""; e.classList.toggle("hidden", !msg); }
+  function fill(sel, list){ sel.innerHTML = list.map(function(n){ return '<option value="' + esc(n) + '">' + esc(n) + "</option>"; }).join(""); }
+
+  function fillDetalle(){
+    var i = itemById(state.detalleId);
+    if(!i){ close("dlg-detalle"); return; }
+    var s = itemStatus(i);
+    var hist = requests().filter(function(r){ return (r.items || []).some(function(x){ return x.id === i.id; }); }).slice(0, 4);
+    $("dd-body").innerHTML =
+      '<div class="grid grid-cols-1 md:grid-cols-2 gap-6">' +
+        '<div class="rounded-2xl overflow-hidden border border-gray-200 group relative">' + visual(i, "lg") + '<span class="absolute top-3 right-3 ' + AVAIL[s] + ' text-white px-2 py-0.5 rounded-full text-[10px] font-bold">' + esc(s) + "</span></div>" +
+        '<div class="space-y-3">' +
+          '<span class="inline-block px-2.5 py-1 bg-cft-lightBlue text-cft-navy text-xs font-bold rounded-full">' + esc(i.carrera) + "</span>" +
+          '<h2 id="dd-name" class="text-xl font-black text-gray-800">' + esc(i.nombre) + "</h2>" +
+          '<p class="text-xs text-gray-400 font-mono">Código: ' + esc(i.codigo || "S/C") + "</p>" +
+          '<div class="p-3 bg-gray-50 rounded-xl border border-gray-200 text-xs space-y-1.5"><span class="font-bold text-gray-700 block">Especificaciones</span>' +
+            '<p class="text-gray-500"><span class="text-gray-400">Marca / modelo:</span> ' + esc(i.marcaModelo || "—") + "</p>" +
+            '<p class="text-gray-500"><span class="text-gray-400">Estado físico:</span> ' + esc(i.estadoFisico || "—") + "</p>" +
+            '<p class="text-gray-500"><span class="text-gray-400">Ubicación:</span> ' + esc(i.zona || "Por asignar") + "</p>" +
+            '<p class="text-gray-500"><span class="text-gray-400">Ingreso:</span> ' + esc(fmt(i.fechaIngreso)) + "</p>" +
+            (i.observaciones ? '<p class="text-gray-500"><span class="text-gray-400">Notas:</span> ' + esc(i.observaciones) + "</p>" : "") +
+          "</div>" +
+        "</div>" +
+      "</div>" +
+      '<div class="mt-6 pt-5 border-t border-gray-100"><h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3">Historial de préstamos</h3>' +
+        (hist.length ? '<ul class="space-y-2">' + hist.map(function(r){ return '<li class="flex items-center justify-between gap-3 text-xs"><span class="text-gray-600"><span class="font-bold text-cft-navy">' + esc(r.codigo) + "</span> · " + esc(r.carrera || "—") + ' <span class="text-gray-400">· ' + esc(fmt(r.fechaRetiro)) + "</span></span>" + pill(shownEstado(r)) + "</li>"; }).join("") + "</ul>"
+          : '<p class="text-xs text-gray-400">Este material aún no ha salido del pañol.</p>') +
+      "</div>";
+    var b = $("dd-add"), added = inCart(i.id);
+    b.disabled = s !== "Disponible" || added || !canWrite();
+    b.innerHTML = ic(added ? "check" : "plus") + "<span>" + (added ? "Ya está en tu bolsa" : s === "Disponible" ? "Añadir a la solicitud" : esc(s)) + "</span>";
   }
 
-  document.getElementById("form-instrumento").addEventListener("submit", function(ev){
-    ev.preventDefault();
-    if(!state.dbOk) return;
-    var data = {
-      codigo: "INS-" + String(state.inventario.length + 1).padStart(3,"0"),
-      nombre: document.getElementById("f-nombre").value.trim(),
-      marcaModelo: document.getElementById("f-marca").value.trim(),
-      carrera: document.getElementById("f-carrera").value,
-      estadoFisico: document.getElementById("f-estado").value,
-      zona: document.getElementById("f-zona").value.trim(),
-      fechaIngreso: document.getElementById("f-fecha").value || todayISO(),
-      observaciones: document.getElementById("f-obs").value.trim(),
-      createdAt: Date.now()
-    };
-    window.__db.collection("inventario").add(data).then(function(){ dlgInstrumento.close(); })
-      .catch(function(e){ if(e && e.code === "invalid_argument") markReadOnly(); else console.error(e); });
-  });
+  function addToCart(id){
+    var i = itemById(id);
+    if(!i) return;
+    if(!canWrite()){ toast(state.db ? "Tu acceso es de solo lectura: no puedes crear solicitudes." : "Abre la página en Claude para solicitar.", "info"); return; }
+    if(itemStatus(i) !== "Disponible"){ toast("Ese material ya no está disponible.", "info"); renderAll(); return; }
+    if(!inCart(id)){ state.cart.push(id); saveCart(); }
+    renderAll();
+    open("dlg-bolsa");
+  }
 
-  document.getElementById("form-prestamo").addEventListener("submit", function(ev){
-    ev.preventDefault();
-    if(!state.dbOk) return;
-    var instId = document.getElementById("p-instrumento").value;
-    if(!instId) return;
-    var inst = state.inventario.find(function(i){ return i.id === instId; });
-    var data = {
-      instrumentoId: instId,
-      instrumentoCodigo: inst ? inst.codigo : "",
-      instrumentoNombre: inst ? inst.nombre : "",
-      carreraSolicitante: document.getElementById("p-carrera").value,
-      solicitadoPor: document.getElementById("p-nombre").value.trim(),
-      requesterId: state.userId || null,
-      fechaEntrega: document.getElementById("p-entrega").value || todayISO(),
-      fechaDevolucionEstimada: document.getElementById("p-devolucion").value,
-      fechaDevolucionReal: null,
-      estadoAlDevolver: null,
-      observaciones: document.getElementById("p-obs").value.trim(),
-      createdAt: Date.now()
-    };
-    window.__db.collection("prestamos").add(data).then(function(){ dlgPrestamo.close(); })
-      .catch(function(e){ if(e && e.code === "invalid_argument") markReadOnly(); else console.error(e); });
-  });
-
-  document.getElementById("form-devolver").addEventListener("submit", function(ev){
-    ev.preventDefault();
-    if(!state.dbOk) return;
-    var id = dlgDevolver.dataset.prestamoId;
-    if(!id) return;
-    window.__db.collection("prestamos").doc(id).update({
-      fechaDevolucionReal: todayISO(),
-      estadoAlDevolver: document.getElementById("d-estado").value,
-      observaciones: document.getElementById("d-obs").value.trim() || null
-    }).then(function(){ dlgDevolver.close(); })
-      .catch(function(e){ if(e && e.code === "invalid_argument") markReadOnly(); else console.error(e); });
-  });
-
-  document.getElementById("form-compra").addEventListener("submit", function(ev){
-    ev.preventDefault();
-    if(!state.dbOk) return;
-    var data = {
-      material: document.getElementById("c-material").value.trim(),
-      carrera: document.getElementById("c-carrera").value,
-      solicitadoPor: document.getElementById("c-nombre").value.trim(),
-      justificacion: document.getElementById("c-justificacion").value.trim(),
-      requesterId: state.userId || null,
-      estado: "Pendiente",
-      createdAt: Date.now()
-    };
-    window.__db.collection("compras").add(data).then(function(){ dlgCompra.close(); })
-      .catch(function(e){ if(e && e.code === "invalid_argument") markReadOnly(); else console.error(e); });
-  });
-
-  document.getElementById("form-marcar-comprado").addEventListener("submit", function(ev){
-    ev.preventDefault();
-    if(!state.dbOk) return;
-    var compraId = dlgMarcarComprado.dataset.compraId;
-    var compra = state.compras.find(function(c){ return c.id === compraId; });
-    if(!compra) return;
-    var invData = {
-      codigo: "INS-" + String(state.inventario.length + 1).padStart(3,"0"),
-      nombre: compra.material,
-      marcaModelo: document.getElementById("mc-marca").value.trim(),
-      carrera: compra.carrera,
-      estadoFisico: document.getElementById("mc-estado").value,
-      zona: document.getElementById("mc-zona").value.trim(),
-      fechaIngreso: document.getElementById("mc-fecha").value || todayISO(),
-      observaciones: "Ingresado desde solicitud de compra.",
-      createdAt: Date.now()
-    };
-    window.__db.collection("inventario").add(invData).then(function(ref){
-      return window.__db.collection("compras").doc(compraId).update({ estado: "Comprada", inventarioId: ref.id });
-    }).then(function(){ dlgMarcarComprado.close(); })
-      .catch(function(e){ if(e && e.code === "invalid_argument") markReadOnly(); else console.error(e); });
-  });
-
-  // ---- boot ----
-  var initialView = (location.hash || "").replace("#","");
-  if(views[initialView]) goTo(initialView);
-
-  async function boot(){
-    var db = null;
-    try{ db = await claude.use("db"); }catch(e){ db = null; }
-    if(!db){
-      document.getElementById("profile-name").textContent = "Sin sesión";
-      document.getElementById("profile-role").textContent = "Inicia sesión";
-      ["item-grid","lista-pedidos"].forEach(function(id){
-        var el = document.getElementById(id);
-        if(el) el.innerHTML = '<div class="empty"><h3>Sin conexión a los datos</h3><p>Abre esta página dentro de Claude, con sesión iniciada, para ver y solicitar materiales.</p></div>';
-      });
-      return;
+  function openCheckout(){
+    var valid = state.cart.filter(function(id){ var i = itemById(id); return i && itemStatus(i) === "Disponible"; });
+    if(valid.length !== state.cart.length){
+      state.cart = valid; saveCart(); renderAll();
+      toast("Quitamos de tu bolsa los equipos que ya no están disponibles.", "info");
+      if(!valid.length) return;
     }
-    window.__db = db;
-    state.dbOk = true;
+    close("dlg-bolsa");
+    $("checkout-form").reset();
+    var first = itemById(valid[0]);
+    $("f-carrera").value = (first && first.carrera) || state.f.carrera || NOMBRES[0];
+    $("f-retiro").value = today(); $("f-retiro").min = today();
+    $("f-devol").value = plusDays(today(), 7); $("f-devol").min = today();
+    $("checkout-summary").innerHTML = valid.map(function(id){ var i = itemById(id); return '<div class="flex justify-between gap-3"><span>' + esc(i.nombre) + '</span><span class="font-mono font-bold">' + esc(i.codigo || "") + "</span></div>"; }).join("");
+    err("ck-error", "");
+    open("dlg-checkout");
+  }
 
-    try{
-      var user = await claude.use("user");
-      if(user){
-        state.userId = await user.id();
-        var canEdit = await user.canEdit();
-        state.canManage = !!canEdit;
-        document.getElementById("profile-role").textContent = state.canManage ? "Encargado de bodega" : "Usuario";
+  function openQR(id){
+    var r = reqById(id); if(!r) return;
+    $("qr-id").textContent = "Solicitud " + r.codigo;
+    $("qr-details").textContent = (r.asignatura ? r.asignatura + " · " : "") + "Retiro " + fmt(r.fechaRetiro) + " · " + plural((r.items || []).length, "equipo", "equipos");
+    $("qr-status").innerHTML = pill(shownEstado(r)) + (r.estado === "Pendiente" ? '<span class="block mt-2 text-[11px] text-gray-500">El encargado debe aprobarla antes del retiro.</span>' : "");
+    var box = $("qr"); box.innerHTML = "";
+    var text = "PANOL CFT JUAN BOHON | Solicitud " + r.codigo + " | Retiro " + (r.fechaRetiro || "") + " | Equipos " + (r.items || []).map(function(it){ return it.codigo || it.nombre; }).join(", ");
+    if(window.QRCode){
+      new window.QRCode(box, { text: text, width: 168, height: 168, colorDark: "#1B365D", colorLight: "#FFFFFF", correctLevel: window.QRCode.CorrectLevel.M });
+    } else {
+      box.innerHTML = '<p class="font-mono text-sm font-bold text-cft-navy">' + esc(r.codigo) + "</p>";
+    }
+    open("dlg-qr");
+  }
+
+  function openCompra(){
+    if(!canWrite()){ toast(state.db ? "Tu acceso es de solo lectura." : "Abre la página en Claude para solicitar.", "info"); return; }
+    close("dlg-detalle");
+    $("compra-form").reset();
+    $("c-carrera").value = state.f.carrera || NOMBRES[0];
+    if(state.view === "catalogo" && state.f.q && !filtered().length) $("c-material").value = state.f.q;
+    err("c-error", "");
+    open("dlg-compra");
+  }
+
+  /* ---------- writes ---------- */
+  function failed(e){
+    if(e && e.code === "invalid_argument"){ state.readOnly = true; renderAll(); toast("No tienes permiso para guardar cambios. Pide acceso de colaborador.", "info"); }
+    else if(e && e.code === "quota_exceeded") toast("La base del pañol llegó a su límite de registros.", "info");
+    else { console.error(e); toast("No se pudo guardar. Revisa tu conexión e intenta de nuevo.", "info"); }
+  }
+  function busy(form, on){ var b = form.querySelector('button[type="submit"]'); if(b) b.disabled = on; }
+
+  function updateRequest(r, data){
+    if(r._src === "prestamos"){
+      var p = {};
+      if(data.estado === "Devuelta"){ p.fechaDevolucionReal = data.fechaDevolucionReal; p.estadoAlDevolver = data.estadoDevolucion; if(data.observacionesDevolucion) p.observacionesDevolucion = data.observacionesDevolucion; }
+      if("prorroga" in data) p.prorroga = data.prorroga;
+      if(data.fechaDevolucion) p.fechaDevolucionEstimada = data.fechaDevolucion;
+      return col("prestamos").doc(r.id).update(p);
+    }
+    data.updatedAt = Date.now();
+    return col("solicitudes").doc(r.id).update(data);
+  }
+
+  $("checkout-form").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var form = this;
+    var items = state.cart.map(itemById).filter(function(i){ return i && itemStatus(i) === "Disponible"; });
+    if(!items.length){ err("ck-error", "Tu bolsa no tiene equipos disponibles."); return; }
+    var asig = $("f-asignatura").value.trim(), prof = $("f-profesor").value.trim();
+    var ret = $("f-retiro").value || today(), dev = $("f-devol").value;
+    if(!asig || !prof){ err("ck-error", "Completa la asignatura y el profesor a cargo."); return; }
+    if(!dev){ err("ck-error", "Indica la fecha de devolución."); return; }
+    if(dev < ret){ err("ck-error", "La devolución no puede ser antes del retiro."); return; }
+    busy(form, true);
+    var codigo = "CFT-" + String(Date.now() % 100000).padStart(5, "0");
+    col("solicitudes").add({
+      codigo: codigo,
+      items: items.map(function(i){ return { id: i.id, codigo: i.codigo || "", nombre: i.nombre, carrera: i.carrera }; }),
+      carrera: $("f-carrera").value, asignatura: asig, profesor: prof, solicitadoPor: $("f-nombre").value.trim(),
+      requesterId: state.userId || null, fechaRetiro: ret, fechaDevolucion: dev,
+      estado: "Pendiente", prorroga: "", createdAt: Date.now(), updatedAt: Date.now()
+    }).then(function(ref){
+      state.cart = []; saveCart();
+      close("dlg-checkout");
+      state.tab = "todas"; go("solicitudes");
+      var tries = 0, msg = "Solicitud " + codigo + " enviada al encargado.";
+      (function waitAndShow(){
+        if(reqById(ref.id)){ openQR(ref.id); toast(msg); }
+        else if(++tries < 20) setTimeout(waitAndShow, 150);
+        else toast(msg);
+      })();
+    }).catch(failed).then(function(){ busy(form, false); });
+  });
+
+  $("compra-form").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var form = this, m = $("c-material").value.trim();
+    if(!m){ err("c-error", "Escribe qué material necesitas."); return; }
+    busy(form, true);
+    col("compras").add({ material: m, carrera: $("c-carrera").value, justificacion: $("c-just").value.trim(), solicitadoPor: "", requesterId: state.userId || null, estado: "Pendiente", createdAt: Date.now() })
+      .then(function(){ close("dlg-compra"); toast("Solicitud de compra enviada al encargado."); })
+      .catch(failed).then(function(){ busy(form, false); });
+  });
+
+  $("nuevo-form").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var form = this, n = $("n-nombre").value.trim();
+    if(!n){ err("n-error", "El material necesita un nombre."); return; }
+    busy(form, true);
+    var codigo = nextCodigo();
+    col("inventario").add({ codigo: codigo, nombre: n, marcaModelo: $("n-marca").value.trim(), carrera: $("n-carrera").value, estadoFisico: $("n-estado").value, zona: $("n-zona").value.trim(), fechaIngreso: $("n-fecha").value || today(), observaciones: $("n-obs").value.trim(), createdAt: Date.now() })
+      .then(function(){ close("dlg-nuevo"); toast(n + " agregado como " + codigo + "."); })
+      .catch(failed).then(function(){ busy(form, false); });
+  });
+
+  $("devolucion-form").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var form = this, r = reqById(state.devolverId); if(!r) return;
+    busy(form, true);
+    updateRequest(r, { estado: "Devuelta", fechaDevolucionReal: today(), estadoDevolucion: $("d-estado").value, observacionesDevolucion: $("d-obs").value.trim() })
+      .then(function(){ close("dlg-devolucion"); toast("Devolución registrada. Los equipos vuelven a estar disponibles."); })
+      .catch(failed).then(function(){ busy(form, false); });
+  });
+
+  $("comprado-form").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var form = this, c = state.compras.find(function(x){ return x.id === state.compraId; }); if(!c) return;
+    busy(form, true);
+    var codigo = nextCodigo();
+    col("inventario").add({ codigo: codigo, nombre: c.material, marcaModelo: $("k-marca").value.trim(), carrera: c.carrera, estadoFisico: "Bueno", zona: $("k-zona").value.trim(), fechaIngreso: today(), observaciones: "Ingresado desde una solicitud de compra.", createdAt: Date.now() })
+      .then(function(ref){ return col("compras").doc(c.id).update({ estado: "Comprada", inventarioId: ref.id }); })
+      .then(function(){ close("dlg-comprado"); toast(c.material + " ya está en el catálogo como " + codigo + "."); })
+      .catch(failed).then(function(){ busy(form, false); });
+  });
+
+  function reqAction(kind, id){
+    var r = reqById(id); if(!r) return;
+    if(kind === "devolver"){
+      state.devolverId = id;
+      $("devolucion-form").reset();
+      $("dv-summary").innerHTML = '<p class="font-bold text-cft-navy">' + esc(r.codigo) + " · " + esc(r.carrera || "") + "</p>" + (r.items || []).map(function(it){ return '<p class="text-gray-600">• ' + esc(it.nombre) + ' <span class="font-mono text-gray-400">' + esc(it.codigo || "") + "</span></p>"; }).join("");
+      open("dlg-devolucion"); return;
+    }
+    var data, msg;
+    if(kind === "aprobar"){ data = { estado: "Lista para retiro" }; msg = "Solicitud aprobada: equipos reservados para el retiro."; }
+    else if(kind === "rechazar"){ data = { estado: "Rechazada" }; msg = "Solicitud rechazada."; }
+    else if(kind === "entregar"){ data = { estado: "En préstamo", fechaEntregaReal: today() }; msg = "Equipos entregados. El préstamo quedó activo."; }
+    else if(kind === "cancelar"){ data = { estado: "Cancelada" }; msg = "Solicitud cancelada. Los equipos quedaron libres."; }
+    else if(kind === "prorroga"){ data = { prorroga: "Solicitada" }; msg = "Prórroga solicitada al encargado."; }
+    else if(kind === "extender"){ data = { prorroga: "Aprobada", fechaDevolucion: plusDays(r.fechaDevolucion, 7) }; msg = "Devolución extendida al " + fmt(plusDays(r.fechaDevolucion, 7)) + "."; }
+    else return;
+    updateRequest(r, data).then(function(){ toast(msg, kind === "rechazar" || kind === "cancelar" ? "info" : "circle-check"); }).catch(failed);
+  }
+  function compraAction(kind, id){
+    var c = state.compras.find(function(x){ return x.id === id; }); if(!c) return;
+    if(kind === "registrar"){
+      state.compraId = id;
+      $("comprado-form").reset();
+      $("dk-summary").innerHTML = '<p class="font-bold">' + esc(c.material) + "</p><p>" + esc(c.carrera) + " · quedará registrado como " + esc(nextCodigo()) + "</p>";
+      open("dlg-comprado"); return;
+    }
+    col("compras").doc(id).update({ estado: kind === "aprobar" ? "Aprobada" : "Rechazada" })
+      .then(function(){ toast(kind === "aprobar" ? "Compra aprobada." : "Solicitud de compra rechazada.", kind === "aprobar" ? "circle-check" : "info"); })
+      .catch(failed);
+  }
+
+  /* ---------- events ---------- */
+  document.addEventListener("click", function(ev){
+    var t = ev.target.closest("button");
+    if(!t) return;
+    if(t.hasAttribute("data-close")){ var d = t.closest("dialog"); if(d) d.close(); }
+    if(t.hasAttribute("data-go")){ go(t.getAttribute("data-go")); return; }
+    if(t.hasAttribute("data-carrera")){ state.f = { carrera: t.getAttribute("data-carrera"), q: "", disp: "" }; renderCatalog(); refreshIcons(); go("catalogo"); return; }
+    if(t.hasAttribute("data-clear")){ var k = t.getAttribute("data-clear"); if(k === "all") state.f = { carrera:"", q:"", disp:"" }; else state.f[k] = ""; renderCatalog(); refreshIcons(); return; }
+    if(t.hasAttribute("data-detalle")){ state.detalleId = t.getAttribute("data-detalle"); fillDetalle(); open("dlg-detalle"); return; }
+    if(t.hasAttribute("data-add")){ addToCart(t.getAttribute("data-add")); return; }
+    if(t.hasAttribute("data-remove")){ var id = t.getAttribute("data-remove"); state.cart = state.cart.filter(function(x){ return x !== id; }); saveCart(); renderAll(); return; }
+    if(t.hasAttribute("data-tab")){ state.tab = t.getAttribute("data-tab"); renderSolicitudes(); refreshIcons(); return; }
+    if(t.hasAttribute("data-qr")){ openQR(t.getAttribute("data-qr")); return; }
+    if(t.hasAttribute("data-req")){ reqAction(t.getAttribute("data-req"), t.getAttribute("data-id")); return; }
+    if(t.hasAttribute("data-compra")){ compraAction(t.getAttribute("data-compra"), t.getAttribute("data-id")); return; }
+    var a = t.getAttribute("data-action");
+    if(a === "bolsa"){ close("dlg-detalle"); renderCart(); refreshIcons(); open("dlg-bolsa"); }
+    else if(a === "compra") openCompra();
+    else if(a === "nuevo"){ $("nuevo-form").reset(); $("n-carrera").value = state.f.carrera || NOMBRES[0]; $("n-fecha").value = today(); err("n-error", ""); open("dlg-nuevo"); }
+  });
+  document.addEventListener("change", function(ev){
+    var t = ev.target;
+    if(t.name === "fcar"){ state.f.carrera = t.value; renderCatalog(); refreshIcons(); }
+    else if(t.name === "fdisp"){ state.f.disp = t.value; renderCatalog(); refreshIcons(); }
+  });
+  $("dd-add").addEventListener("click", function(){ var id = state.detalleId; close("dlg-detalle"); addToCart(id); });
+  $("dlg-detalle").addEventListener("close", function(){ state.detalleId = null; });
+  $("btn-checkout").addEventListener("click", openCheckout);
+  $("hero-search").addEventListener("submit", function(ev){ ev.preventDefault(); state.f = { carrera:"", q: $("hero-q").value.trim(), disp:"" }; renderCatalog(); refreshIcons(); go("catalogo"); });
+  $("catalog-search").addEventListener("input", function(){ state.f.q = this.value; renderCatalog(); refreshIcons(); });
+  $("f-retiro").addEventListener("change", function(){ $("f-devol").min = this.value || today(); });
+  document.querySelectorAll("dialog").forEach(function(d){
+    d.addEventListener("click", function(ev){ if(ev.target === d) d.close(); });
+  });
+
+  fill($("f-carrera"), NOMBRES); fill($("c-carrera"), NOMBRES); fill($("n-carrera"), NOMBRES);
+  loadCart();
+
+  /* ---------- boot ---------- */
+  var initial = location.hash.slice(1);
+  go(ROUTES.indexOf(initial) !== -1 ? initial : "inicio");
+  renderAll();
+
+  function subscribe(name, key, field){
+    col(name).orderBy("createdAt", "desc").onSnapshot(function(snap){
+      state[field] = snap.docs.map(function(d){ return Object.assign({ id: d.id }, d.data()); });
+      state.loaded[key] = true;
+      renderAll();
+    }, function(e){ console.error(name, e); state.loaded[key] = true; renderAll(); });
+  }
+
+  (async function boot(){
+    var c = window.claude, db = null, user = null;
+    try{ db = c && c.use ? await c.use("db") : null; }catch(e){ db = null; }
+    state.db = db; state.dbTried = true;
+    if(!db){ renderAll(); return; }
+    try{ user = await c.use("user"); }catch(e){ user = null; }
+    state.user = user;
+    if(user){
+      try{
         var me = await user.me();
-        var name = (me && me.name) ? me.name : "Usuario";
-        document.getElementById("profile-name").textContent = name;
-        var initials = name.split(" ").filter(Boolean).slice(0,2).map(function(w){ return w[0].toUpperCase(); }).join("") || "U";
-        document.getElementById("avatar-initials").textContent = initials;
-      } else {
-        document.getElementById("profile-name").textContent = "Usuario";
-        document.getElementById("profile-role").textContent = "";
-      }
-    }catch(e){
-      document.getElementById("profile-name").textContent = "Usuario";
+        state.me = me; state.userId = me.id; state.canManage = !!me.canEdit;
+        if(await user.can("data.write") === false) state.readOnly = true;
+      }catch(e){}
     }
-
-    db.collection("inventario").orderBy("createdAt","desc").onSnapshot(function(snap){
-      state.inventario = snap.docs.map(function(d){ return Object.assign({ id: d.id }, d.data()); });
-      renderAll();
-    }, function(err){ console.error("inventario", err); });
-
-    db.collection("prestamos").orderBy("createdAt","desc").onSnapshot(function(snap){
-      state.prestamos = snap.docs.map(function(d){ return Object.assign({ id: d.id }, d.data()); });
-      renderAll();
-    }, function(err){ console.error("prestamos", err); });
-
-    db.collection("compras").orderBy("createdAt","desc").onSnapshot(function(snap){
-      state.compras = snap.docs.map(function(d){ return Object.assign({ id: d.id }, d.data()); });
-      renderAll();
-    }, function(err){ console.error("compras", err); });
-  }
-  boot();
+    renderAll();
+    subscribe("inventario", "inv", "inventario");
+    subscribe("solicitudes", "sol", "solicitudes");
+    subscribe("prestamos", "leg", "legacy");
+    subscribe("compras", "com", "compras");
+  })();
 })();
 </script>
