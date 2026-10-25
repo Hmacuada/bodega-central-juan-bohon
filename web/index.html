@@ -47,7 +47,7 @@
       <div class="flex justify-between items-center h-20 lg:h-24 gap-3">
 
         <div class="flex items-center gap-3 min-w-0">
-        <button type="button" id="btn-menu" data-action="menu" class="lg:hidden relative p-2.5 rounded-xl text-cft-navy border border-gray-200 bg-white hover:bg-cft-goldLight transition flex-none" aria-label="Abrir menú" aria-controls="sidebar" aria-expanded="false">
+        <button type="button" id="btn-menu" data-action="menu" class="lg:hidden relative p-2.5 rounded-xl text-cft-navy border border-gray-200 bg-white hover:bg-cft-lightBlue transition flex-none" aria-label="Abrir menú" aria-controls="sidebar" aria-expanded="false">
           <i data-lucide="menu" class="w-5 h-5"></i>
           <span id="menu-dot" class="hidden absolute -top-1 -right-1 w-3 h-3 rounded-full bg-cft-gold border-2 border-white"></span>
         </button>
@@ -82,7 +82,7 @@
         </div>
 
         <div class="flex items-center gap-2 sm:gap-4">
-          <button type="button" data-action="bolsa" class="relative p-2.5 text-cft-navy hover:bg-cft-goldLight rounded-xl transition-all border border-gray-200 bg-white" aria-label="Abrir bolsa de solicitud">
+          <button type="button" data-action="bolsa" class="relative p-2.5 text-cft-navy hover:bg-cft-lightBlue rounded-xl transition-all border border-gray-200 bg-white" aria-label="Abrir bolsa de solicitud">
             <i data-lucide="shopping-bag" class="w-5 h-5"></i>
             <span id="cart-counter" class="absolute -top-1 -right-1 bg-cft-gold text-cft-navy text-xs font-black w-5 h-5 rounded-full flex items-center justify-center shadow">0</span>
           </button>
@@ -110,29 +110,29 @@
       <div>
         <p class="px-3 mb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">Portal</p>
         <ul class="space-y-1">
-          <li><button type="button" data-go="inicio" class="side-link group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-cft-goldLight hover:text-cft-navy transition text-left"><i data-lucide="home" class="side-ic w-5 h-5 flex-none text-gray-400 group-hover:text-cft-navy"></i><span>Inicio</span></button></li>
-          <li><button type="button" data-go="catalogo" class="side-link group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-cft-goldLight hover:text-cft-navy transition text-left"><i data-lucide="layout-grid" class="side-ic w-5 h-5 flex-none text-gray-400 group-hover:text-cft-navy"></i><span>Catálogo</span></button></li>
-          <li><button type="button" data-go="solicitudes" class="side-link group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-cft-goldLight hover:text-cft-navy transition text-left"><i data-lucide="file-text" class="side-ic w-5 h-5 flex-none text-gray-400 group-hover:text-cft-navy"></i><span id="side-sol">Mis solicitudes</span><span data-badge="solicitudes" class="hidden ml-auto bg-cft-gold text-cft-navy text-[10px] font-black min-w-[1.25rem] h-5 px-1.5 rounded-full items-center justify-center">0</span></button></li>
-          <li><button type="button" data-go="prestamos" class="side-link group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-cft-goldLight hover:text-cft-navy transition text-left"><i data-lucide="package" class="side-ic w-5 h-5 flex-none text-gray-400 group-hover:text-cft-navy"></i><span id="side-loan">Mis préstamos</span></button></li>
-          <li><button type="button" data-go="flujo" class="side-link group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-cft-goldLight hover:text-cft-navy transition text-left"><i data-lucide="workflow" class="side-ic w-5 h-5 flex-none text-gray-400 group-hover:text-cft-navy"></i><span>Flujo del pañol</span></button></li>
+          <li><button type="button" data-go="inicio" class="side-link group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-cft-lightBlue hover:text-cft-navy transition text-left"><i data-lucide="home" class="side-ic w-5 h-5 flex-none text-gray-400 group-hover:text-cft-navy"></i><span>Inicio</span></button></li>
+          <li><button type="button" data-go="catalogo" class="side-link group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-cft-lightBlue hover:text-cft-navy transition text-left"><i data-lucide="layout-grid" class="side-ic w-5 h-5 flex-none text-gray-400 group-hover:text-cft-navy"></i><span>Catálogo</span></button></li>
+          <li><button type="button" data-go="solicitudes" class="side-link group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-cft-lightBlue hover:text-cft-navy transition text-left"><i data-lucide="file-text" class="side-ic w-5 h-5 flex-none text-gray-400 group-hover:text-cft-navy"></i><span id="side-sol">Mis solicitudes</span><span data-badge="solicitudes" class="hidden ml-auto bg-cft-gold text-cft-navy text-[10px] font-black min-w-[1.25rem] h-5 px-1.5 rounded-full items-center justify-center">0</span></button></li>
+          <li><button type="button" data-go="prestamos" class="side-link group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-cft-lightBlue hover:text-cft-navy transition text-left"><i data-lucide="package" class="side-ic w-5 h-5 flex-none text-gray-400 group-hover:text-cft-navy"></i><span id="side-loan">Mis préstamos</span></button></li>
+          <li><button type="button" data-go="flujo" class="side-link group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-cft-lightBlue hover:text-cft-navy transition text-left"><i data-lucide="workflow" class="side-ic w-5 h-5 flex-none text-gray-400 group-hover:text-cft-navy"></i><span>Flujo del pañol</span></button></li>
         </ul>
       </div>
       <div id="side-admin" class="hidden">
         <p class="px-3 mb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">Encargado</p>
         <ul class="space-y-1">
-          <li><button type="button" data-go="gestion" class="side-link group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-cft-goldLight hover:text-cft-navy transition text-left"><i data-lucide="clipboard-check" class="side-ic w-5 h-5 flex-none text-gray-400 group-hover:text-cft-navy"></i><span>Panel del encargado</span><span data-badge="gestion" class="hidden ml-auto bg-amber-400 text-cft-navy text-[10px] font-black min-w-[1.25rem] h-5 px-1.5 rounded-full items-center justify-center" title="Docentes por validar">0</span></button></li>
-          <li><button type="button" data-action="escanear" class="side-link group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-cft-goldLight hover:text-cft-navy transition text-left"><i data-lucide="scan-line" class="side-ic w-5 h-5 flex-none text-gray-400 group-hover:text-cft-navy"></i><span>Escanear pase</span></button></li>
+          <li><button type="button" data-go="gestion" class="side-link group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-cft-lightBlue hover:text-cft-navy transition text-left"><i data-lucide="clipboard-check" class="side-ic w-5 h-5 flex-none text-gray-400 group-hover:text-cft-navy"></i><span>Panel del encargado</span><span data-badge="gestion" class="hidden ml-auto bg-amber-400 text-cft-navy text-[10px] font-black min-w-[1.25rem] h-5 px-1.5 rounded-full items-center justify-center" title="Docentes por validar">0</span></button></li>
+          <li><button type="button" data-action="escanear" class="side-link group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-cft-lightBlue hover:text-cft-navy transition text-left"><i data-lucide="scan-line" class="side-ic w-5 h-5 flex-none text-gray-400 group-hover:text-cft-navy"></i><span>Escanear pase</span></button></li>
         </ul>
       </div>
     </nav>
     <div class="p-3 border-t border-gray-100 flex-none">
-      <div class="rounded-2xl bg-cft-goldLight border border-cft-gold/40 p-3.5 space-y-2.5">
+      <div class="rounded-2xl bg-gray-50 border border-gray-200 p-3.5 space-y-2.5">
         <div class="flex items-center gap-3">
           <span id="side-role-ic" class="w-9 h-9 rounded-xl bg-cft-navy text-cft-gold flex items-center justify-center flex-none"><i data-lucide="user" class="w-5 h-5"></i></span>
           <div class="min-w-0"><p class="text-[10px] font-bold uppercase tracking-wider text-gray-500">Tu rol</p><p id="side-role" class="text-sm font-black text-cft-navy truncate">—</p></div>
         </div>
         <p id="side-role-text" class="text-[11px] text-gray-600 leading-snug"></p>
-        <label id="modo-wrap" class="hidden items-center justify-between gap-2 w-full pl-2.5 pr-1.5 py-1.5 rounded-xl border border-cft-gold/60 bg-white text-cft-navy text-xs font-bold cursor-pointer">
+        <label id="modo-wrap" class="hidden items-center justify-between gap-2 w-full pl-2.5 pr-1.5 py-1.5 rounded-xl border border-gray-200 bg-white text-cft-navy text-xs font-bold cursor-pointer">
           <span class="flex items-center gap-1.5 whitespace-nowrap"><i data-lucide="eye" class="w-4 h-4 flex-none"></i>Ver como</span>
           <select id="modo-select" class="bg-transparent font-bold text-cft-navy outline-none cursor-pointer min-w-0" aria-label="Ver el portal como">
             <option value="">Encargado</option><option value="docente">Docente</option><option value="alumno">Alumno</option>
@@ -144,124 +144,168 @@
   <div id="sidebar-backdrop" class="hidden fixed inset-0 z-40 bg-gray-900/60 backdrop-blur-sm lg:hidden" aria-hidden="true"></div>
 
   <div class="flex-1 min-w-0 flex flex-col">
-  <div id="preview-banner" class="hidden bg-cft-gold text-cft-navy">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs sm:text-sm font-semibold">
+  <div id="preview-banner" class="hidden bg-cft-lightBlue text-cft-navy border-b border-cft-navy/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs sm:text-[13px] font-medium">
       <span class="flex items-center gap-2"><i data-lucide="eye" class="w-4 h-4 flex-none"></i><span id="preview-text">Estás viendo el portal como alumno.</span></span>
-      <button type="button" data-action="modo" class="self-start sm:self-auto underline font-bold whitespace-nowrap">Volver a modo encargado</button>
+      <button type="button" data-action="modo" class="self-start sm:self-auto whitespace-nowrap px-3 py-1 rounded-full bg-cft-navy hover:bg-cft-darkNavy text-white text-xs font-bold transition">Volver a modo encargado</button>
     </div>
   </div>
 
   <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
     <!-- ==================== INICIO ==================== -->
-    <section id="page-inicio" class="spa-page space-y-10">
-      <div class="relative bg-gradient-to-r from-cft-navy via-cft-darkNavy to-blue-950 rounded-3xl p-8 sm:p-12 text-white overflow-hidden shadow-xl border-b-4 border-cft-gold">
-        <div class="absolute inset-0 opacity-[0.07] pointer-events-none" style="background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);background-size:32px 32px;-webkit-mask-image:radial-gradient(ellipse at 90% 20%,#000,transparent 65%);mask-image:radial-gradient(ellipse at 90% 20%,#000,transparent 65%)"></div>
-        <div class="absolute -right-10 -bottom-16 w-80 h-80 rounded-full border-[28px] border-cft-gold/10 pointer-events-none hidden md:block"></div>
-        <div class="relative z-10 grid xl:grid-cols-[minmax(0,1fr)_auto] gap-8 items-end">
-          <div class="max-w-2xl space-y-4">
-            <span class="inline-block px-3 py-1 bg-cft-gold/20 border border-cft-gold/40 text-cft-gold rounded-full text-xs font-bold uppercase tracking-wide">Pañol oficial · CFT acreditado nivel avanzado</span>
-            <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight">Tu pañol, conectado con tu carrera</h1>
-            <p class="text-gray-200 text-base sm:text-lg">Encuentra y solicita los materiales, herramientas y equipos necesarios para tus clases prácticas y talleres.</p>
-            <form id="hero-search" class="pt-4" role="search">
-              <div class="relative flex items-center bg-white rounded-2xl p-2 shadow-lg max-w-xl">
-                <i data-lucide="search" class="w-6 h-6 text-gray-400 ml-3 flex-none"></i>
-                <label for="hero-q" class="sr-only">Buscar en el pañol</label>
-                <input type="search" id="hero-q" autocomplete="off" placeholder="Buscar multímetros, estación total, transpaleta…" class="w-full min-w-0 pl-3 pr-4 py-2 text-gray-800 bg-transparent outline-none text-sm font-medium placeholder-gray-400">
-                <button type="submit" class="bg-cft-gold hover:bg-amber-500 text-cft-navy px-5 py-2.5 rounded-xl text-sm font-bold transition flex-none">Buscar</button>
-              </div>
-            </form>
-          </div>
-          <dl class="grid grid-cols-3 gap-3 max-w-xl xl:w-80">
-            <div class="bg-white/[0.07] border border-white/15 rounded-2xl p-3 sm:p-4 min-w-0"><dt class="text-[11px] font-semibold text-gray-300 sm:uppercase sm:tracking-wide">Materiales</dt><dd id="st-total" class="text-2xl sm:text-3xl font-black mt-1 tabular-nums">—</dd></div>
-            <div class="bg-white/[0.07] border border-white/15 rounded-2xl p-3 sm:p-4 min-w-0"><dt class="text-[11px] font-semibold text-gray-300 sm:uppercase sm:tracking-wide">Disponibles</dt><dd id="st-disp" class="text-2xl sm:text-3xl font-black mt-1 text-cft-gold tabular-nums">—</dd></div>
-            <div class="bg-white/[0.07] border border-white/15 rounded-2xl p-3 sm:p-4 min-w-0"><dt class="text-[11px] font-semibold text-gray-300 sm:uppercase sm:tracking-wide">Prestados</dt><dd id="st-out" class="text-2xl sm:text-3xl font-black mt-1 tabular-nums">—</dd></div>
-          </dl>
+    <section id="page-inicio" class="spa-page space-y-8">
+      <div class="relative overflow-hidden rounded-3xl bg-cft-navy shadow-lg">
+        <div class="absolute inset-y-0 right-0 w-[62%] hidden md:block pointer-events-none" aria-hidden="true">
+          <svg viewBox="0 0 640 300" preserveAspectRatio="xMaxYMid slice" class="w-full h-full">
+            <defs>
+              <linearGradient id="hx-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b4a72"/><stop offset="1" stop-color="#1c3557"/></linearGradient>
+              <radialGradient id="hx-glow" cx=".72" cy=".2" r=".6"><stop offset="0" stop-color="#f4d58d" stop-opacity=".4"/><stop offset="1" stop-color="#f4d58d" stop-opacity="0"/></radialGradient>
+              <filter id="hx-blur" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="3.2"/></filter>
+              <filter id="hx-soft" x="-30%" y="-60%" width="160%" height="220%"><feGaussianBlur stdDeviation="7"/></filter>
+              <linearGradient id="hx-dome" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#eef2f7"/><stop offset="1" stop-color="#c3cddb"/></linearGradient>
+              <linearGradient id="hx-paper" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e3ecf7"/><stop offset="1" stop-color="#c4d4e8"/></linearGradient>
+              <pattern id="hx-grid" width="12" height="12" patternUnits="userSpaceOnUse"><path d="M12 0H0V12" fill="none" stroke="#7fa3cc" stroke-width=".6" opacity=".55"/></pattern>
+              <linearGradient id="hx-tape" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd23f"/><stop offset="1" stop-color="#e5a813"/></linearGradient>
+            </defs>
+            <rect width="640" height="300" fill="url(#hx-bg)"/>
+            <g filter="url(#hx-blur)">
+              <rect width="640" height="300" fill="url(#hx-glow)"/>
+              <g fill="#3d5f8a"><rect x="150" y="14" width="6" height="160"/><rect x="340" y="14" width="6" height="160"/><rect x="520" y="8" width="6" height="166"/></g>
+              <g fill="#4d709c"><rect x="140" y="60" width="400" height="5"/><rect x="140" y="112" width="400" height="5"/></g>
+              <g>
+                <rect x="166" y="38" width="34" height="22" rx="2" fill="#e5a813"/><rect x="206" y="42" width="30" height="18" rx="2" fill="#2f7fe0"/><rect x="242" y="38" width="34" height="22" rx="2" fill="#e5a813"/><rect x="282" y="44" width="48" height="16" rx="2" fill="#6b8bb3"/>
+                <rect x="354" y="42" width="30" height="18" rx="2" fill="#2f7fe0"/><rect x="390" y="38" width="34" height="22" rx="2" fill="#e5a813"/><rect x="430" y="42" width="40" height="18" rx="2" fill="#6b8bb3"/><rect x="476" y="38" width="34" height="22" rx="2" fill="#e5a813"/>
+                <rect x="166" y="92" width="44" height="20" rx="2" fill="#2f7fe0"/><rect x="216" y="90" width="34" height="22" rx="2" fill="#e5a813"/><rect x="256" y="94" width="30" height="18" rx="2" fill="#6b8bb3"/><rect x="292" y="90" width="34" height="22" rx="2" fill="#e5a813"/>
+                <rect x="354" y="90" width="34" height="22" rx="2" fill="#e5a813"/><rect x="394" y="94" width="44" height="18" rx="2" fill="#2f7fe0"/><rect x="444" y="90" width="34" height="22" rx="2" fill="#e5a813"/>
+              </g>
+              <g transform="translate(588 58)">
+                <circle cx="0" cy="20" r="11" fill="#d9a77c"/>
+                <path d="M-14 16a14 12 0 0 1 28 0z" fill="#ffd23f"/><rect x="-16" y="14" width="32" height="4" rx="2" fill="#f0c020"/>
+                <path d="M-26 44q26-12 52 0l6 80h-64z" fill="#f08a24"/><rect x="-22" y="66" width="44" height="5" fill="#e9eef5"/><rect x="-24" y="86" width="48" height="5" fill="#e9eef5"/>
+              </g>
+            </g>
+            <path d="M0 178L640 160V300H0Z" fill="#8fa2bb"/>
+            <path d="M110 204L600 170L640 300H70Z" fill="url(#hx-paper)"/>
+            <path d="M110 204L600 170L640 300H70Z" fill="url(#hx-grid)"/>
+            <g fill="none" stroke="#3b6ea8" stroke-width="1.6" stroke-linejoin="round" opacity=".8">
+              <path d="M160 232L300 222L306 276L164 286Z"/><path d="M230 227L234 281M164 256L304 248"/>
+              <path d="M520 190L590 185L604 230L528 236Z"/><circle cx="270" cy="262" r="9"/>
+            </g>
+            <g transform="rotate(-5 220 196)"><rect x="140" y="186" width="170" height="18" rx="9" fill="#dce6f2"/><ellipse cx="310" cy="195" rx="5" ry="9" fill="#a9bcd4"/><path d="M150 190H300" stroke="#b9c9dd" stroke-width="1.5"/></g>
+            <ellipse cx="440" cy="214" rx="104" ry="18" fill="#0f213d" opacity=".45" filter="url(#hx-soft)"/>
+            <ellipse cx="430" cy="200" rx="98" ry="21" fill="#d9e0ea"/>
+            <path d="M352 199C352 141 386 104 430 104S508 141 508 199Z" fill="url(#hx-dome)"/>
+            <path d="M444 106C462 124 472 160 472 199H460C460 160 454 128 436 106Z" fill="#fff" opacity=".85"/>
+            <path d="M350 197Q430 232 512 197Q430 214 350 197Z" fill="#f4f6fa"/>
+            <g transform="translate(374 124) scale(.3)">
+              <path d="M70 12L80 28L95 18L110 28L120 12L112 36L128 36L108 52L118 100L95 116L72 100L82 52L62 36L78 36Z" fill="none" stroke="#E5A813" stroke-width="7" stroke-linejoin="round"/>
+            </g>
+            <text x="402.5" y="174" text-anchor="middle" font-family="Inter, sans-serif" font-weight="900" font-size="9" fill="#1B365D">JUAN</text>
+            <text x="402.5" y="184" text-anchor="middle" font-family="Inter, sans-serif" font-weight="900" font-size="9" fill="#1B365D">BOHÓN</text>
+            <ellipse cx="300" cy="262" rx="62" ry="9" fill="#0f213d" opacity=".3" filter="url(#hx-soft)"/>
+            <g transform="translate(246 232) rotate(-6)">
+              <path d="M2 8L-30 0M102 8L132 -2" stroke="#2b3440" stroke-width="4" stroke-linecap="round"/>
+              <path d="M4 6C6-2 44-4 48 6C50 22 40 30 25 30C11 30 2 21 4 6Z" fill="#cfe3f5" fill-opacity=".8" stroke="#2b3440" stroke-width="3"/>
+              <path d="M56 6C60-4 98-2 100 6C102 21 93 30 79 30C64 30 54 22 56 6Z" fill="#cfe3f5" fill-opacity=".8" stroke="#2b3440" stroke-width="3"/>
+              <path d="M48 8Q52 1 56 8" fill="none" stroke="#2b3440" stroke-width="3"/>
+              <path d="M12 9Q20 4 30 6M64 9Q72 4 82 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" opacity=".9"/>
+            </g>
+            <ellipse cx="572" cy="270" rx="46" ry="8" fill="#0f213d" opacity=".35" filter="url(#hx-soft)"/>
+            <path d="M532 250L420 262V272L532 262Z" fill="#ffd23f"/>
+            <path d="M440 260V266M452 259V264M464 257V266M476 256V261M488 255V264M500 254V259M512 252V261" stroke="#1f2937" stroke-width="1.2"/>
+            <rect x="416" y="259" width="6" height="15" rx="1" fill="#4b5563"/>
+            <rect x="528" y="204" width="80" height="66" rx="18" fill="url(#hx-tape)"/>
+            <circle cx="570" cy="236" r="21" fill="#1f2937"/><circle cx="570" cy="236" r="8" fill="#e5a813"/>
+            <rect x="600" y="214" width="8" height="40" rx="3" fill="#1f2937"/>
+          </svg>
+          <div class="absolute inset-0" style="background:linear-gradient(90deg,#1B365D 0%,rgba(27,54,93,.85) 16%,rgba(27,54,93,.3) 42%,rgba(27,54,93,0) 62%)"></div>
+        </div>
+        <div class="relative z-10 px-6 sm:px-10 py-8 sm:py-10 max-w-md lg:max-w-lg space-y-3 text-white">
+          <h1 class="text-3xl sm:text-[2.35rem] font-extrabold tracking-tight leading-tight">Tu pañol, conectado con tu carrera</h1>
+          <p class="text-gray-200 text-sm sm:text-base">Encuentra y solicita los materiales, herramientas y equipos necesarios para tus clases prácticas y talleres.</p>
+          <form id="hero-search" class="pt-2" role="search">
+            <div class="flex items-center bg-white rounded-full pl-5 pr-1.5 py-1.5 shadow-lg max-w-md">
+              <i data-lucide="search" class="w-5 h-5 text-gray-400 flex-none"></i>
+              <label for="hero-q" class="sr-only">Buscar en el pañol</label>
+              <input type="search" id="hero-q" autocomplete="off" placeholder="Buscar materiales, herramientas o equipos…" class="w-full min-w-0 px-3 py-2 text-gray-800 bg-transparent outline-none text-sm placeholder-gray-400">
+              <button type="submit" aria-label="Buscar" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-cft-blue hover:bg-blue-700 text-white flex items-center justify-center flex-none transition"><i data-lucide="search" class="w-5 h-5"></i></button>
+            </div>
+          </form>
         </div>
       </div>
 
-      <div class="space-y-4">
+      <div class="space-y-5">
         <div class="flex justify-between items-center gap-4">
-          <h2 class="text-2xl font-bold text-gray-800">Explora por carrera</h2>
-          <button type="button" data-carrera="" class="text-sm font-semibold text-cft-navy hover:underline flex items-center gap-1 flex-none"><span>Ver todas las carreras</span><i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+          <h2 class="text-xl sm:text-2xl font-bold text-cft-navy">Explora por carrera</h2>
+          <button type="button" data-carrera="" class="text-sm font-semibold text-cft-blue hover:underline flex items-center gap-1 flex-none"><span>Ver todas las carreras</span><i data-lucide="arrow-right" class="w-4 h-4"></i></button>
         </div>
-        <div id="career-grid" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4"></div>
+        <div id="career-grid" class="grid grid-cols-3 md:grid-cols-6 gap-x-4 gap-y-6"></div>
       </div>
 
-      <div class="space-y-4">
-        <h2 class="text-2xl font-bold text-gray-800">Accesos rápidos</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <button type="button" data-go="catalogo" class="text-left cursor-pointer group bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-cft-gold transition flex items-center gap-4">
-            <div class="p-4 bg-cft-goldLight rounded-2xl text-cft-navy group-hover:bg-cft-navy group-hover:text-cft-gold transition"><i data-lucide="package-plus" class="w-8 h-8"></i></div>
-            <div class="flex-grow"><h3 class="font-bold text-gray-800 group-hover:text-cft-navy transition">Solicitar materiales</h3><p class="text-xs text-gray-500 mt-1">Agrega equipos a tu bolsa y envía la solicitud para tu clase.</p></div>
-            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400 group-hover:text-cft-navy flex-none"></i>
+      <div class="bg-cft-lightBlue/70 rounded-3xl p-5 sm:p-8 space-y-5">
+        <h2 class="text-xl sm:text-2xl font-bold text-cft-navy">Accesos rápidos</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+          <button type="button" data-go="catalogo" class="relative group text-left bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition flex items-center gap-4 md:flex-col md:items-start xl:flex-row xl:items-center">
+            <span class="w-14 h-14 flex-none rounded-2xl bg-cft-lightBlue text-cft-navy flex items-center justify-center"><i data-lucide="package-plus" class="w-7 h-7"></i></span>
+            <span class="flex-1 min-w-0 md:pr-6 xl:pr-0"><span class="block font-bold text-cft-navy">Solicitar materiales</span><span class="block text-sm text-gray-500 mt-0.5">Agrega equipos a tu bolsa y envía la solicitud para tu clase.</span></span>
+            <i data-lucide="arrow-right" class="w-5 h-5 text-cft-navy flex-none transition group-hover:translate-x-0.5 md:absolute md:top-5 md:right-5 xl:static"></i>
           </button>
-          <button type="button" data-go="solicitudes" class="text-left cursor-pointer group bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-cft-gold transition flex items-center gap-4">
-            <div class="p-4 bg-cft-goldLight rounded-2xl text-cft-navy group-hover:bg-cft-navy group-hover:text-cft-gold transition"><i data-lucide="clipboard-list" class="w-8 h-8"></i></div>
-            <div class="flex-grow"><h3 class="font-bold text-gray-800 group-hover:text-cft-navy transition">Mis solicitudes</h3><p class="text-xs text-gray-500 mt-1">Revisa el estado de tus solicitudes y tu pase de retiro.</p></div>
-            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400 group-hover:text-cft-navy flex-none"></i>
+          <button type="button" data-go="solicitudes" class="relative group text-left bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition flex items-center gap-4 md:flex-col md:items-start xl:flex-row xl:items-center">
+            <span class="w-14 h-14 flex-none rounded-2xl bg-cft-lightBlue text-cft-navy flex items-center justify-center"><i data-lucide="clipboard-list" class="w-7 h-7"></i></span>
+            <span class="flex-1 min-w-0 md:pr-6 xl:pr-0"><span class="block font-bold text-cft-navy">Mis solicitudes</span><span class="block text-sm text-gray-500 mt-0.5">Revisa el estado de tus solicitudes y tu pase de retiro.</span></span>
+            <i data-lucide="arrow-right" class="w-5 h-5 text-cft-navy flex-none transition group-hover:translate-x-0.5 md:absolute md:top-5 md:right-5 xl:static"></i>
           </button>
-          <button type="button" data-go="prestamos" class="text-left cursor-pointer group bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-cft-gold transition flex items-center gap-4">
-            <div class="p-4 bg-cft-goldLight rounded-2xl text-cft-navy group-hover:bg-cft-navy group-hover:text-cft-gold transition"><i data-lucide="clock" class="w-8 h-8"></i></div>
-            <div class="flex-grow"><h3 class="font-bold text-gray-800 group-hover:text-cft-navy transition">Mis préstamos</h3><p class="text-xs text-gray-500 mt-1">Consulta tus préstamos activos y fechas de devolución.</p></div>
-            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400 group-hover:text-cft-navy flex-none"></i>
+          <button type="button" data-go="prestamos" class="relative group text-left bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition flex items-center gap-4 md:flex-col md:items-start xl:flex-row xl:items-center">
+            <span class="w-14 h-14 flex-none rounded-2xl bg-cft-lightBlue text-cft-navy flex items-center justify-center"><i data-lucide="clock" class="w-7 h-7"></i></span>
+            <span class="flex-1 min-w-0 md:pr-6 xl:pr-0"><span class="block font-bold text-cft-navy">Mis préstamos</span><span class="block text-sm text-gray-500 mt-0.5">Consulta tus préstamos activos y fechas de devolución.</span></span>
+            <i data-lucide="arrow-right" class="w-5 h-5 text-cft-navy flex-none transition group-hover:translate-x-0.5 md:absolute md:top-5 md:right-5 xl:static"></i>
           </button>
         </div>
       </div>
     </section>
 
     <!-- ==================== CATÁLOGO ==================== -->
-    <section id="page-catalogo" class="spa-page hidden space-y-6">
-      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200 pb-4">
+    <section id="page-catalogo" class="spa-page hidden space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div>
-          <h1 class="text-2xl font-black text-gray-800">Catálogo de Materiales y Equipos</h1>
-          <p class="text-sm text-gray-500">Explora el inventario del pañol CFT Juan Bohón con su disponibilidad en tiempo real.</p>
+          <h1 class="text-2xl sm:text-[1.75rem] font-extrabold tracking-tight text-cft-navy">Catálogo</h1>
+          <p class="text-sm text-gray-500 mt-0.5">Materiales, herramientas y equipos del pañol, con su disponibilidad en tiempo real.</p>
         </div>
-        <div class="flex items-center gap-3 flex-wrap">
-          <div id="active-career-pill" class="hidden items-center bg-cft-goldLight text-cft-navy border border-cft-gold pl-3 pr-1.5 py-1.5 rounded-full text-xs font-bold gap-2">
-            <span id="active-career-text">Carrera</span>
-            <button type="button" data-clear="carrera" class="w-5 h-5 rounded-full hover:bg-white flex items-center justify-center hover:text-red-600" aria-label="Quitar filtro de carrera"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
-          </div>
-          <button type="button" id="btn-nuevo" data-action="nuevo" class="hidden whitespace-nowrap flex-none px-4 py-2 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i><span>Agregar material</span></button>
+        <div class="flex items-center gap-2 flex-wrap">
+          <button type="button" data-buy data-action="compra" class="whitespace-nowrap flex-none px-4 py-2 bg-white border border-gray-200 hover:border-cft-navy/40 text-cft-navy rounded-xl text-xs font-bold transition flex items-center gap-2"><i data-lucide="shopping-cart" class="w-4 h-4"></i><span>Solicitar compra</span></button>
+          <button type="button" id="btn-nuevo" data-action="nuevo" class="hidden whitespace-nowrap flex-none px-4 py-2 bg-cft-navy hover:bg-cft-darkNavy text-white rounded-xl text-xs font-bold transition items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i><span>Agregar material</span></button>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 xl:grid-cols-[17.5rem_minmax(0,1fr)] gap-8">
-        <aside class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start content-start min-w-0 xl:flex xl:flex-col xl:items-stretch xl:gap-6">
-          <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-3">
-            <label for="catalog-search" class="text-xs font-bold text-gray-700 uppercase tracking-wider block">Búsqueda rápida</label>
-            <div class="relative">
-              <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-3"></i>
-              <input type="search" id="catalog-search" autocomplete="off" placeholder="Buscar por código, nombre…" class="w-full pl-9 pr-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-cft-navy focus:bg-white">
-            </div>
+      <div class="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-3 sm:p-4">
+        <div class="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_16rem] xl:grid-cols-[minmax(0,1fr)_17rem_auto] gap-3">
+          <div class="relative">
+            <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+            <label for="catalog-search" class="sr-only">Buscar en el catálogo</label>
+            <input type="search" id="catalog-search" autocomplete="off" placeholder="Buscar por nombre, marca o código…" class="w-full h-11 pl-10 pr-3 text-sm bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-cft-navy focus:bg-white">
           </div>
-          <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-3 sm:col-start-1 sm:row-start-1 sm:row-span-3">
-            <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Filtrar por carrera</h3>
-            <div class="space-y-1 text-sm max-h-80 overflow-y-auto overflow-x-hidden pr-1" id="career-filter-list" role="radiogroup" aria-label="Carrera"></div>
+          <div class="relative">
+            <label for="career-select" class="sr-only">Carrera</label>
+            <select id="career-select" name="fcar" class="w-full h-11 pl-3.5 pr-9 text-sm font-medium text-gray-800 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-cft-navy focus:bg-white appearance-none cursor-pointer truncate"></select>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
           </div>
-          <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-3">
-            <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Disponibilidad</h3>
-            <div class="space-y-1 text-sm" id="disp-filter-list" role="radiogroup" aria-label="Disponibilidad"></div>
-          </div>
-          <div data-buy class="bg-cft-goldLight p-5 rounded-2xl border border-dashed border-cft-gold space-y-3">
-            <h3 class="font-bold text-cft-navy text-sm">¿No encuentras un material?</h3>
-            <p class="text-xs text-gray-600">Pide que el pañol lo compre. El encargado revisa cada solicitud y, al llegar, lo ingresa al catálogo.</p>
-            <button type="button" data-action="compra" class="w-full py-2.5 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition flex items-center justify-center gap-2"><i data-lucide="shopping-cart" class="w-4 h-4"></i><span>Solicitar compra</span></button>
-          </div>
-          <div data-nobuy class="hidden bg-white p-5 rounded-2xl border border-dashed border-gray-300 space-y-2">
-            <h3 class="font-bold text-gray-700 text-sm">¿No encuentras un material?</h3>
-            <p class="text-xs text-gray-500">Las compras las solicitan los docentes. Pídele a tu profesor que lo solicite desde su cuenta.</p>
-          </div>
-        </aside>
-
-        <div class="min-w-0 space-y-4">
-          <div class="flex justify-between items-center text-xs text-gray-500 font-medium gap-3">
-            <span id="catalog-count-text">Cargando inventario…</span>
-            <button type="button" data-clear="all" class="text-cft-navy font-bold hover:underline">Limpiar todos los filtros</button>
-          </div>
-          <div id="catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 gap-6"></div>
+          <div id="disp-filter-list" role="radiogroup" aria-label="Disponibilidad" class="md:col-span-2 xl:col-span-1 grid grid-cols-3 bg-gray-100 rounded-xl p-1 h-11 text-xs font-semibold"></div>
         </div>
       </div>
+
+      <div class="flex flex-wrap items-center gap-2 text-xs min-h-[1.75rem]">
+        <span id="catalog-count-text" class="text-gray-500 font-medium mr-1">Cargando inventario…</span>
+        <span id="active-chips" class="contents"></span>
+      </div>
+
+      <div id="catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4"></div>
+
+      <div data-buy class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl bg-cft-lightBlue/60 p-4 sm:px-5">
+        <p class="text-sm text-cft-navy"><span class="font-bold">¿No encuentras un material?</span> Pide que el pañol lo compre; el encargado revisa cada solicitud.</p>
+        <button type="button" data-action="compra" class="self-start sm:self-auto whitespace-nowrap px-4 py-2 bg-cft-navy hover:bg-cft-darkNavy text-white rounded-xl text-xs font-bold transition flex items-center gap-2 flex-none"><i data-lucide="shopping-cart" class="w-4 h-4"></i><span>Solicitar compra</span></button>
+      </div>
+      <p data-nobuy class="hidden rounded-2xl bg-gray-100/80 p-4 sm:px-5 text-sm text-gray-600"><span class="font-bold text-gray-700">¿No encuentras un material?</span> Las compras las solicitan los docentes: pídele a tu profesor que lo pida desde su cuenta.</p>
     </section>
 
     <!-- ==================== SOLICITUDES ==================== -->
@@ -364,28 +408,26 @@
   </main>
 
   <!-- FOOTER -->
-  <footer class="bg-white border-t border-gray-200 mt-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row justify-between items-center gap-6">
-      <svg class="h-14 w-auto max-w-full" viewBox="0 0 380 120" fill="none" aria-label="CFT Juan Bohón, acreditado nivel avanzado por la CNA-Chile" role="img">
+  <footer class="mt-12 bg-cft-lightBlue/60 border-t border-cft-navy/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-center sm:text-left">
+      <svg class="h-14 w-auto flex-none" viewBox="10 0 172 120" fill="none" role="img" aria-label="CFT Juan Bohón">
         <path d="M70 12 L80 28 L95 18 L110 28 L120 12 L112 36 L128 36 L108 52 L118 100 L95 116 L72 100 L82 52 L62 36 L78 36 Z" stroke="#E5A813" stroke-width="4.5" fill="none" stroke-linejoin="round"/>
         <circle cx="95" cy="14" r="3.5" fill="#E5A813"/><circle cx="70" cy="12" r="2.5" fill="#E5A813"/><circle cx="120" cy="12" r="2.5" fill="#E5A813"/><circle cx="80" cy="28" r="2.5" fill="#E5A813"/><circle cx="110" cy="28" r="2.5" fill="#E5A813"/>
         <text x="95" y="62" text-anchor="middle" font-family="Inter, sans-serif" font-weight="900" font-size="28" fill="#1B365D" letter-spacing="-0.5">JUAN</text>
         <text x="95" y="88" text-anchor="middle" font-family="Inter, sans-serif" font-weight="900" font-size="28" fill="#1B365D" letter-spacing="-0.5">BOHON</text>
         <text x="95" y="103" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="8.5" fill="#1B365D" letter-spacing="0.8">CENTRO DE FORMACIÓN TÉCNICA</text>
-        <line x1="195" y1="28" x2="195" y2="92" stroke="#CBD5E1" stroke-width="1.5"/>
-        <path d="M220 70 L235 40 L248 70 L241 70 L235 56 L229 70 Z" fill="#1B365D"/>
-        <path d="M242 42 L256 70 L250 70 L242 54 L238 62 L244 48 Z" fill="#1B365D"/>
-        <text x="238" y="82" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="7" fill="#1B365D">Comisión Nacional</text>
-        <text x="238" y="90" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="7" fill="#1B365D">de Acreditación</text>
-        <text x="238" y="98" text-anchor="middle" font-family="Inter, sans-serif" font-weight="800" font-size="6.5" fill="#1B365D">CNA - Chile</text>
-        <line x1="280" y1="28" x2="280" y2="92" stroke="#CBD5E1" stroke-width="1.5"/>
-        <text x="290" y="38" font-family="Inter, sans-serif" font-weight="900" font-size="11" fill="#1B365D">CFT ACREDITADO</text>
-        <text x="290" y="52" font-family="Inter, sans-serif" font-weight="900" font-size="11" fill="#1B365D">NIVEL AVANZADO</text>
-        <text x="290" y="65" font-family="Inter, sans-serif" font-weight="600" font-size="7.5" fill="#475569">GESTIÓN INSTITUCIONAL</text>
-        <text x="290" y="74" font-family="Inter, sans-serif" font-weight="600" font-size="7.5" fill="#475569">Y DOCENCIA DE PREGRADO</text>
-        <text x="290" y="86" font-family="Inter, sans-serif" font-weight="800" font-size="8.5" fill="#1B365D">HASTA ABRIL DE 2027</text>
       </svg>
-      <div class="text-xs text-gray-500 text-center lg:text-right font-medium">© 2026 Centro de Formación Técnica Juan Bohón.<br>Acreditado por la Comisión Nacional de Acreditación (CNA-Chile).</div>
+      <span class="hidden sm:block w-px h-12 bg-cft-navy/15 flex-none"></span>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-cft-navy">Formación técnica que impulsa tu futuro</p>
+        <p class="text-xs text-gray-500 mt-1">© 2026 CFT Juan Bohón · Acreditado nivel avanzado por la CNA-Chile hasta abril de 2027.</p>
+      </div>
+      <svg class="h-12 w-auto flex-none text-cft-navy/60" viewBox="0 0 96 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
+        <circle cx="74" cy="12" r="5"/>
+        <path d="M2 44 L28 14 L42 30 L56 18 L94 44 Z"/>
+        <path d="M21 22 L28 26 L34 21"/>
+        <path d="M50 23 L56 26 L61 22"/>
+      </svg>
     </div>
   </footer>
   </div>
@@ -820,6 +862,7 @@
   };
   function pill(e){ return '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold whitespace-nowrap ' + (STATUS_PILL[e] || "bg-gray-100 text-gray-600") + '">' + esc(e) + "</span>"; }
   var AVAIL = { "Disponible":"bg-emerald-500", "Reservado":"bg-amber-500", "Prestado":"bg-rose-500", "Fuera de servicio":"bg-gray-500" };
+  var AVAIL_SOFT = { "Disponible":"bg-emerald-50 text-emerald-700", "Reservado":"bg-amber-50 text-amber-700", "Prestado":"bg-rose-50 text-rose-700", "Fuera de servicio":"bg-gray-100 text-gray-600" };
 
   /* ---------- cart (per-viewer convenience) ---------- */
   function loadCart(){ try{ var v = JSON.parse(localStorage.getItem(CART_KEY) || "[]"); state.cart = Array.isArray(v) ? v : []; }catch(e){ state.cart = []; } }
@@ -887,7 +930,7 @@
   /* ---------- builders ---------- */
   function visual(i, size){
     var big = size === "lg";
-    return '<div class="relative ' + (big ? "h-60" : "h-44") + ' overflow-hidden bg-gradient-to-br from-cft-lightBlue via-white to-cft-goldLight">' +
+    return '<div class="relative ' + (big ? "h-60" : "h-44") + ' overflow-hidden bg-gradient-to-br from-cft-lightBlue to-white">' +
       '<div class="absolute inset-0 blueprint"></div>' +
       '<div class="absolute inset-0 flex items-center justify-center"><div class="' + (big ? "w-24 h-24" : "w-20 h-20") + ' rounded-2xl bg-white shadow-md border border-gray-100 text-cft-navy flex items-center justify-center group-hover:scale-110 transition duration-300">' + ic(iconFor(i.carrera), big ? "w-12 h-12" : "w-10 h-10") + "</div></div>" +
       '<span class="absolute bottom-3 right-3 font-mono text-[11px] font-bold text-cft-navy/40">' + esc(i.codigo || "") + "</span></div>";
@@ -895,23 +938,27 @@
   function productCard(i){
     var s = itemStatus(i), ok = s === "Disponible", added = inCart(i.id);
     var btn;
-    if(added) btn = '<button type="button" data-action="bolsa" class="py-2 px-3 bg-cft-goldLight text-cft-navy border border-cft-gold rounded-xl text-xs font-bold transition flex items-center gap-1">' + ic("check", "w-3.5 h-3.5") + "<span>En la bolsa</span></button>";
-    else if(ok) btn = '<button type="button" data-add="' + esc(i.id) + '" class="py-2 px-3 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"' + (canWrite() ? "" : " disabled") + ">" + ic("plus", "w-3.5 h-3.5") + "<span>Solicitar</span></button>";
-    else btn = '<button type="button" disabled class="py-2 px-3 bg-gray-100 text-gray-400 rounded-xl text-xs font-bold cursor-not-allowed">' + esc(s) + "</button>";
-    return '<article class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition flex flex-col justify-between overflow-hidden group">' +
-      '<button type="button" data-detalle="' + esc(i.id) + '" class="relative block text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-cft-gold" aria-label="Ver detalle de ' + esc(i.nombre) + '">' + visual(i) +
-        '<span class="absolute top-3 left-3 max-w-[62%] truncate bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold text-cft-navy uppercase shadow-sm">' + esc(i.carrera) + "</span>" +
-        '<span class="absolute top-3 right-3 ' + AVAIL[s] + ' text-white px-2 py-0.5 rounded-full text-[10px] font-bold">' + esc(s) + "</span>" +
+    if(added) btn = '<button type="button" data-action="bolsa" class="h-9 px-3.5 bg-emerald-50 text-emerald-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 flex-none">' + ic("check", "w-4 h-4") + "<span>En la bolsa</span></button>";
+    else if(ok) btn = '<button type="button" data-add="' + esc(i.id) + '" class="h-9 px-3.5 bg-cft-navy hover:bg-cft-darkNavy text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 flex-none disabled:opacity-50 disabled:cursor-not-allowed"' + (canWrite() ? "" : " disabled") + ">" + ic("plus", "w-4 h-4") + "<span>Solicitar</span></button>";
+    else btn = '<span class="h-9 px-3.5 bg-gray-100 text-gray-400 rounded-xl text-xs font-bold flex items-center flex-none">No disponible</span>';
+    return '<article class="group bg-white rounded-2xl border border-gray-200/80 hover:border-cft-navy/25 hover:shadow-md transition p-4 flex flex-col gap-3 min-w-0">' +
+      '<button type="button" data-detalle="' + esc(i.id) + '" class="flex items-start gap-3 text-left rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-cft-blue/40" aria-label="Ver detalle de ' + esc(i.nombre) + '">' +
+        '<span class="w-12 h-12 rounded-xl bg-cft-lightBlue text-cft-navy flex items-center justify-center flex-none">' + ic(iconFor(i.carrera), "w-6 h-6") + "</span>" +
+        '<span class="min-w-0 flex-1">' +
+          '<span class="block text-[11px] font-semibold text-gray-400 truncate">' + esc(i.carrera) + "</span>" +
+          '<span class="block font-bold text-gray-900 leading-snug line-clamp-2 group-hover:text-cft-navy">' + esc(i.nombre) + "</span>" +
+          (i.marcaModelo ? '<span class="block text-xs text-gray-500 truncate mt-0.5">' + esc(i.marcaModelo) + "</span>" : "") +
+        "</span>" +
       "</button>" +
-      '<div class="p-5 flex-1 flex flex-col justify-between gap-4">' +
-        "<div>" +
-          '<span class="text-[11px] font-mono text-gray-400 block">' + esc(i.codigo || "S/C") + " • " + esc(i.estadoFisico ? "Estado " + i.estadoFisico.toLowerCase() : "Sin estado") + "</span>" +
-          '<h3 class="font-bold text-gray-800 text-sm line-clamp-2 mt-1 leading-snug">' + esc(i.nombre) + (i.marcaModelo ? ' <span class="font-medium text-gray-500">· ' + esc(i.marcaModelo) + "</span>" : "") + "</h3>" +
-          (i.requiereDocente ? '<span class="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full bg-cft-lightBlue text-cft-navy text-[10px] font-bold">' + ic("shield-check", "w-3 h-3") + "Requiere docente</span>" : "") +
-        "</div>" +
-        '<div class="pt-3 border-t border-gray-100 flex items-center justify-between gap-2">' +
-          '<button type="button" data-detalle="' + esc(i.id) + '" class="flex-1 py-2 px-3 border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 hover:bg-gray-50 transition">Ver detalle</button>' + btn +
-        "</div>" +
+      '<div class="flex flex-wrap items-center gap-1.5 text-[11px] font-semibold">' +
+        '<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full ' + (AVAIL_SOFT[s] || "bg-gray-100 text-gray-600") + '"><span class="w-1.5 h-1.5 rounded-full ' + (AVAIL[s] || "bg-gray-400") + '"></span>' + esc(s) + "</span>" +
+        (i.requiereDocente ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cft-lightBlue text-cft-navy">' + ic("shield-check", "w-3 h-3") + "Requiere docente</span>" : "") +
+      "</div>" +
+      '<div class="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between gap-2">' +
+        '<span class="font-mono text-[11px] text-gray-400 truncate">' + esc(i.codigo || "S/C") + "</span>" +
+        '<span class="flex items-center gap-1">' +
+          '<button type="button" data-detalle="' + esc(i.id) + '" class="h-9 px-3 rounded-xl text-xs font-semibold text-gray-600 hover:bg-gray-100 hover:text-cft-navy transition">Detalle</button>' + btn +
+        "</span>" +
       "</div></article>";
   }
   function emptyCard(icon, title, text, extra){
@@ -920,7 +967,7 @@
   }
   function skeletonCards(n){
     var s = "";
-    for(var k = 0; k < n; k++) s += '<div class="bg-white rounded-2xl border border-gray-100 overflow-hidden animate-pulse" aria-hidden="true"><div class="h-44 bg-gray-100"></div><div class="p-5 space-y-3"><div class="h-3 w-1/3 bg-gray-100 rounded"></div><div class="h-4 w-4/5 bg-gray-100 rounded"></div><div class="h-9 bg-gray-100 rounded-xl"></div></div></div>';
+    for(var k = 0; k < n; k++) s += '<div class="bg-white rounded-2xl border border-gray-200/80 p-4 space-y-3 animate-pulse" aria-hidden="true"><div class="flex gap-3"><div class="w-12 h-12 rounded-xl bg-gray-100 flex-none"></div><div class="flex-1 space-y-2 pt-1"><div class="h-3 w-1/3 bg-gray-100 rounded"></div><div class="h-4 w-4/5 bg-gray-100 rounded"></div></div></div><div class="h-5 w-24 bg-gray-100 rounded-full"></div><div class="h-9 bg-gray-100 rounded-xl"></div></div>';
     return s;
   }
   var NO_DB = "Abre esta página dentro de Claude, con tu sesión iniciada, para ver el inventario en vivo.";
@@ -945,22 +992,23 @@
     }
   }
 
-  function renderStats(){
-    if(!state.loaded.inv || !state.loaded.sol || !state.loaded.leg){ return; }
-    var total = state.inventario.length;
-    var disp = state.inventario.filter(function(i){ return itemStatus(i) === "Disponible"; }).length;
-    var out = state.inventario.filter(function(i){ return itemStatus(i) === "Prestado"; }).length;
-    $("st-total").textContent = total; $("st-disp").textContent = disp; $("st-out").textContent = out;
-  }
+  // Íconos sólidos de las carreras destacadas en el inicio (los recortes usan el fondo del círculo).
+  var CUT = "#e8f1ff";
+  var CAREER_SVG = {
+    "Electricidad y Energías Renovables": '<path d="M27 3L9 27h12l-3 18L39 19H26l4-16Z"/>',
+    "Minería y Metalurgia": '<path d="M24 2Q42-2 46 18Q38 8 24 2Z"/><path d="M18.5 27.5L35 9l3 2.5L21.5 30Z"/><path d="M2 44L16 24l6 7 8-10 16 23Z" stroke="' + CUT + '" stroke-width="3" stroke-linejoin="round" paint-order="stroke"/><path d="M16 24l-4 6 4-2 3 3Z" fill="' + CUT + '"/>',
+    "Topografía": '<rect x="16" y="4" width="15" height="12" rx="2"/><rect x="31" y="7" width="6" height="5" rx="1"/><circle cx="23.5" cy="10" r="3" fill="' + CUT + '"/><rect x="13" y="16" width="22" height="4" rx="1.5"/><path d="M22 20L8 45h4.5L25 22ZM26 20l14 25h-4.5L23 22Z"/><rect x="22.8" y="20" width="2.4" height="25"/>',
+    "Logística Industrial": '<rect x="3" y="11" width="26" height="23" rx="1.5"/><path d="M31 17h8l7 8.5V34H31Z"/><path d="M34 20h4l4.5 5.5H34Z" fill="' + CUT + '"/><g stroke="' + CUT + '" stroke-width="2.5" paint-order="stroke"><circle cx="12" cy="36" r="5.5"/><circle cx="37" cy="36" r="5.5"/></g><circle cx="12" cy="36" r="2" fill="' + CUT + '"/><circle cx="37" cy="36" r="2" fill="' + CUT + '"/>',
+    "Mantenimiento Mecánico Industrial": '<circle cx="19" cy="19" r="12" fill="none" stroke="currentColor" stroke-width="6" stroke-dasharray="4.71 4.71"/><circle cx="19" cy="19" r="10.5"/><circle cx="19" cy="19" r="4" fill="' + CUT + '"/><g transform="translate(32 31) rotate(-45)" stroke="' + CUT + '" stroke-width="2.5" paint-order="stroke"><rect x="-3" y="-13" width="6" height="22" rx="3"/><circle cx="0" cy="12" r="7"/></g><g transform="translate(32 31) rotate(-45)"><rect x="-2.6" y="12" width="5.2" height="9" fill="' + CUT + '"/></g>',
+    "Gastronomía y Cocina Internacional": '<path d="M14 30C6 30 3 22 7 17s9-5 11-4c1-6 6-9 10-8 5 1 7 5 7 8 4-2 10 1 9 7-1 6-6 9-10 10Z"/><rect x="14" y="32.5" width="20" height="10" rx="2"/><path d="M20 22v7M28 21v8" stroke="' + CUT + '" stroke-width="1.8" stroke-linecap="round"/>'
+  };
 
   function renderCareers(){
-    var c = {};
-    state.inventario.forEach(function(i){ c[i.carrera] = (c[i.carrera] || 0) + 1; });
     $("career-grid").innerHTML = FEATURED.map(function(n){
-      return '<button type="button" data-carrera="' + esc(n) + '" class="cursor-pointer group bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md hover:border-cft-gold transition text-center flex flex-col items-center justify-start gap-3">' +
-        '<div class="w-16 h-16 rounded-full bg-amber-50 text-cft-navy flex items-center justify-center group-hover:scale-110 transition">' + ic(iconFor(n), "w-8 h-8") + "</div>" +
-        '<span class="text-xs font-bold text-gray-800 group-hover:text-cft-navy transition leading-snug">' + esc(n) + "</span>" +
-        '<span class="text-[11px] font-medium text-gray-400">' + (state.loaded.inv ? plural(c[n] || 0, "material", "materiales") : "&nbsp;") + "</span></button>";
+      var art = CAREER_SVG[n] ? '<svg viewBox="0 0 48 48" class="w-10 h-10 sm:w-12 sm:h-12" fill="currentColor" aria-hidden="true">' + CAREER_SVG[n] + "</svg>" : ic(iconFor(n), "w-10 h-10");
+      return '<button type="button" data-carrera="' + esc(n) + '" class="cursor-pointer group flex flex-col items-center gap-3 text-center rounded-2xl p-1">' +
+        '<span class="w-20 h-20 sm:w-24 sm:h-24 xl:w-28 xl:h-28 rounded-full bg-cft-lightBlue text-[#1f5fbf] flex items-center justify-center transition group-hover:-translate-y-0.5 group-hover:ring-4 group-hover:ring-cft-blue/15">' + art + "</span>" +
+        '<span class="text-xs sm:text-sm font-medium text-gray-800 group-hover:text-cft-navy transition leading-snug max-w-[10rem]">' + esc(n) + "</span></button>";
     }).join("");
   }
 
@@ -974,30 +1022,37 @@
     }).sort(function(a, b){ return String(a.codigo).localeCompare(String(b.codigo)); });
   }
 
-  function radio(name, value, label, checked, count){
-    return '<label class="flex items-center gap-2 cursor-pointer hover:text-cft-navy rounded-lg px-2 py-1.5 ' + (checked ? "bg-cft-goldLight text-cft-navy font-semibold" : "text-gray-700") + '">' +
-      '<input type="radio" name="' + name + '" value="' + esc(value) + '"' + (checked ? " checked" : "") + ' class="accent-[#1B365D] flex-none">' +
-      '<span class="leading-snug">' + esc(label) + "</span>" + (count != null ? '<span class="ml-auto pl-2 text-[11px] font-mono text-gray-400">' + count + "</span>" : "") + "</label>";
+  function segment(name, value, label, checked){
+    return '<label class="flex items-center justify-center rounded-lg px-2 cursor-pointer whitespace-nowrap transition ' + (checked ? "bg-white text-cft-navy shadow-sm" : "text-gray-500 hover:text-gray-800") + '">' +
+      '<input type="radio" name="' + name + '" value="' + esc(value) + '"' + (checked ? " checked" : "") + ' class="sr-only">' + esc(label) + "</label>";
+  }
+  function chip(label, clear){
+    return '<span class="inline-flex items-center gap-1 pl-2.5 pr-1 py-1 rounded-full bg-cft-lightBlue text-cft-navy font-semibold max-w-full"><span class="truncate">' + esc(label) + "</span>" +
+      '<button type="button" data-clear="' + clear + '" class="w-5 h-5 rounded-full hover:bg-white flex items-center justify-center flex-none" aria-label="Quitar filtro ' + esc(label) + '">' + ic("x", "w-3.5 h-3.5") + "</button></span>";
   }
 
   function renderCatalog(){
     var c = {};
     state.inventario.forEach(function(i){ c[i.carrera] = (c[i.carrera] || 0) + 1; });
     var showN = state.loaded.inv;
-    $("career-filter-list").innerHTML = radio("fcar", "", "Todas las carreras", state.f.carrera === "", showN ? state.inventario.length : null) +
-      NOMBRES.map(function(n){ return radio("fcar", n, n, state.f.carrera === n, showN ? (c[n] || 0) : null); }).join("");
-    $("disp-filter-list").innerHTML = radio("fdisp", "", "Todas", state.f.disp === "") + radio("fdisp", "Disponible", "Disponibles ahora", state.f.disp === "Disponible") + radio("fdisp", "Ocupado", "Reservados o prestados", state.f.disp === "Ocupado");
+    $("career-select").innerHTML = '<option value="">Todas las carreras' + (showN ? " (" + state.inventario.length + ")" : "") + "</option>" +
+      NOMBRES.map(function(n){ return '<option value="' + esc(n) + '">' + esc(n) + (showN ? " (" + (c[n] || 0) + ")" : "") + "</option>"; }).join("");
+    $("career-select").value = state.f.carrera;
+    $("disp-filter-list").innerHTML = segment("fdisp", "", "Todos", state.f.disp === "") + segment("fdisp", "Disponible", "Disponibles", state.f.disp === "Disponible") + segment("fdisp", "Ocupado", "Ocupados", state.f.disp === "Ocupado");
     if($("catalog-search").value !== state.f.q) $("catalog-search").value = state.f.q;
-    var pillEl = $("active-career-pill");
-    pillEl.classList.toggle("hidden", !state.f.carrera); pillEl.classList.toggle("flex", !!state.f.carrera);
-    $("active-career-text").textContent = "Carrera: " + state.f.carrera;
+    var chips = [];
+    if(state.f.carrera) chips.push(chip(state.f.carrera, "carrera"));
+    if(state.f.q.trim()) chips.push(chip("“" + state.f.q.trim() + "”", "q"));
+    if(state.f.disp) chips.push(chip(state.f.disp === "Disponible" ? "Disponibles" : "Ocupados", "disp"));
+    if(chips.length > 1) chips.push('<button type="button" data-clear="all" class="text-cft-blue font-semibold hover:underline ml-1">Limpiar filtros</button>');
+    $("active-chips").innerHTML = chips.join("");
     var bn = $("btn-nuevo"); bn.classList.toggle("hidden", !state.canManage); bn.classList.toggle("flex", state.canManage);
 
     var g = $("catalog-grid");
     if(!state.db && state.dbTried){ $("catalog-count-text").textContent = "Sin conexión"; g.innerHTML = emptyCard("plug-zap", "Sin conexión con el inventario", NO_DB); return; }
     if(!state.loaded.inv){ $("catalog-count-text").textContent = "Cargando inventario…"; g.innerHTML = skeletonCards(6); return; }
     var items = filtered(), total = state.inventario.length;
-    $("catalog-count-text").textContent = "Mostrando " + items.length + " de " + plural(total, "material", "materiales");
+    $("catalog-count-text").textContent = items.length === total ? plural(total, "material", "materiales") : items.length + " de " + plural(total, "material", "materiales");
     if(!total){ g.innerHTML = emptyCard("package-open", "Aún no hay materiales registrados", state.canManage ? "Agrega el primero con “Agregar material”." : "El encargado de bodega está cargando el inventario."); return; }
     if(!items.length){
       g.innerHTML = emptyCard("package-x", "No se encontraron materiales con los filtros aplicados.", canBuy() ? "Prueba con otra búsqueda o carrera. Si el pañol no lo tiene, puedes pedir que lo compre." : "Prueba con otra búsqueda o carrera. Si el pañol no lo tiene, pídele a un docente que solicite la compra.",
@@ -1439,7 +1494,7 @@
 
   function renderAll(){
     buildStatusMap();
-    renderRoleUI(); renderWho(); renderStats(); renderCareers(); renderCatalog(); renderCart(); badges(); renderSolicitudes(); renderPrestamos(); renderGestion();
+    renderRoleUI(); renderWho(); renderCareers(); renderCatalog(); renderCart(); badges(); renderSolicitudes(); renderPrestamos(); renderGestion();
     if(state.detalleId && $("dlg-detalle").open) fillDetalle();
     if(state.paseId && $("dlg-pase").open) fillPase();
     if(state.view === "gestion" && state.roleKnown && !state.canManage) go("inicio");
