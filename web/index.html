@@ -83,20 +83,23 @@
         </nav>
 
         <div class="flex items-center gap-2 sm:gap-4">
-          <button type="button" id="btn-modo" data-action="modo" class="hidden items-center gap-2 p-2.5 sm:px-3 sm:py-2 rounded-xl border border-cft-gold/60 bg-cft-goldLight text-cft-navy text-xs font-bold hover:bg-amber-100 transition whitespace-nowrap" aria-label="Cambiar vista entre encargado y estudiante">
-            <i data-lucide="eye" class="w-4 h-4"></i><span id="btn-modo-text" class="hidden sm:inline">Ver como estudiante</span>
-          </button>
+          <label id="modo-wrap" class="hidden items-center gap-1.5 pl-2.5 pr-1 py-1.5 rounded-xl border border-cft-gold/60 bg-cft-goldLight text-cft-navy text-xs font-bold hover:bg-amber-100 transition whitespace-nowrap cursor-pointer">
+            <i data-lucide="eye" class="w-4 h-4 flex-none"></i><span class="hidden sm:inline">Ver como</span>
+            <select id="modo-select" class="bg-transparent font-bold text-cft-navy outline-none cursor-pointer pr-1" aria-label="Ver el portal como">
+              <option value="">Encargado</option><option value="docente">Docente</option><option value="alumno">Alumno</option>
+            </select>
+          </label>
           <button type="button" data-action="bolsa" class="relative p-2.5 text-cft-navy hover:bg-cft-goldLight rounded-xl transition-all border border-gray-200 bg-white" aria-label="Abrir bolsa de solicitud">
             <i data-lucide="shopping-bag" class="w-5 h-5"></i>
             <span id="cart-counter" class="absolute -top-1 -right-1 bg-cft-gold text-cft-navy text-xs font-black w-5 h-5 rounded-full flex items-center justify-center shadow">0</span>
           </button>
-          <div class="pl-3 border-l border-gray-200 flex items-center gap-3">
+          <button type="button" data-action="perfil" class="pl-3 border-l border-gray-200 flex items-center gap-3 rounded-r-xl hover:opacity-80 transition" aria-label="Mi perfil">
             <div id="avatar" class="w-10 h-10 rounded-full bg-cft-navy text-cft-gold font-bold flex items-center justify-center text-sm shadow border-2 border-cft-gold overflow-hidden flex-none">·</div>
             <div class="hidden md:block text-left leading-tight whitespace-nowrap">
               <span id="who-name" class="block text-sm font-bold text-gray-800">Conectando…</span>
               <span id="who-role" class="block text-xs font-medium text-gray-500">&nbsp;</span>
             </div>
-          </div>
+          </button>
         </div>
       </div>
     </div>
@@ -114,7 +117,7 @@
 
   <div id="preview-banner" class="hidden bg-cft-gold text-cft-navy">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs sm:text-sm font-semibold">
-      <span class="flex items-center gap-2"><i data-lucide="eye" class="w-4 h-4 flex-none"></i>Estás viendo el portal como estudiante. Lo que hagas se guarda con tu cuenta.</span>
+      <span class="flex items-center gap-2"><i data-lucide="eye" class="w-4 h-4 flex-none"></i><span id="preview-text">Estás viendo el portal como alumno.</span></span>
       <button type="button" data-action="modo" class="self-start sm:self-auto underline font-bold whitespace-nowrap">Volver a modo encargado</button>
     </div>
   </div>
@@ -211,10 +214,14 @@
             <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Disponibilidad</h3>
             <div class="space-y-1 text-sm" id="disp-filter-list" role="radiogroup" aria-label="Disponibilidad"></div>
           </div>
-          <div class="bg-cft-goldLight p-5 rounded-2xl border border-dashed border-cft-gold space-y-3">
+          <div data-buy class="bg-cft-goldLight p-5 rounded-2xl border border-dashed border-cft-gold space-y-3">
             <h3 class="font-bold text-cft-navy text-sm">¿No encuentras un material?</h3>
             <p class="text-xs text-gray-600">Pide que el pañol lo compre. El encargado revisa cada solicitud y, al llegar, lo ingresa al catálogo.</p>
             <button type="button" data-action="compra" class="w-full py-2.5 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition flex items-center justify-center gap-2"><i data-lucide="shopping-cart" class="w-4 h-4"></i><span>Solicitar compra</span></button>
+          </div>
+          <div data-nobuy class="hidden bg-white p-5 rounded-2xl border border-dashed border-gray-300 space-y-2">
+            <h3 class="font-bold text-gray-700 text-sm">¿No encuentras un material?</h3>
+            <p class="text-xs text-gray-500">Las compras las solicitan los docentes. Pídele a tu profesor que lo solicite desde su cuenta.</p>
           </div>
         </aside>
 
@@ -235,7 +242,10 @@
           <h1 id="sol-title" class="text-2xl font-black text-gray-800">Mis Solicitudes</h1>
           <p id="sol-sub" class="text-sm text-gray-500">Revisa el estado de tus reservas de materiales y accede a tu pase QR de retiro.</p>
         </div>
-        <button type="button" data-go="catalogo" class="self-start md:self-auto px-4 py-2.5 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition flex items-center gap-2"><i data-lucide="package-plus" class="w-4 h-4"></i><span>Nueva solicitud</span></button>
+        <div class="flex flex-wrap gap-2 self-start md:self-auto">
+          <button type="button" data-admin data-action="escanear" class="hidden px-4 py-2.5 bg-cft-gold hover:bg-amber-500 text-cft-navy rounded-xl text-xs font-bold transition items-center gap-2"><i data-lucide="scan-line" class="w-4 h-4"></i><span>Escanear pase</span></button>
+          <button type="button" data-go="catalogo" class="px-4 py-2.5 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition flex items-center gap-2"><i data-lucide="package-plus" class="w-4 h-4"></i><span>Nueva solicitud</span></button>
+        </div>
       </div>
       <div class="flex border-b border-gray-200 gap-6 overflow-x-auto no-scrollbar text-sm font-medium" role="tablist" id="req-tabs"></div>
       <div id="requests-list" class="space-y-4"></div>
@@ -243,9 +253,12 @@
 
     <!-- ==================== PRÉSTAMOS ==================== -->
     <section id="page-prestamos" class="spa-page hidden space-y-6">
-      <div class="border-b border-gray-200 pb-4">
-        <h1 id="loan-title" class="text-2xl font-black text-gray-800">Mis Préstamos Activos y Devoluciones</h1>
-        <p id="loan-sub" class="text-sm text-gray-500">Herramientas que tienes actualmente en tu posesión, con su fecha de devolución.</p>
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200 pb-4">
+        <div>
+          <h1 id="loan-title" class="text-2xl font-black text-gray-800">Mis Préstamos Activos y Devoluciones</h1>
+          <p id="loan-sub" class="text-sm text-gray-500">Herramientas que tienes actualmente en tu posesión, con su fecha de devolución.</p>
+        </div>
+        <button type="button" data-admin data-action="escanear" class="hidden self-start md:self-auto px-4 py-2.5 bg-cft-gold hover:bg-amber-500 text-cft-navy rounded-xl text-xs font-bold transition items-center gap-2"><i data-lucide="scan-line" class="w-4 h-4"></i><span>Escanear pase</span></button>
       </div>
       <div id="loan-banner"></div>
       <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -276,24 +289,33 @@
       </div>
 
       <ol class="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <li class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-cft-gold transition"><div class="w-10 h-10 rounded-xl bg-cft-navy text-cft-gold flex items-center justify-center font-bold text-lg mb-4">1</div><h3 class="font-bold text-gray-800 text-base mb-2">Búsqueda y selección</h3><p class="text-xs text-gray-500 leading-relaxed">Navegas por carrera o código y verificas la disponibilidad en tiempo real.</p><span class="inline-flex items-center gap-1 mt-4 px-2 py-0.5 rounded-full bg-gray-100 text-[11px] font-bold text-gray-600"><i data-lucide="user" class="w-3 h-3"></i>Estudiante o docente</span></li>
-        <li class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-cft-gold transition"><div class="w-10 h-10 rounded-xl bg-cft-navy text-cft-gold flex items-center justify-center font-bold text-lg mb-4">2</div><h3 class="font-bold text-gray-800 text-base mb-2">Bolsa y solicitud</h3><p class="text-xs text-gray-500 leading-relaxed">Agregas los equipos a tu bolsa e indicas asignatura, profesor a cargo y fechas.</p><span class="inline-flex items-center gap-1 mt-4 px-2 py-0.5 rounded-full bg-gray-100 text-[11px] font-bold text-gray-600"><i data-lucide="user" class="w-3 h-3"></i>Estudiante o docente</span></li>
-        <li class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-cft-gold transition"><div class="w-10 h-10 rounded-xl bg-cft-navy text-cft-gold flex items-center justify-center font-bold text-lg mb-4">3</div><h3 class="font-bold text-gray-800 text-base mb-2">Aprobación y pase QR</h3><p class="text-xs text-gray-500 leading-relaxed">El encargado aprueba y reserva los equipos. Tu pase digital con QR queda listo para el retiro.</p><span class="inline-flex items-center gap-1 mt-4 px-2 py-0.5 rounded-full bg-cft-goldLight text-[11px] font-bold text-cft-navy"><i data-lucide="shield-check" class="w-3 h-3"></i>Encargado de pañol</span></li>
-        <li class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-cft-gold transition"><div class="w-10 h-10 rounded-xl bg-cft-navy text-cft-gold flex items-center justify-center font-bold text-lg mb-4">4</div><h3 class="font-bold text-gray-800 text-base mb-2">Retiro físico en pañol</h3><p class="text-xs text-gray-500 leading-relaxed">Muestras el pase, el encargado verifica el estado del equipo y te lo entrega.</p><span class="inline-flex items-center gap-1 mt-4 px-2 py-0.5 rounded-full bg-cft-goldLight text-[11px] font-bold text-cft-navy"><i data-lucide="shield-check" class="w-3 h-3"></i>Encargado de pañol</span></li>
-        <li class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-cft-gold transition"><div class="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-bold text-lg mb-4">5</div><h3 class="font-bold text-gray-800 text-base mb-2">Devolución y cierre</h3><p class="text-xs text-gray-500 leading-relaxed">Se inspecciona el material devuelto, se registra su estado y vuelve a quedar disponible.</p><span class="inline-flex items-center gap-1 mt-4 px-2 py-0.5 rounded-full bg-gray-100 text-[11px] font-bold text-gray-600"><i data-lucide="users" class="w-3 h-3"></i>Ambos</span></li>
+        <li class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-cft-gold transition"><div class="w-10 h-10 rounded-xl bg-cft-navy text-cft-gold flex items-center justify-center font-bold text-lg mb-4">1</div><h3 class="font-bold text-gray-800 text-base mb-2">Búsqueda y selección</h3><p class="text-xs text-gray-500 leading-relaxed">Navegas por carrera o código y verificas la disponibilidad en tiempo real.</p><span class="inline-flex items-center gap-1 mt-4 px-2 py-0.5 rounded-full bg-gray-100 text-[11px] font-bold text-gray-600"><i data-lucide="user" class="w-3 h-3"></i>Alumno o docente</span></li>
+        <li class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-cft-gold transition"><div class="w-10 h-10 rounded-xl bg-cft-navy text-cft-gold flex items-center justify-center font-bold text-lg mb-4">2</div><h3 class="font-bold text-gray-800 text-base mb-2">Bolsa y solicitud</h3><p class="text-xs text-gray-500 leading-relaxed">Indicas asignatura, fechas y el responsable que retira (obligatorio). Si el equipo lo exige, eliges un docente de respaldo.</p><span class="inline-flex items-center gap-1 mt-4 px-2 py-0.5 rounded-full bg-gray-100 text-[11px] font-bold text-gray-600"><i data-lucide="user" class="w-3 h-3"></i>Alumno o docente</span></li>
+        <li class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-cft-gold transition"><div class="w-10 h-10 rounded-xl bg-cft-navy text-cft-gold flex items-center justify-center font-bold text-lg mb-4">3</div><h3 class="font-bold text-gray-800 text-base mb-2">Aprobación y pase QR</h3><p class="text-xs text-gray-500 leading-relaxed">Si hace falta, el docente confirma su respaldo. Luego el encargado aprueba y reserva los equipos, y tu pase QR queda listo.</p><span class="inline-flex items-center gap-1 mt-4 px-2 py-0.5 rounded-full bg-cft-goldLight text-[11px] font-bold text-cft-navy"><i data-lucide="shield-check" class="w-3 h-3"></i>Encargado de pañol</span></li>
+        <li class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-cft-gold transition"><div class="w-10 h-10 rounded-xl bg-cft-navy text-cft-gold flex items-center justify-center font-bold text-lg mb-4">4</div><h3 class="font-bold text-gray-800 text-base mb-2">Retiro físico en pañol</h3><p class="text-xs text-gray-500 leading-relaxed">El encargado escanea tu pase QR, verifica quién retira y el estado del equipo, y te lo entrega.</p><span class="inline-flex items-center gap-1 mt-4 px-2 py-0.5 rounded-full bg-cft-goldLight text-[11px] font-bold text-cft-navy"><i data-lucide="shield-check" class="w-3 h-3"></i>Encargado de pañol</span></li>
+        <li class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-cft-gold transition"><div class="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-bold text-lg mb-4">5</div><h3 class="font-bold text-gray-800 text-base mb-2">Devolución y cierre</h3><p class="text-xs text-gray-500 leading-relaxed">Con el mismo pase se registra la devolución y el estado del material, que vuelve a quedar disponible.</p><span class="inline-flex items-center gap-1 mt-4 px-2 py-0.5 rounded-full bg-gray-100 text-[11px] font-bold text-gray-600"><i data-lucide="users" class="w-3 h-3"></i>Ambos</span></li>
       </ol>
 
       <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 sm:p-8 space-y-6">
         <div class="flex items-start gap-4">
           <div class="p-3 bg-cft-goldLight rounded-2xl text-cft-navy flex-none"><i data-lucide="shopping-cart" class="w-6 h-6"></i></div>
-          <div><h2 class="text-xl font-black text-cft-navy">¿Y si el pañol no tiene el material?</h2><p class="text-sm text-gray-500 mt-1">Cualquier persona puede pedir una compra. Así crece el inventario compartido de todas las carreras.</p></div>
+          <div><h2 class="text-xl font-black text-cft-navy">¿Y si el pañol no tiene el material?</h2><p class="text-sm text-gray-500 mt-1">Los docentes piden la compra; los alumnos se la piden a su profesor. Así crece el inventario compartido de todas las carreras.</p></div>
         </div>
         <ol class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <li class="rounded-2xl bg-gray-50 border border-gray-100 p-5"><span class="text-xs font-black text-cft-gold">PASO A</span><h3 class="font-bold text-gray-800 mt-1">Pides la compra</h3><p class="text-xs text-gray-500 mt-1 leading-relaxed">Desde el catálogo describes el material y para qué lo necesitas.</p></li>
+          <li class="rounded-2xl bg-gray-50 border border-gray-100 p-5"><span class="text-xs font-black text-cft-gold">PASO A</span><h3 class="font-bold text-gray-800 mt-1">El docente pide la compra</h3><p class="text-xs text-gray-500 mt-1 leading-relaxed">Desde el catálogo describe el material y para qué se usará.</p></li>
           <li class="rounded-2xl bg-gray-50 border border-gray-100 p-5"><span class="text-xs font-black text-cft-gold">PASO B</span><h3 class="font-bold text-gray-800 mt-1">Revisión</h3><p class="text-xs text-gray-500 mt-1 leading-relaxed">El encargado aprueba o rechaza la solicitud.</p></li>
           <li class="rounded-2xl bg-gray-50 border border-gray-100 p-5"><span class="text-xs font-black text-cft-gold">PASO C</span><h3 class="font-bold text-gray-800 mt-1">Compra y registro</h3><p class="text-xs text-gray-500 mt-1 leading-relaxed">Cuando llega, se ingresa al inventario con su código.</p></li>
           <li class="rounded-2xl bg-emerald-50 border border-emerald-100 p-5"><span class="text-xs font-black text-emerald-600">PASO D</span><h3 class="font-bold text-gray-800 mt-1">Listo para préstamo</h3><p class="text-xs text-gray-500 mt-1 leading-relaxed">Aparece en el catálogo de su carrera para todos.</p></li>
         </ol>
+      </div>
+
+      <div class="space-y-4">
+        <div class="text-center max-w-2xl mx-auto"><h2 class="text-2xl font-black text-cft-navy">Quién puede hacer qué</h2><p class="text-sm text-gray-500 mt-1">Cada solicitud registra un responsable. Algunos equipos además necesitan un docente que los respalde.</p></div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm"><div class="w-11 h-11 rounded-xl bg-gray-100 text-cft-navy flex items-center justify-center mb-4"><i data-lucide="graduation-cap" class="w-6 h-6"></i></div><h3 class="font-bold text-gray-800">Alumno</h3><ul class="mt-3 space-y-2 text-xs text-gray-600"><li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600 flex-none"></i>Pide préstamos de materiales y equipos.</li><li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600 flex-none"></i>Indica siempre al responsable que retira.</li><li class="flex gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-cft-navy flex-none"></i>Para equipos marcados, elige un docente que debe confirmar su respaldo.</li><li class="flex gap-2"><i data-lucide="x" class="w-4 h-4 text-rose-500 flex-none"></i>No solicita compras.</li></ul></div>
+          <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm"><div class="w-11 h-11 rounded-xl bg-cft-goldLight text-cft-navy flex items-center justify-center mb-4"><i data-lucide="presentation" class="w-6 h-6"></i></div><h3 class="font-bold text-gray-800">Docente</h3><ul class="mt-3 space-y-2 text-xs text-gray-600"><li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600 flex-none"></i>Pide préstamos, incluidos los equipos que requieren docente.</li><li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600 flex-none"></i>Solicita compras de materiales nuevos.</li><li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600 flex-none"></i>Confirma o rechaza el respaldo de las solicitudes de sus alumnos.</li><li class="flex gap-2"><i data-lucide="info" class="w-4 h-4 text-gray-400 flex-none"></i>El encargado valida el rol docente.</li></ul></div>
+          <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm"><div class="w-11 h-11 rounded-xl bg-cft-navy text-cft-gold flex items-center justify-center mb-4"><i data-lucide="shield-check" class="w-6 h-6"></i></div><h3 class="font-bold text-gray-800">Encargado de pañol</h3><ul class="mt-3 space-y-2 text-xs text-gray-600"><li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600 flex-none"></i>Ve todas las solicitudes, préstamos y compras.</li><li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600 flex-none"></i>Escanea el pase QR para entregar y recibir equipos.</li><li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600 flex-none"></i>Gestiona inventario, proveedores y compras.</li><li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-600 flex-none"></i>Valida docentes y asigna roles.</li></ul></div>
+        </div>
       </div>
     </section>
     <!-- ==================== GESTIÓN (ENCARGADO) ==================== -->
@@ -302,8 +324,9 @@
         <div>
           <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-cft-goldLight text-cft-navy border border-cft-gold text-[11px] font-bold uppercase rounded-full mb-2"><i data-lucide="shield-check" class="w-3.5 h-3.5"></i>Solo encargado de pañol</span>
           <h1 class="text-2xl font-black text-gray-800">Panel del Encargado</h1>
-          <p class="text-sm text-gray-500">Inventario, proveedores y compras del pañol central, con los datos compartidos en vivo.</p>
+          <p class="text-sm text-gray-500">Inventario, usuarios, proveedores y compras del pañol central, con los datos compartidos en vivo.</p>
         </div>
+        <button type="button" data-action="escanear" class="self-start md:self-auto flex-none whitespace-nowrap px-4 py-2.5 bg-cft-gold hover:bg-amber-500 text-cft-navy rounded-xl text-xs font-bold transition flex items-center gap-2"><i data-lucide="scan-line" class="w-4 h-4"></i><span>Escanear pase</span></button>
       </div>
       <div id="kpis" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4"></div>
       <div class="flex border-b border-gray-200 gap-6 overflow-x-auto no-scrollbar text-sm font-medium" role="tablist" id="g-tabs"></div>
@@ -375,13 +398,18 @@
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div><label for="f-asignatura" class="block text-xs font-bold text-gray-700 uppercase mb-1">Asignatura / taller</label><input id="f-asignatura" required placeholder="Ej: Topografía aplicada" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
-      <div><label for="f-profesor" class="block text-xs font-bold text-gray-700 uppercase mb-1">Profesor a cargo</label><input id="f-profesor" required placeholder="Nombre del docente" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+      <div><label for="f-nombre" class="block text-xs font-bold text-gray-700 uppercase mb-1">Responsable que retira <span class="text-rose-600">*</span></label><input id="f-nombre" required placeholder="Nombre y apellido" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
     </div>
+    <p class="text-[11px] text-gray-500 -mt-2">El responsable responde por el estado de los equipos hasta su devolución.</p>
+    <div id="f-respaldo-box" class="hidden rounded-2xl border border-cft-navy/20 bg-cft-lightBlue p-4 space-y-2">
+      <div class="flex items-start gap-2 text-xs text-cft-navy"><i data-lucide="shield-check" class="w-4 h-4 flex-none mt-0.5"></i><p id="f-respaldo-text" class="font-semibold"></p></div>
+      <div id="f-respaldo-field"><label for="f-docente" class="block text-xs font-bold text-gray-700 uppercase mb-1">Docente de respaldo <span class="text-rose-600">*</span></label><select id="f-docente" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></select></div>
+    </div>
+    <div><label for="f-profesor" class="block text-xs font-bold text-gray-700 uppercase mb-1">Profesor de la asignatura <span class="font-medium normal-case text-gray-400">(opcional)</span></label><input id="f-profesor" placeholder="Nombre del docente" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
     <div class="grid grid-cols-2 gap-4">
       <div><label for="f-retiro" class="block text-xs font-bold text-gray-700 uppercase mb-1">Fecha de retiro</label><input type="date" id="f-retiro" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
       <div><label for="f-devol" class="block text-xs font-bold text-gray-700 uppercase mb-1">Fecha de devolución</label><input type="date" id="f-devol" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
     </div>
-    <div><label for="f-nombre" class="block text-xs font-bold text-gray-700 uppercase mb-1">Quién retira <span class="font-medium normal-case text-gray-400">(opcional)</span></label><input id="f-nombre" placeholder="Si retira otra persona, escribe su nombre" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
     <div class="bg-cft-goldLight p-4 rounded-2xl border border-cft-gold/30 text-xs text-cft-navy space-y-2">
       <span class="font-bold block">Resumen del pedido</span>
       <div id="checkout-summary" class="space-y-1"></div>
@@ -397,7 +425,7 @@
 <dialog id="dlg-qr" aria-labelledby="qr-title">
   <div class="pop bg-white rounded-3xl shadow-2xl w-[min(24rem,calc(100vw-2rem))] p-6 text-center space-y-4">
     <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto"><i data-lucide="qr-code" class="w-7 h-7"></i></div>
-    <div><h3 id="qr-title" class="text-xl font-black text-gray-800">Pase Digital de Retiro</h3><p class="text-xs text-gray-500">Muestra este código al encargado del pañol para retirar tus materiales.</p></div>
+    <div><h3 id="qr-title" class="text-xl font-black text-gray-800">Pase Digital de Retiro</h3><p class="text-xs text-gray-500">Muéstralo en el pañol: el encargado lo escanea para entregarte los equipos y, después, para recibir la devolución.</p></div>
     <div id="qr" class="bg-gray-50 p-4 rounded-2xl border border-gray-200 flex justify-center items-center min-h-[200px]"></div>
     <div class="text-xs bg-cft-lightBlue text-cft-navy p-3 rounded-xl space-y-1">
       <p class="font-bold" id="qr-id">Solicitud</p>
@@ -445,6 +473,10 @@
       <div><label for="n-fecha" class="block text-xs font-bold text-gray-700 uppercase mb-1">Fecha de ingreso</label><input type="date" id="n-fecha" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
       <div><label for="n-obs" class="block text-xs font-bold text-gray-700 uppercase mb-1">Observaciones</label><input id="n-obs" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
     </div>
+    <label class="flex items-start gap-3 rounded-2xl border border-cft-navy/20 bg-cft-lightBlue p-4 cursor-pointer">
+      <input id="n-docente" type="checkbox" class="mt-0.5 w-4 h-4 accent-[#1B365D] flex-none">
+      <span class="text-xs text-cft-navy"><span class="font-bold block">Requiere docente de respaldo</span>Si lo pide un alumno, debe elegir un docente que confirme que responde por el equipo.</span>
+    </label>
     <p id="n-error" class="hidden text-xs font-semibold text-rose-600" role="alert"></p>
     <div class="flex justify-end gap-3">
       <button type="button" data-close class="px-4 py-2.5 border border-gray-300 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100">Cancelar</button>
@@ -543,12 +575,72 @@
   </form>
 </dialog>
 
+<dialog id="dlg-perfil" aria-labelledby="pf-title">
+  <form id="perfil-form" novalidate class="pop bg-white rounded-3xl shadow-2xl w-[min(32rem,calc(100vw-2rem))] max-h-[calc(100dvh-2rem)] overflow-y-auto p-6 sm:p-8 space-y-5">
+    <div class="flex justify-between items-start gap-4 border-b border-gray-100 pb-4">
+      <div class="flex items-start gap-3">
+        <div class="p-2.5 bg-cft-goldLight rounded-xl text-cft-navy flex-none"><i data-lucide="id-card" class="w-5 h-5"></i></div>
+        <div><h3 id="pf-title" class="text-xl font-bold text-gray-800">Completa tu perfil</h3><p id="pf-sub" class="text-xs text-gray-500 mt-0.5">Lo usamos para registrar quién responde por cada solicitud.</p></div>
+      </div>
+      <button type="button" data-close class="text-gray-400 hover:text-gray-600" aria-label="Cerrar"><i data-lucide="x" class="w-6 h-6"></i></button>
+    </div>
+    <div><label for="pf-nombre" class="block text-xs font-bold text-gray-700 uppercase mb-1">Nombre completo <span class="text-rose-600">*</span></label><input id="pf-nombre" required autocomplete="name" placeholder="Nombre y apellido" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></div>
+    <div><label for="pf-carrera" class="block text-xs font-bold text-gray-700 uppercase mb-1">Carrera</label><select id="pf-carrera" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy"></select></div>
+    <fieldset>
+      <legend class="block text-xs font-bold text-gray-700 uppercase mb-2">Soy</legend>
+      <div class="grid grid-cols-2 gap-3">
+        <label class="flex items-center gap-3 p-3 rounded-2xl border border-gray-200 cursor-pointer has-[:checked]:border-cft-navy has-[:checked]:bg-cft-lightBlue"><input type="radio" name="pf-rol" value="alumno" class="accent-[#1B365D]" checked><span><span class="block text-sm font-bold text-gray-800">Alumno</span><span class="block text-[11px] text-gray-500">Pido préstamos</span></span></label>
+        <label class="flex items-center gap-3 p-3 rounded-2xl border border-gray-200 cursor-pointer has-[:checked]:border-cft-navy has-[:checked]:bg-cft-lightBlue"><input type="radio" name="pf-rol" value="docente" class="accent-[#1B365D]"><span><span class="block text-sm font-bold text-gray-800">Docente</span><span class="block text-[11px] text-gray-500">Pido, compro y respaldo</span></span></label>
+      </div>
+    </fieldset>
+    <p id="pf-note" class="hidden text-xs bg-amber-50 border border-amber-200 text-amber-900 rounded-xl p-3"></p>
+    <p id="pf-error" class="hidden text-xs font-semibold text-rose-600" role="alert"></p>
+    <div class="flex justify-end gap-3">
+      <button type="button" data-close class="px-4 py-2.5 border border-gray-300 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100">Ahora no</button>
+      <button type="submit" class="px-6 py-2.5 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition flex items-center gap-2 disabled:opacity-50"><i data-lucide="check" class="w-4 h-4"></i><span>Guardar perfil</span></button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-escanear" aria-labelledby="es-title">
+  <div class="pop bg-white rounded-3xl shadow-2xl w-[min(28rem,calc(100vw-2rem))] p-6 sm:p-7 space-y-5">
+    <div class="flex justify-between items-center border-b border-gray-100 pb-4">
+      <div class="flex items-center gap-2"><i data-lucide="scan-line" class="w-5 h-5 text-cft-navy"></i><h3 id="es-title" class="text-lg font-bold text-gray-800">Escanear pase de retiro</h3></div>
+      <button type="button" data-close class="text-gray-400 hover:text-gray-600" aria-label="Cerrar"><i data-lucide="x" class="w-6 h-6"></i></button>
+    </div>
+    <label for="qr-file" class="flex flex-col items-center justify-center gap-2 w-full py-6 rounded-2xl border-2 border-dashed border-cft-gold bg-cft-goldLight text-cft-navy cursor-pointer hover:bg-amber-100 transition">
+      <i data-lucide="camera" class="w-8 h-8"></i><span class="font-bold text-sm">Tomar foto del código QR</span><span class="text-[11px] text-gray-600">En el celular abre la cámara · en el computador sube una imagen</span>
+    </label>
+    <input id="qr-file" type="file" accept="image/*" capture="environment" class="sr-only">
+    <div class="flex items-center gap-3 text-[11px] font-bold text-gray-400 uppercase"><span class="h-px flex-1 bg-gray-200"></span>o escribe el código<span class="h-px flex-1 bg-gray-200"></span></div>
+    <form id="code-form" class="flex gap-2">
+      <label for="code-q" class="sr-only">Código de la solicitud</label>
+      <input id="code-q" autocomplete="off" placeholder="CFT-60252" class="flex-1 min-w-0 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono uppercase outline-none focus:border-cft-navy">
+      <button type="submit" class="px-4 py-2.5 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold">Buscar</button>
+    </form>
+    <p id="es-error" class="hidden text-xs font-semibold text-rose-600" role="alert"></p>
+    <p class="text-[11px] text-gray-500 bg-gray-50 rounded-xl p-3">También puedes escanear el pase con la cámara normal del celular: el QR abre esta solicitud directamente en el portal.</p>
+  </div>
+</dialog>
+
+<dialog id="dlg-pase" aria-labelledby="ps-title">
+  <div class="pop bg-white rounded-3xl shadow-2xl w-[min(34rem,calc(100vw-2rem))] max-h-[calc(100dvh-2rem)] flex flex-col overflow-hidden">
+    <div class="px-6 py-4 bg-cft-navy text-white flex items-center justify-between">
+      <div class="flex items-center gap-2"><i data-lucide="scan-line" class="w-5 h-5 text-cft-gold"></i><h3 id="ps-title" class="font-bold">Verificación de pase</h3></div>
+      <button type="button" data-close class="text-gray-300 hover:text-white" aria-label="Cerrar"><i data-lucide="x" class="w-6 h-6"></i></button>
+    </div>
+    <div id="ps-body" class="p-6 overflow-y-auto space-y-4"></div>
+    <div id="ps-foot" class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex flex-wrap justify-end gap-3"></div>
+  </div>
+</dialog>
+
 <div id="toast" popover="manual" role="status" aria-live="polite" class="z-[60] max-w-[calc(100vw-2rem)] bg-cft-navy text-white rounded-2xl px-4 py-3 shadow-2xl items-center gap-3 text-sm font-semibold">
   <span id="toast-icon" class="text-cft-gold flex-none"></span><span id="toast-text"></span>
 </div>
 
 <script src="https://unpkg.com/lucide@1.48.0/dist/umd/lucide.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <script>
 (function(){
   "use strict";
@@ -578,15 +670,20 @@
   var CART_KEY = "panol-bolsa-v1";
   var VIEW_KEY = "panol-vista-v1";
 
+  var ARTIFACT_URL = "https://claude.ai/artifact/CgjMqxL77HHKxNFfRqnCzL";
+  var ROLE_LABEL = { encargado:"Encargado de pañol", docente:"Docente", alumno:"Alumno" };
+
   var state = {
-    inventario: [], solicitudes: [], legacy: [], compras: [], proveedores: [],
-    loaded: { inv:false, sol:false, leg:false, com:false, prov:false },
-    db: null, user: null, dbTried: false, me: null, userId: null,
+    inventario: [], solicitudes: [], legacy: [], compras: [], proveedores: [], perfiles: [], roles: [],
+    loaded: { inv:false, sol:false, leg:false, com:false, prov:false, perf:false, roles:false },
+    db: null, user: null, dbTried: false, me: null, userId: null, myPerfil: null,
     isAdmin: false, preview: null, roleKnown: false, canManage: false, readOnly: false,
+    perfilPrompted: false, pendingPase: null, paseId: null,
     names: {}, smap: {},
     view: "inicio", f: { carrera:"", q:"", disp:"" }, tab: "todas",
-    g: { tab:"inventario", q:"", car:"", est:"", provQ:"", compEst:"" },
-    cart: [], detalleId: null, devolverId: null, compraId: null, materialId: null, proveedorId: null
+    g: { tab:"inventario", q:"", car:"", est:"", provQ:"", compEst:"", usQ:"", usF:"" },
+    cart: [], detalleId: null, devolverId: null, compraId: null, materialId: null, proveedorId: null,
+    ck: { need:false, mode:"" }, paseCheck: false, perfilNext: null
   };
 
   function $(id){ return document.getElementById(id); }
@@ -615,9 +712,19 @@
   function provById(id){ return id ? state.proveedores.find(function(p){ return p.id === id; }) : null; }
 
   /* ---------- roles: real permission + owner preview ---------- */
-  function loadPreview(){ try{ state.preview = localStorage.getItem(VIEW_KEY) === "estudiante" ? "estudiante" : null; }catch(e){ state.preview = null; } }
+  function loadPreview(){ try{ var v = localStorage.getItem(VIEW_KEY); state.preview = (v === "docente" || v === "alumno") ? v : null; }catch(e){ state.preview = null; } }
   function savePreview(){ try{ if(state.preview) localStorage.setItem(VIEW_KEY, state.preview); else localStorage.removeItem(VIEW_KEY); }catch(e){} }
-  function applyRole(){ state.canManage = state.isAdmin && state.preview !== "estudiante"; }
+  function roleDocOf(id){ return state.roles.find(function(r){ return r.id === id; }); }
+  function role(){
+    if(state.isAdmin) return state.preview || "encargado";
+    var r = roleDocOf(state.userId);
+    return r && r.rol === "docente" ? "docente" : "alumno";
+  }
+  function applyRole(){ state.canManage = role() === "encargado"; }
+  function canBuy(){ var r = role(); return r === "encargado" || r === "docente"; }
+  function docentes(){ return state.roles.filter(function(r){ return r.rol === "docente"; }).sort(function(a, b){ return String(a.nombre).localeCompare(String(b.nombre)); }); }
+  function pendingDocente(){ return !state.isAdmin && state.myPerfil && state.myPerfil.rolSolicitado === "docente" && role() !== "docente" && !(roleDocOf(state.userId) || {}).revisado; }
+  function roleLabel(){ return pendingDocente() ? "Docente (por validar)" : ROLE_LABEL[role()]; }
 
   /* ---------- requests model ---------- */
   function normLegacy(p){
@@ -629,7 +736,7 @@
       requesterId: p.requesterId || null, fechaRetiro: p.fechaEntrega, fechaDevolucion: p.fechaDevolucionEstimada,
       fechaEntregaReal: p.fechaEntrega, fechaDevolucionReal: p.fechaDevolucionReal || null,
       estado: p.fechaDevolucionReal ? "Devuelta" : "En préstamo", estadoDevolucion: p.estadoAlDevolver || "",
-      prorroga: p.prorroga || "", createdAt: p.createdAt || 0
+      prorroga: p.prorroga || "", responsable: p.solicitadoPor || "", respaldo: null, requiereDocente: false, createdAt: p.createdAt || 0
     };
   }
   function requests(){
@@ -651,7 +758,11 @@
   }
   function itemStatus(i){ if(i.estadoFisico === "Fuera de servicio") return "Fuera de servicio"; return state.smap[i.id] || "Disponible"; }
   function mine(list){ if(state.canManage || !state.userId) return list; return list.filter(function(x){ return x.requesterId === state.userId; }); }
-  function personName(x){ return (x.requesterId && state.names[x.requesterId]) || x.solicitadoPor || ""; }
+  function personName(x){ return x.solicitanteNombre || (x.requesterId && state.names[x.requesterId]) || x.responsable || x.solicitadoPor || ""; }
+  function needsRespaldo(r){ return r.requiereDocente && !(r.respaldo && r.respaldo.estado === "Confirmado"); }
+  // the owner may respaldar their own test requests, so one person can walk the whole flow
+  function isMyRespaldo(r){ return role() === "docente" && !!r.respaldo && r.respaldo.docenteId === state.userId && (r.requesterId !== state.userId || state.isAdmin); }
+  function respaldosParaMi(){ return requests().filter(isMyRespaldo); }
   function resolveNames(list){
     if(!state.user || !state.canManage) return;
     var ids = [];
@@ -718,8 +829,11 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
   function routeFromHash(h){
-    if(h === "estudiante"){ state.preview = "estudiante"; savePreview(); applyRole(); return "inicio"; }
+    if(h === "alumno" || h === "estudiante"){ state.preview = "alumno"; savePreview(); applyRole(); return "inicio"; }
+    if(h === "docente"){ state.preview = "docente"; savePreview(); applyRole(); return "inicio"; }
     if(h === "encargado"){ state.preview = null; savePreview(); applyRole(); return "gestion"; }
+    var m = /^pase-([A-Za-z0-9_.~-]+)$/.exec(h || "");
+    if(m){ state.pendingPase = m[1]; return "solicitudes"; }
     return ROUTES.indexOf(h) !== -1 ? h : null;
   }
   window.addEventListener("hashchange", function(){
@@ -750,6 +864,7 @@
         "<div>" +
           '<span class="text-[11px] font-mono text-gray-400 block">' + esc(i.codigo || "S/C") + " • " + esc(i.estadoFisico ? "Estado " + i.estadoFisico.toLowerCase() : "Sin estado") + "</span>" +
           '<h3 class="font-bold text-gray-800 text-sm line-clamp-2 mt-1 leading-snug">' + esc(i.nombre) + (i.marcaModelo ? ' <span class="font-medium text-gray-500">· ' + esc(i.marcaModelo) + "</span>" : "") + "</h3>" +
+          (i.requiereDocente ? '<span class="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full bg-cft-lightBlue text-cft-navy text-[10px] font-bold">' + ic("shield-check", "w-3 h-3") + "Requiere docente</span>" : "") +
         "</div>" +
         '<div class="pt-3 border-t border-gray-100 flex items-center justify-between gap-2">' +
           '<button type="button" data-detalle="' + esc(i.id) + '" class="flex-1 py-2 px-3 border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 hover:bg-gray-50 transition">Ver detalle</button>' + btn +
@@ -776,9 +891,9 @@
       av.textContent = "?";
       return;
     }
-    var name = (state.me && state.me.name) || "Invitado";
+    var name = (state.myPerfil && state.myPerfil.nombre) || (state.me && state.me.name) || "Invitado";
     $("who-name").textContent = name;
-    $("who-role").textContent = state.canManage ? "Encargado de pañol" : (state.isAdmin ? "Vista de estudiante" : "Estudiante / docente");
+    $("who-role").textContent = state.isAdmin && state.preview ? "Vista de " + ROLE_LABEL[state.preview].toLowerCase() : roleLabel();
     if(state.me && state.me.avatarUrl){
       if(!av.querySelector("img")){ av.innerHTML = ""; var img = document.createElement("img"); img.alt = ""; img.className = "w-full h-full object-cover"; av.appendChild(img); }
       av.querySelector("img").src = state.me.avatarUrl;
@@ -842,8 +957,8 @@
     $("catalog-count-text").textContent = "Mostrando " + items.length + " de " + plural(total, "material", "materiales");
     if(!total){ g.innerHTML = emptyCard("package-open", "Aún no hay materiales registrados", state.canManage ? "Agrega el primero con “Agregar material”." : "El encargado de bodega está cargando el inventario."); return; }
     if(!items.length){
-      g.innerHTML = emptyCard("package-x", "No se encontraron materiales con los filtros aplicados.", "Prueba con otra búsqueda o carrera. Si el pañol no lo tiene, puedes pedir que lo compre.",
-        '<div class="flex justify-center gap-4 pt-1"><button type="button" data-clear="all" class="text-xs text-cft-navy underline font-semibold">Limpiar búsqueda</button><button type="button" data-action="compra" class="text-xs text-cft-navy underline font-semibold">Solicitar compra</button></div>');
+      g.innerHTML = emptyCard("package-x", "No se encontraron materiales con los filtros aplicados.", canBuy() ? "Prueba con otra búsqueda o carrera. Si el pañol no lo tiene, puedes pedir que lo compre." : "Prueba con otra búsqueda o carrera. Si el pañol no lo tiene, pídele a un docente que solicite la compra.",
+        '<div class="flex justify-center gap-4 pt-1"><button type="button" data-clear="all" class="text-xs text-cft-navy underline font-semibold">Limpiar búsqueda</button>' + (canBuy() ? '<button type="button" data-action="compra" class="text-xs text-cft-navy underline font-semibold">Solicitar compra</button>' : "") + "</div>");
       return;
     }
     g.innerHTML = items.map(productCard).join("");
@@ -869,9 +984,11 @@
     }).join("");
   }
 
+  function respaldosPendientes(){ return respaldosParaMi().filter(function(r){ return r.estado === "Pendiente" && r.respaldo.estado === "Pendiente"; }); }
   function badges(){
     var reqs = mine(requests());
     var n = state.canManage ? reqs.filter(function(r){ return r.estado === "Pendiente"; }).length : reqs.filter(function(r){ return r.estado === "Pendiente" || r.estado === "Lista para retiro"; }).length;
+    if(role() === "docente") n += respaldosPendientes().length;
     document.querySelectorAll('[data-badge="solicitudes"]').forEach(function(b){ b.textContent = n; b.classList.toggle("hidden", !n); b.classList.toggle("flex", !!n); });
   }
 
@@ -881,19 +998,31 @@
     { id:"Lista para retiro", label:"Listas para retiro" },
     { id:"En préstamo", label:"En préstamo" },
     { id:"cerradas", label:"Completadas" },
+    { id:"respaldos", label:"Respaldos" },
     { id:"compras", label:"Compras" }
   ];
+  function tabsFor(){
+    return TABS.filter(function(t){
+      if(t.id === "respaldos") return role() === "docente";
+      if(t.id === "compras") return canBuy();
+      return true;
+    });
+  }
   function renderSolicitudes(){
+    var r0 = role();
     $("sol-title").textContent = state.canManage ? "Solicitudes del Pañol" : "Mis Solicitudes";
-    $("sol-sub").textContent = state.canManage ? "Aprueba, entrega y cierra las solicitudes de todas las carreras." : "Revisa el estado de tus reservas de materiales y accede a tu pase QR de retiro.";
-    var reqs = mine(requests()), comps = mine(state.compras);
+    $("sol-sub").textContent = state.canManage ? "Aprueba, entrega y cierra las solicitudes de todas las carreras." : r0 === "docente" ? "Tus reservas, los respaldos que te piden tus alumnos y tus solicitudes de compra." : "Revisa el estado de tus reservas de materiales y accede a tu pase QR de retiro.";
+    var tabs = tabsFor();
+    if(!tabs.some(function(t){ return t.id === state.tab; })) state.tab = "todas";
+    var reqs = mine(requests()), comps = mine(state.compras), resp = r0 === "docente" ? respaldosParaMi() : [];
     var countFor = function(t){
       if(t === "todas") return reqs.length;
       if(t === "cerradas") return reqs.filter(function(r){ return ACTIVE.indexOf(r.estado) === -1; }).length;
       if(t === "compras") return comps.length;
+      if(t === "respaldos") return respaldosPendientes().length;
       return reqs.filter(function(r){ return r.estado === t; }).length;
     };
-    $("req-tabs").innerHTML = TABS.map(function(t){
+    $("req-tabs").innerHTML = tabs.map(function(t){
       var on = state.tab === t.id, n = countFor(t.id);
       return '<button type="button" role="tab" aria-selected="' + on + '" data-tab="' + esc(t.id) + '" class="py-3 whitespace-nowrap flex items-center gap-1.5 border-b-2 ' + (on ? "text-cft-navy border-cft-navy font-bold" : "text-gray-500 border-transparent hover:text-gray-800") + '">' + esc(t.label) +
         (n ? '<span class="text-[10px] font-bold px-1.5 rounded-full ' + (on ? "bg-cft-navy text-cft-gold" : "bg-gray-100 text-gray-500") + '">' + n + "</span>" : "") + "</button>";
@@ -904,6 +1033,11 @@
     if(!state.loaded.sol || !state.loaded.leg || !state.loaded.com){ box.innerHTML = '<div class="bg-white p-8 rounded-3xl text-center text-gray-400 text-sm border border-gray-100">Cargando solicitudes…</div>'; return; }
 
     if(state.tab === "compras"){ renderCompras(box, comps); return; }
+    if(state.tab === "respaldos"){
+      box.innerHTML = '<div class="bg-cft-lightBlue border border-cft-navy/15 rounded-2xl p-4 flex items-start gap-3 text-cft-navy text-xs">' + ic("shield-check", "w-5 h-5 flex-none") + "<p><span class=\"font-bold\">Solicitudes donde te eligieron como docente de respaldo.</span> Al confirmar, respondes junto al responsable por los equipos hasta su devolución. Si rechazas, la solicitud se cierra.</p></div>" +
+        (resp.length ? resp.map(requestCard).join("") : '<div class="bg-white p-8 rounded-3xl text-center text-gray-500 text-sm border border-gray-100">Ningún alumno te ha pedido respaldo todavía.</div>');
+      return;
+    }
     var list = reqs.filter(function(r){
       if(state.tab === "todas") return true;
       if(state.tab === "cerradas") return ACTIVE.indexOf(r.estado) === -1;
@@ -918,43 +1052,63 @@
     box.innerHTML = list.map(requestCard).join("");
   }
 
+  var RESP_PILL = { "Pendiente":["bg-amber-100 text-amber-700","Por confirmar"], "Confirmado":["bg-emerald-100 text-emerald-700","Confirmado"], "Rechazado":["bg-rose-100 text-rose-700","Rechazado"] };
+  function respPill(rs){ var p = RESP_PILL[rs && rs.estado] || RESP_PILL.Pendiente; return '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap ' + p[0] + '">' + p[1] + "</span>"; }
+  function infoGrid(r){
+    var cell = function(label, value){ return '<div class="min-w-0"><span class="text-gray-400 block">' + label + '</span><span class="font-bold text-gray-800 break-words">' + value + "</span></div>"; };
+    var resp = r.requiereDocente
+      ? cell("Docente de respaldo:", r.respaldo ? esc(r.respaldo.docenteNombre || "Docente") + " " + respPill(r.respaldo) : "—")
+      : cell("Profesor de la asignatura:", esc(r.profesor || "—"));
+    return '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">' +
+      cell("Carrera:", esc(r.carrera || "—")) + cell("Asignatura / taller:", esc(r.asignatura || "—")) +
+      cell("Responsable que retira:", esc(r.responsable || personName(r) || "—")) + resp + "</div>";
+  }
   function requestCard(r){
-    var e = shownEstado(r), who = state.canManage ? personName(r) : "";
+    var e = shownEstado(r), forOthers = state.canManage || r.requesterId !== state.userId;
+    var who = forOthers ? personName(r) : "";
     var actions = [];
     var w = canWrite() ? "" : " disabled";
     var btnNavy = "px-4 py-2 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition flex items-center gap-2 disabled:opacity-50";
     var btnGhost = "px-4 py-2 border border-gray-300 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition disabled:opacity-50";
+    var blocked = needsRespaldo(r);
+    var myResp = isMyRespaldo(r);
     if(state.canManage){
-      if(r.estado === "Pendiente"){ actions.push('<button type="button" data-req="rechazar" data-id="' + esc(r.id) + '" class="' + btnGhost + '"' + w + ">Rechazar</button>"); actions.push('<button type="button" data-req="aprobar" data-id="' + esc(r.id) + '" class="' + btnNavy + '"' + w + ">" + ic("check") + "<span>Aprobar y reservar</span></button>"); }
-      if(r.estado === "Lista para retiro") actions.push('<button type="button" data-req="entregar" data-id="' + esc(r.id) + '" class="' + btnNavy + '"' + w + ">" + ic("hand-helping") + "<span>Entregar equipos</span></button>");
+      if(r.estado === "Pendiente"){ actions.push('<button type="button" data-req="rechazar" data-id="' + esc(r.id) + '" class="' + btnGhost + '"' + w + ">Rechazar</button>"); actions.push('<button type="button" data-req="aprobar" data-id="' + esc(r.id) + '" class="' + btnNavy + '"' + (blocked ? ' disabled title="Falta la confirmación del docente de respaldo"' : w) + ">" + ic("check") + "<span>Aprobar y reservar</span></button>"); }
+      if(r.estado === "Lista para retiro") actions.push('<button type="button" data-pase="' + esc(r.id) + '" class="' + btnNavy + '"' + w + ">" + ic("hand-helping") + "<span>Verificar y entregar</span></button>");
       if(r.estado === "En préstamo"){
         if(r.prorroga === "Solicitada") actions.push('<button type="button" data-req="extender" data-id="' + esc(r.id) + '" class="' + btnGhost + '"' + w + ">Extender 7 días</button>");
         actions.push('<button type="button" data-req="devolver" data-id="' + esc(r.id) + '" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 disabled:opacity-50"' + w + ">" + ic("undo-2") + "<span>Registrar devolución</span></button>");
       }
+    } else if(myResp){
+      if(r.estado === "Pendiente" && r.respaldo.estado === "Pendiente"){
+        actions.push('<button type="button" data-resp="rechazar" data-id="' + esc(r.id) + '" class="' + btnGhost + '"' + w + ">Rechazar respaldo</button>");
+        actions.push('<button type="button" data-resp="confirmar" data-id="' + esc(r.id) + '" class="' + btnNavy + '"' + w + ">" + ic("shield-check") + "<span>Confirmar respaldo</span></button>");
+      }
     } else if((r.estado === "Pendiente" || r.estado === "Lista para retiro") && r._src !== "prestamos"){
       actions.push('<button type="button" data-req="cancelar" data-id="' + esc(r.id) + '" class="' + btnGhost + '"' + w + ">Cancelar</button>");
     }
-    if(ACTIVE.indexOf(r.estado) !== -1) actions.push('<button type="button" data-qr="' + esc(r.id) + '" class="' + btnNavy + '">' + ic("qr-code") + "<span>Ver pase QR</span></button>");
+    if(ACTIVE.indexOf(r.estado) !== -1 && !myResp && !state.canManage) actions.push('<button type="button" data-qr="' + esc(r.id) + '" class="' + btnNavy + '">' + ic("qr-code") + "<span>Ver pase QR</span></button>");
 
     var closing = "";
+    if(r.estado === "Pendiente" && blocked && r.respaldo){
+      closing = '<p class="text-xs text-amber-700 font-semibold flex items-center gap-1.5">' + ic("hourglass", "w-3.5 h-3.5") + (myResp ? "Tu confirmación es necesaria para que el pañol pueda aprobarla." : "Esperando que " + esc(r.respaldo.docenteNombre || "el docente") + " confirme su respaldo.") + "</p>";
+    }
     if(r.estado === "Devuelta") closing = '<p class="text-xs text-gray-500">Devuelta el ' + esc(fmt(r.fechaDevolucionReal)) + (r.estadoDevolucion ? " · estado: " + esc(r.estadoDevolucion.toLowerCase()) : "") + "</p>";
-    if(r.estado === "Rechazada") closing = '<p class="text-xs text-rose-600">El encargado rechazó esta solicitud.</p>';
+    if(r.estado === "Rechazada") closing = '<p class="text-xs text-rose-600">' + (r.respaldo && r.respaldo.estado === "Rechazado" ? "El docente de respaldo no la confirmó." : "El encargado rechazó esta solicitud.") + "</p>";
     if(r.estado === "Cancelada") closing = '<p class="text-xs text-gray-500">Cancelada por quien la pidió.</p>';
     if(r.prorroga === "Solicitada" && r.estado === "En préstamo") closing = '<p class="text-xs text-amber-700 font-semibold">Prórroga solicitada, esperando al encargado.</p>';
 
     return '<article class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm space-y-4">' +
       '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 pb-3">' +
-        '<div class="flex items-center gap-3 flex-wrap"><span class="font-black text-cft-navy text-base">' + esc(r.codigo) + "</span>" + pill(e) + (who ? '<span class="text-xs text-gray-500 flex items-center gap-1">' + ic("user", "w-3.5 h-3.5") + esc(who) + "</span>" : "") + "</div>" +
+        '<div class="flex items-center gap-3 flex-wrap"><span class="font-black text-cft-navy text-base">' + esc(r.codigo) + "</span>" + pill(e) +
+          (r.requiereDocente ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cft-lightBlue text-cft-navy text-[10px] font-bold">' + ic("shield-check", "w-3 h-3") + "Con respaldo docente</span>" : "") +
+          (who ? '<span class="text-xs text-gray-500 flex items-center gap-1">' + ic("user", "w-3.5 h-3.5") + esc(who) + (r.solicitanteRol ? " · " + esc(ROLE_LABEL[r.solicitanteRol] || r.solicitanteRol) : "") + "</span>" : "") + "</div>" +
         '<span class="text-xs text-gray-400 font-medium">Retiro: ' + esc(fmt(r.fechaRetiro)) + " · Devolución: " + '<span class="' + (isLate(r) ? "text-rose-600 font-bold" : "") + '">' + esc(fmt(r.fechaDevolucion)) + "</span></span>" +
       "</div>" +
-      '<div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">' +
-        '<div><span class="text-gray-400 block">Carrera:</span><span class="font-bold text-gray-800">' + esc(r.carrera || "—") + "</span></div>" +
-        '<div><span class="text-gray-400 block">Asignatura / taller:</span><span class="font-bold text-gray-800">' + esc(r.asignatura || "—") + "</span></div>" +
-        '<div><span class="text-gray-400 block">Profesor a cargo:</span><span class="font-bold text-gray-800">' + esc(r.profesor || "—") + "</span></div>" +
-      "</div>" +
+      infoGrid(r) +
       '<div class="bg-gray-50 p-3 rounded-xl border border-gray-200 text-xs space-y-1"><span class="font-bold text-gray-700 block">Materiales solicitados:</span>' +
         (r.items || []).map(function(it){ return '<p class="text-gray-600">• ' + esc(it.nombre) + ' <span class="font-mono text-gray-400">' + esc(it.codigo || "") + "</span></p>"; }).join("") + "</div>" +
-      (closing || actions.length ? '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1"><div>' + closing + '</div><div class="flex flex-wrap justify-end gap-2">' + actions.join("") + "</div></div>" : "") +
+      (closing || actions.length ? '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1"><div class="min-w-0">' + closing + '</div><div class="flex flex-wrap justify-end gap-2 sm:flex-none">' + actions.join("") + "</div></div>" : "") +
     "</article>";
   }
 
@@ -1018,14 +1172,22 @@
   function renderRoleUI(){
     document.querySelectorAll("[data-admin]").forEach(function(el){ el.classList.toggle("hidden", !state.canManage); el.classList.toggle("flex", state.canManage); });
     var mob = $("mob-nav"); mob.classList.toggle("grid-cols-5", !state.canManage); mob.classList.toggle("grid-cols-6", state.canManage);
-    var bm = $("btn-modo"); bm.classList.toggle("hidden", !state.isAdmin); bm.classList.toggle("flex", state.isAdmin);
-    $("btn-modo-text").textContent = state.preview === "estudiante" ? "Volver a encargado" : "Ver como estudiante";
-    $("preview-banner").classList.toggle("hidden", !(state.isAdmin && state.preview === "estudiante"));
+    var mw = $("modo-wrap"); mw.classList.toggle("hidden", !state.isAdmin); mw.classList.toggle("flex", state.isAdmin);
+    $("modo-select").value = state.preview || "";
+    var b = canBuy();
+    document.querySelectorAll("[data-buy]").forEach(function(el){ el.classList.toggle("hidden", !b); });
+    document.querySelectorAll("[data-nobuy]").forEach(function(el){ el.classList.toggle("hidden", b); });
+    var pv = state.isAdmin && !!state.preview;
+    $("preview-banner").classList.toggle("hidden", !pv);
+    if(pv) $("preview-text").textContent = state.preview === "docente"
+      ? "Estás viendo el portal como docente: puede pedir préstamos, solicitar compras y confirmar respaldos."
+      : "Estás viendo el portal como alumno: solo pide préstamos y elige un docente de respaldo cuando el equipo lo exige.";
   }
 
   /* ---------- panel del encargado ---------- */
   var gShell = null;
-  var G_TABS = [ { id:"inventario", label:"Inventario", icon:"boxes" }, { id:"proveedores", label:"Proveedores", icon:"building-2" }, { id:"compras", label:"Compras", icon:"receipt" } ];
+  var G_TABS = [ { id:"inventario", label:"Inventario", icon:"boxes" }, { id:"usuarios", label:"Usuarios", icon:"users" }, { id:"proveedores", label:"Proveedores", icon:"building-2" }, { id:"compras", label:"Compras", icon:"receipt" } ];
+  function porValidar(){ return state.perfiles.filter(function(p){ return p.id !== state.userId && p.rolSolicitado === "docente" && !(roleDocOf(p.id) || {}).revisado; }); }
   var EST_FIS = { "Bueno":"bg-emerald-50 text-emerald-700", "Regular":"bg-amber-50 text-amber-700", "Necesita mantenimiento":"bg-orange-50 text-orange-700", "Fuera de servicio":"bg-gray-100 text-gray-500" };
   var AVAIL_DOT = { "Disponible":"bg-emerald-500", "Reservado":"bg-amber-500", "Prestado":"bg-rose-500", "Fuera de servicio":"bg-gray-400" };
   var INPUT = "px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-cft-navy";
@@ -1058,11 +1220,12 @@
         '<div class="flex items-start justify-between gap-2"><span class="text-[11px] font-bold text-gray-500 uppercase tracking-wide leading-snug">' + x.l + '</span><span class="text-cft-navy/60 flex-none">' + ic(x.i, "w-4 h-4") + "</span></div>" +
         '<div class="text-3xl font-black mt-2 tabular-nums ' + (x.t || "text-gray-800") + '">' + (ready ? x.v : "—") + "</div></button>";
     }).join("");
-    var counts = { inventario: inv.length, proveedores: state.proveedores.length, compras: state.compras.length };
+    var pend = porValidar().length;
+    var counts = { inventario: inv.length, usuarios: pend || state.perfiles.length, proveedores: state.proveedores.length, compras: state.compras.length };
     $("g-tabs").innerHTML = G_TABS.map(function(t){
-      var on = state.g.tab === t.id;
+      var on = state.g.tab === t.id, warn = t.id === "usuarios" && pend;
       return '<button type="button" role="tab" aria-selected="' + on + '" data-gtab="' + t.id + '" class="py-3 whitespace-nowrap flex items-center gap-2 border-b-2 ' + (on ? "text-cft-navy border-cft-navy font-bold" : "text-gray-500 border-transparent hover:text-gray-800") + '">' + ic(t.icon, "w-4 h-4") + esc(t.label) +
-        '<span class="text-[10px] font-bold px-1.5 rounded-full ' + (on ? "bg-cft-navy text-cft-gold" : "bg-gray-100 text-gray-500") + '">' + counts[t.id] + "</span></button>";
+        '<span class="text-[10px] font-bold px-1.5 rounded-full ' + (warn ? "bg-amber-400 text-cft-navy" : on ? "bg-cft-navy text-cft-gold" : "bg-gray-100 text-gray-500") + '"' + (warn ? ' title="Docentes por validar"' : "") + ">" + counts[t.id] + "</span></button>";
     }).join("");
     if(gShell !== state.g.tab){ gShell = state.g.tab; body.innerHTML = gestionShell(state.g.tab); }
     renderGTable();
@@ -1077,6 +1240,15 @@
           '<label for="g-est" class="sr-only">Estado físico</label><select id="g-est" class="' + INPUT + '"><option value="">Todo estado físico</option>' + ["Bueno","Regular","Necesita mantenimiento","Fuera de servicio"].map(function(n){ return '<option' + (state.g.est === n ? " selected" : "") + ">" + n + "</option>"; }).join("") + "</select>" +
         "</div>" +
         '<button type="button" data-action="nuevo" class="' + BTN_NAVY + '">' + ic("plus") + "<span>Agregar material</span></button></div>" +
+        '<p id="g-count" class="text-xs text-gray-500 font-medium mb-3"></p><div id="g-table"></div>';
+    }
+    if(tab === "usuarios"){
+      return '<div class="flex flex-col sm:flex-row gap-3 sm:items-center justify-between mb-4">' +
+        '<div class="flex flex-col sm:flex-row gap-3 flex-1 min-w-0">' +
+          '<div class="relative flex-1 min-w-0 sm:max-w-sm"><i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-3.5"></i><label for="us-q" class="sr-only">Buscar usuario</label><input id="us-q" type="search" autocomplete="off" value="' + esc(state.g.usQ || "") + '" placeholder="Nombre o carrera" class="w-full pl-9 ' + INPUT + '"></div>' +
+          '<label for="us-f" class="sr-only">Rol</label><select id="us-f" class="' + INPUT + ' sm:max-w-xs">' + [["","Todos los usuarios"],["pendientes","Docentes por validar"],["docente","Docentes"],["alumno","Alumnos"]].map(function(o){ return '<option value="' + o[0] + '"' + ((state.g.usF || "") === o[0] ? " selected" : "") + ">" + o[1] + "</option>"; }).join("") + "</select>" +
+        "</div></div>" +
+        '<div class="bg-cft-lightBlue border border-cft-navy/15 rounded-2xl p-4 mb-4 flex items-start gap-3 text-xs text-cft-navy">' + ic("info", "w-4 h-4 flex-none mt-0.5") + "<p>Cada persona completa su perfil al entrar. Quien se declara docente usa el portal como alumno hasta que lo valides aquí; recién entonces puede solicitar compras y respaldar equipos.</p></div>" +
         '<p id="g-count" class="text-xs text-gray-500 font-medium mb-3"></p><div id="g-table"></div>';
     }
     if(tab === "proveedores"){
@@ -1108,7 +1280,7 @@
         var s = itemStatus(i);
         return '<tr class="hover:bg-gray-50 transition">' +
           '<td class="p-4 font-mono text-xs font-bold text-cft-navy whitespace-nowrap">' + esc(i.codigo || "S/C") + "</td>" +
-          '<td class="p-4"><span class="font-bold text-gray-800 block text-sm">' + esc(i.nombre) + "</span>" + (i.marcaModelo ? '<span class="text-xs text-gray-400">' + esc(i.marcaModelo) + "</span>" : "") + "</td>" +
+          '<td class="p-4"><span class="font-bold text-gray-800 block text-sm">' + esc(i.nombre) + "</span>" + (i.marcaModelo ? '<span class="text-xs text-gray-400 block">' + esc(i.marcaModelo) + "</span>" : "") + (i.requiereDocente ? '<span class="inline-flex items-center gap-1 mt-1 text-[10px] font-bold text-cft-navy">' + ic("shield-check", "w-3 h-3") + "Requiere docente</span>" : "") + "</td>" +
           '<td class="p-4 text-xs text-gray-600">' + esc(i.carrera) + "</td>" +
           '<td class="p-4"><span class="px-2 py-0.5 rounded-full text-[11px] font-bold whitespace-nowrap ' + (EST_FIS[i.estadoFisico] || "bg-gray-100 text-gray-500") + '">' + esc(i.estadoFisico || "—") + "</span></td>" +
           '<td class="p-4 text-xs text-gray-500">' + esc(i.zona || "Por asignar") + "</td>" +
@@ -1116,6 +1288,48 @@
           '<td class="p-4 text-center"><button type="button" data-edit-material="' + esc(i.id) + '" class="px-3 py-1.5 border border-cft-navy text-cft-navy hover:bg-cft-lightBlue text-xs font-bold rounded-xl transition inline-flex items-center gap-1.5">' + ic("pencil", "w-3.5 h-3.5") + "Editar</button></td></tr>";
       }).join("");
       box.innerHTML = tableWrap("min-w-[880px]", [{t:"Código"},{t:"Material"},{t:"Carrera"},{t:"Estado físico"},{t:"Ubicación"},{t:"Disponibilidad"},{t:"Acción",c:"text-center"}], rows || emptyRow(7, "Ningún material calza con los filtros."));
+      return;
+    }
+    if(tab === "usuarios"){
+      if(!state.loaded.perf || !state.loaded.roles){ box.innerHTML = tableWrap("min-w-[820px]", [{t:"Cargando"}], emptyRow(1, "Cargando usuarios…")); return; }
+      var uq = (state.g.usQ || "").toLowerCase().trim(), uf = state.g.usF || "";
+      var pendIds = porValidar().map(function(p){ return p.id; });
+      var users = state.perfiles.filter(function(p){
+        var r = roleDocOf(p.id), rol = p.id === state.userId ? "encargado" : (r && r.rol === "docente" ? "docente" : "alumno");
+        if(uf === "pendientes" && pendIds.indexOf(p.id) === -1) return false;
+        if((uf === "docente" || uf === "alumno") && rol !== uf) return false;
+        if(uq && [p.nombre, p.carrera].join(" ").toLowerCase().indexOf(uq) === -1) return false;
+        return true;
+      }).sort(function(a, b){ return (pendIds.indexOf(b.id) !== -1) - (pendIds.indexOf(a.id) !== -1) || String(a.nombre).localeCompare(String(b.nombre)); });
+      if(cnt) cnt.textContent = plural(users.length, "usuario", "usuarios") + (pendIds.length ? " · " + plural(pendIds.length, "docente por validar", "docentes por validar") : "");
+      if(!state.perfiles.length){
+        box.innerHTML = '<div class="bg-white rounded-3xl border border-dashed border-gray-300 p-10 text-center space-y-3">' + ic("users", "w-12 h-12 text-gray-300 mx-auto") + '<p class="font-bold text-gray-700 text-sm">Aún no hay usuarios registrados</p><p class="text-xs text-gray-500 max-w-sm mx-auto">Aparecerán aquí cuando alumnos y docentes abran el portal y completen su perfil.</p></div>';
+        return;
+      }
+      var w2 = canWrite() ? "" : " disabled";
+      var sm = "px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap disabled:opacity-50 ";
+      var rowsU = users.map(function(p){
+        var r = roleDocOf(p.id), self = p.id === state.userId, doc = r && r.rol === "docente", pend = pendIds.indexOf(p.id) !== -1;
+        var rolCell = self ? '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-cft-navy text-cft-gold">Encargado (tú)</span>'
+          : doc ? '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-cft-goldLight text-cft-navy">Docente validado</span>'
+          : pend ? '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-700">Docente por validar</span>'
+          : '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-gray-100 text-gray-600">Alumno</span>';
+        var act = "";
+        if(!self){
+          if(pend) act = '<div class="flex justify-center gap-2"><button type="button" data-rol="rechazar" data-id="' + esc(p.id) + '" class="' + sm + 'border border-gray-300 text-gray-700 hover:bg-gray-100"' + w2 + '>Rechazar</button><button type="button" data-rol="validar" data-id="' + esc(p.id) + '" class="' + sm + 'bg-cft-navy text-cft-gold hover:bg-cft-darkNavy"' + w2 + ">Validar docente</button></div>";
+          else if(doc) act = '<button type="button" data-rol="quitar" data-id="' + esc(p.id) + '" class="' + sm + 'border border-gray-300 text-gray-700 hover:bg-gray-100"' + w2 + ">Quitar rol docente</button>";
+          else act = '<button type="button" data-rol="hacer" data-id="' + esc(p.id) + '" class="' + sm + 'border border-cft-navy text-cft-navy hover:bg-cft-lightBlue"' + w2 + ">Hacer docente</button>";
+        }
+        var reqs = requests().filter(function(x){ return x.requesterId === p.id; });
+        return '<tr class="hover:bg-gray-50 transition' + (pend ? " bg-amber-50/40" : "") + '">' +
+          '<td class="p-4"><span class="font-bold text-gray-800 block">' + esc(p.nombre || "Sin nombre") + '</span><span class="text-xs text-gray-400">' + esc(p.carrera || "Sin carrera") + "</span></td>" +
+          '<td class="p-4 text-xs text-gray-600">' + esc(p.rolSolicitado === "docente" ? "Docente" : p.rolSolicitado === "encargado" ? "Encargado" : "Alumno") + "</td>" +
+          '<td class="p-4">' + rolCell + "</td>" +
+          '<td class="p-4 text-xs text-gray-600 whitespace-nowrap"><span class="font-bold text-gray-800">' + reqs.length + "</span> " + (reqs.length === 1 ? "solicitud" : "solicitudes") + "</td>" +
+          '<td class="p-4 text-xs text-gray-500 whitespace-nowrap">' + esc(fmt(tsISO(p.createdAt))) + "</td>" +
+          '<td class="p-4 text-center">' + act + "</td></tr>";
+      }).join("");
+      box.innerHTML = tableWrap("min-w-[820px]", [{t:"Usuario"},{t:"Se declara"},{t:"Rol en el portal"},{t:"Historial"},{t:"Registro"},{t:"Acción",c:"text-center"}], rowsU || emptyRow(6, "Ningún usuario calza con el filtro."));
       return;
     }
     if(tab === "proveedores"){
@@ -1172,8 +1386,21 @@
     buildStatusMap();
     renderRoleUI(); renderWho(); renderStats(); renderCareers(); renderCatalog(); renderCart(); badges(); renderSolicitudes(); renderPrestamos(); renderGestion();
     if(state.detalleId && $("dlg-detalle").open) fillDetalle();
+    if(state.paseId && $("dlg-pase").open) fillPase();
     if(state.view === "gestion" && state.roleKnown && !state.canManage) go("inicio");
     refreshIcons();
+    afterLoad();
+  }
+  function anyDialogOpen(){ return !!document.querySelector("dialog[open]"); }
+  function afterLoad(){
+    if(state.pendingPase && state.dbTried && (!state.db || (state.loaded.sol && state.loaded.leg))){
+      var pid = state.pendingPase; state.pendingPase = null;
+      if(reqById(pid)) openPase(pid); else toast(state.db ? "Ese pase no corresponde a una solicitud registrada." : "Abre el pase dentro de Claude para verlo.", "info");
+      return;
+    }
+    if(!state.isAdmin && canWrite() && state.userId && state.loaded.perf && !state.myPerfil && !state.perfilPrompted && !anyDialogOpen()){
+      state.perfilPrompted = true; openPerfil(null);
+    }
   }
 
   /* ---------- dialogs ---------- */
@@ -1193,6 +1420,7 @@
         '<div class="space-y-3">' +
           '<span class="inline-block px-2.5 py-1 bg-cft-lightBlue text-cft-navy text-xs font-bold rounded-full">' + esc(i.carrera) + "</span>" +
           '<h2 id="dd-name" class="text-xl font-black text-gray-800">' + esc(i.nombre) + "</h2>" +
+          (i.requiereDocente ? '<p class="flex items-start gap-2 p-3 rounded-xl bg-cft-goldLight border border-cft-gold/40 text-xs text-cft-navy">' + ic("shield-check", "w-4 h-4 flex-none") + "<span><span class=\"font-bold\">Requiere docente de respaldo.</span> " + (role() === "alumno" ? "Al pedirlo eliges a un docente, que debe confirmar antes de la aprobación." : "Como docente, quedas registrado como respaldo al pedirlo.") + "</span></p>" : "") +
           '<p class="text-xs text-gray-400 font-mono">Código: ' + esc(i.codigo || "S/C") + "</p>" +
           '<div class="p-3 bg-gray-50 rounded-xl border border-gray-200 text-xs space-y-1.5"><span class="font-bold text-gray-700 block">Especificaciones</span>' +
             '<p class="text-gray-500"><span class="text-gray-400">Marca / modelo:</span> ' + esc(i.marcaModelo || "—") + "</p>" +
@@ -1230,23 +1458,56 @@
       if(!valid.length) return;
     }
     close("dlg-bolsa");
+    if(!state.isAdmin && !state.myPerfil){
+      toast("Antes de tu primera solicitud, completa tu perfil.", "id-card");
+      openPerfil("checkout"); return;
+    }
     $("checkout-form").reset();
     var first = itemById(valid[0]);
-    $("f-carrera").value = (first && first.carrera) || state.f.carrera || NOMBRES[0];
+    $("f-carrera").value = (first && first.carrera) || (state.myPerfil && state.myPerfil.carrera) || state.f.carrera || NOMBRES[0];
+    $("f-nombre").value = myName();
     $("f-retiro").value = today(); $("f-retiro").min = today();
     $("f-devol").value = plusDays(today(), 7); $("f-devol").min = today();
-    $("checkout-summary").innerHTML = valid.map(function(id){ var i = itemById(id); return '<div class="flex justify-between gap-3"><span>' + esc(i.nombre) + '</span><span class="font-mono font-bold">' + esc(i.codigo || "") + "</span></div>"; }).join("");
+    $("checkout-summary").innerHTML = valid.map(function(id){ var i = itemById(id); return '<div class="flex justify-between gap-3"><span>' + esc(i.nombre) + (i.requiereDocente ? ' <span class="font-bold">· requiere docente</span>' : "") + '</span><span class="font-mono font-bold">' + esc(i.codigo || "") + "</span></div>"; }).join("");
+    setupRespaldo(valid.map(itemById));
     err("ck-error", "");
     open("dlg-checkout");
   }
+  function myName(){ return (state.myPerfil && state.myPerfil.nombre) || (state.me && state.me.name) || ""; }
+  function docenteOptions(){
+    var list = docentes().filter(function(d){ return d.id !== state.userId; }).map(function(d){ return { id: d.id, nombre: d.nombre || "Docente", carrera: d.carrera || "" }; });
+    if(state.isAdmin) list.unshift({ id: state.userId, nombre: (myName() || "Tú") + " (tú, para probar el flujo)", carrera: "" });
+    return list;
+  }
+  function setupRespaldo(items){
+    var need = items.some(function(i){ return i && i.requiereDocente; }), r = role();
+    var box = $("f-respaldo-box"), field = $("f-respaldo-field"), sel = $("f-docente");
+    var mode = !need ? "" : r === "alumno" ? (docenteOptions().length ? "pick" : "none") : "self";
+    state.ck = { need: need, mode: mode };
+    box.classList.toggle("hidden", !need);
+    field.classList.toggle("hidden", mode !== "pick");
+    if(!need) return;
+    var names = items.filter(function(i){ return i && i.requiereDocente; }).map(function(i){ return i.nombre; }).join(", ");
+    if(mode === "self") $("f-respaldo-text").textContent = names + " requiere docente de respaldo. Como " + (r === "docente" ? "docente" : "encargado") + ", quedas registrado como respaldo.";
+    else if(mode === "none") $("f-respaldo-text").textContent = names + " requiere docente de respaldo, pero aún no hay docentes validados en el portal. Pídele a tu profesor que entre y complete su perfil, o quita ese equipo de la bolsa.";
+    else $("f-respaldo-text").textContent = names + " requiere docente de respaldo. Elige al docente que responde contigo: debe confirmar antes de que el pañol apruebe.";
+    if(mode === "pick"){
+      var opts = docenteOptions();
+      sel.innerHTML = '<option value="">Selecciona un docente</option>' + opts.map(function(d){ return '<option value="' + esc(d.id) + '">' + esc(d.nombre) + (d.carrera ? " · " + esc(d.carrera) : "") + "</option>"; }).join("");
+    }
+  }
 
+  function paseURL(r){ return ARTIFACT_URL + "#pase-" + r.id; }
   function openQR(id){
     var r = reqById(id); if(!r) return;
     $("qr-id").textContent = "Solicitud " + r.codigo;
-    $("qr-details").textContent = (r.asignatura ? r.asignatura + " · " : "") + "Retiro " + fmt(r.fechaRetiro) + " · " + plural((r.items || []).length, "equipo", "equipos");
-    $("qr-status").innerHTML = pill(shownEstado(r)) + (r.estado === "Pendiente" ? '<span class="block mt-2 text-[11px] text-gray-500">El encargado debe aprobarla antes del retiro.</span>' : "");
+    $("qr-details").textContent = "Responsable: " + (r.responsable || personName(r) || "—") + " · Retiro " + fmt(r.fechaRetiro) + " · " + plural((r.items || []).length, "equipo", "equipos");
+    $("qr-status").innerHTML = pill(shownEstado(r)) +
+      (r.estado === "Pendiente" ? '<span class="block mt-2 text-[11px] text-gray-500">' + (needsRespaldo(r) ? "Falta que el docente de respaldo confirme; luego el encargado la aprueba." : "El encargado debe aprobarla antes del retiro.") + "</span>" : "") +
+      (r.estado === "Lista para retiro" ? '<span class="block mt-2 text-[11px] text-gray-500">Muéstralo en el pañol: el encargado lo escanea y te entrega los equipos.</span>' : "") +
+      (r.estado === "En préstamo" ? '<span class="block mt-2 text-[11px] text-gray-500">Vuelve a mostrarlo al devolver los equipos.</span>' : "");
     var box = $("qr"); box.innerHTML = "";
-    var text = "PANOL CFT JUAN BOHON | Solicitud " + r.codigo + " | Retiro " + (r.fechaRetiro || "") + " | Equipos " + (r.items || []).map(function(it){ return it.codigo || it.nombre; }).join(", ");
+    var text = paseURL(r);
     if(window.QRCode){
       new window.QRCode(box, { text: text, width: 168, height: 168, colorDark: "#1B365D", colorLight: "#FFFFFF", correctLevel: window.QRCode.CorrectLevel.M });
     } else {
@@ -1257,6 +1518,7 @@
 
   function openCompra(){
     if(!canWrite()){ toast(state.db ? "Tu acceso es de solo lectura." : "Abre la página en Claude para solicitar.", "info"); return; }
+    if(!canBuy()){ toast(pendingDocente() ? "Podrás solicitar compras cuando el encargado valide tu rol docente." : "Las compras las solicitan los docentes. Pídeselo a tu profesor.", "info"); return; }
     close("dlg-detalle");
     $("compra-form").reset();
     $("c-carrera").value = state.f.carrera || NOMBRES[0];
@@ -1290,24 +1552,37 @@
     var form = this;
     var items = state.cart.map(itemById).filter(function(i){ return i && itemStatus(i) === "Disponible"; });
     if(!items.length){ err("ck-error", "Tu bolsa no tiene equipos disponibles."); return; }
-    var asig = $("f-asignatura").value.trim(), prof = $("f-profesor").value.trim();
+    var asig = $("f-asignatura").value.trim(), prof = $("f-profesor").value.trim(), resp = $("f-nombre").value.trim();
     var ret = $("f-retiro").value || today(), dev = $("f-devol").value;
-    if(!asig || !prof){ err("ck-error", "Completa la asignatura y el profesor a cargo."); return; }
+    if(!resp){ err("ck-error", "Indica el nombre del responsable que retira: es obligatorio."); $("f-nombre").focus(); return; }
+    if(!asig){ err("ck-error", "Indica la asignatura o taller."); $("f-asignatura").focus(); return; }
     if(!dev){ err("ck-error", "Indica la fecha de devolución."); return; }
     if(dev < ret){ err("ck-error", "La devolución no puede ser antes del retiro."); return; }
+    var need = items.some(function(i){ return i.requiereDocente; }), respaldo = null, r0 = role();
+    if(need){
+      if(state.ck.mode === "none"){ err("ck-error", "No hay docentes validados para respaldar este equipo."); return; }
+      if(state.ck.mode === "pick"){
+        var did = $("f-docente").value, d = docenteOptions().find(function(x){ return x.id === did; });
+        if(!d){ err("ck-error", "Elige al docente de respaldo."); $("f-docente").focus(); return; }
+        respaldo = { docenteId: d.id, docenteNombre: d.nombre.replace(/ \(tú, para probar el flujo\)$/, ""), estado: "Pendiente" };
+      } else {
+        respaldo = { docenteId: state.userId || null, docenteNombre: myName() || ROLE_LABEL[r0], estado: "Confirmado", fechaRespuesta: today() };
+      }
+    }
     busy(form, true);
     var codigo = "CFT-" + String(Date.now() % 100000).padStart(5, "0");
     col("solicitudes").add({
       codigo: codigo,
-      items: items.map(function(i){ return { id: i.id, codigo: i.codigo || "", nombre: i.nombre, carrera: i.carrera }; }),
-      carrera: $("f-carrera").value, asignatura: asig, profesor: prof, solicitadoPor: $("f-nombre").value.trim(),
+      items: items.map(function(i){ return { id: i.id, codigo: i.codigo || "", nombre: i.nombre, carrera: i.carrera, requiereDocente: !!i.requiereDocente }; }),
+      carrera: $("f-carrera").value, asignatura: asig, profesor: prof, responsable: resp, solicitadoPor: resp,
+      solicitanteNombre: myName(), solicitanteRol: r0, requiereDocente: need, respaldo: respaldo,
       requesterId: state.userId || null, fechaRetiro: ret, fechaDevolucion: dev,
       estado: "Pendiente", prorroga: "", createdAt: Date.now(), updatedAt: Date.now()
     }).then(function(ref){
       state.cart = []; saveCart();
       close("dlg-checkout");
       state.tab = "todas"; go("solicitudes");
-      var tries = 0, msg = "Solicitud " + codigo + " enviada al encargado.";
+      var tries = 0, msg = "Solicitud " + codigo + (respaldo && respaldo.estado === "Pendiente" ? " enviada: " + respaldo.docenteNombre + " debe confirmar su respaldo." : " enviada al encargado.");
       (function waitAndShow(){
         if(reqById(ref.id)){ openQR(ref.id); toast(msg); }
         else if(++tries < 20) setTimeout(waitAndShow, 150);
@@ -1321,7 +1596,7 @@
     var form = this, m = $("c-material").value.trim();
     if(!m){ err("c-error", "Escribe qué material necesitas."); return; }
     busy(form, true);
-    col("compras").add({ material: m, carrera: $("c-carrera").value, justificacion: $("c-just").value.trim(), solicitadoPor: "", requesterId: state.userId || null, estado: "Pendiente", createdAt: Date.now() })
+    col("compras").add({ material: m, carrera: $("c-carrera").value, justificacion: $("c-just").value.trim(), solicitadoPor: myName(), solicitanteNombre: myName(), solicitanteRol: role(), requesterId: state.userId || null, estado: "Pendiente", createdAt: Date.now() })
       .then(function(){ close("dlg-compra"); toast("Solicitud de compra enviada al encargado."); })
       .catch(failed).then(function(){ busy(form, false); });
   });
@@ -1339,6 +1614,7 @@
     $("n-zona").value = i ? (i.zona || "") : "";
     $("n-fecha").value = i ? (i.fechaIngreso || today()) : today();
     $("n-obs").value = i ? (i.observaciones || "") : "";
+    $("n-docente").checked = !!(i && i.requiereDocente);
     err("n-error", "");
     open("dlg-nuevo");
   }
@@ -1346,7 +1622,7 @@
     ev.preventDefault();
     var form = this, n = $("n-nombre").value.trim();
     if(!n){ err("n-error", "El material necesita un nombre."); return; }
-    var data = { nombre: n, marcaModelo: $("n-marca").value.trim(), carrera: $("n-carrera").value, estadoFisico: $("n-estado").value, zona: $("n-zona").value.trim(), fechaIngreso: $("n-fecha").value || today(), observaciones: $("n-obs").value.trim() };
+    var data = { nombre: n, marcaModelo: $("n-marca").value.trim(), carrera: $("n-carrera").value, estadoFisico: $("n-estado").value, zona: $("n-zona").value.trim(), fechaIngreso: $("n-fecha").value || today(), observaciones: $("n-obs").value.trim(), requiereDocente: $("n-docente").checked };
     busy(form, true);
     var p, msg;
     if(state.materialId){ data.updatedAt = Date.now(); p = col("inventario").doc(state.materialId).update(data); msg = n + " actualizado."; }
@@ -1438,8 +1714,9 @@
       $("dv-summary").innerHTML = '<p class="font-bold text-cft-navy">' + esc(r.codigo) + " · " + esc(r.carrera || "") + "</p>" + (r.items || []).map(function(it){ return '<p class="text-gray-600">• ' + esc(it.nombre) + ' <span class="font-mono text-gray-400">' + esc(it.codigo || "") + "</span></p>"; }).join("");
       open("dlg-devolucion"); return;
     }
+    if(kind === "aprobar" && needsRespaldo(r)){ toast("Falta que " + ((r.respaldo && r.respaldo.docenteNombre) || "el docente") + " confirme su respaldo.", "shield-check"); return; }
     var data, msg;
-    if(kind === "aprobar"){ data = { estado: "Lista para retiro" }; msg = "Solicitud aprobada: equipos reservados para el retiro."; }
+    if(kind === "aprobar"){ data = { estado: "Lista para retiro", fechaAprobacion: today() }; msg = "Solicitud aprobada: equipos reservados para el retiro."; }
     else if(kind === "rechazar"){ data = { estado: "Rechazada" }; msg = "Solicitud rechazada."; }
     else if(kind === "entregar"){ data = { estado: "En préstamo", fechaEntregaReal: today() }; msg = "Equipos entregados. El préstamo quedó activo."; }
     else if(kind === "cancelar"){ data = { estado: "Cancelada" }; msg = "Solicitud cancelada. Los equipos quedaron libres."; }
@@ -1464,6 +1741,178 @@
       .catch(failed);
   }
 
+  function respAction(kind, id){
+    var r = reqById(id); if(!r || !r.respaldo) return;
+    var rs = Object.assign({}, r.respaldo, { estado: kind === "confirmar" ? "Confirmado" : "Rechazado", fechaRespuesta: today() });
+    var data = { respaldo: rs };
+    if(kind !== "confirmar") data.estado = "Rechazada";
+    updateRequest(r, data).then(function(){ toast(kind === "confirmar" ? "Respaldo confirmado. El pañol ya puede aprobar " + r.codigo + "." : "Rechazaste el respaldo: la solicitud " + r.codigo + " quedó cerrada.", kind === "confirmar" ? "shield-check" : "info"); }).catch(failed);
+  }
+
+  /* ---------- usuarios y roles ---------- */
+  function roleAction(kind, uid){
+    var p = state.perfiles.find(function(x){ return x.id === uid; }); if(!p) return;
+    var prev = roleDocOf(uid);
+    var rol = kind === "validar" || kind === "hacer" ? "docente" : "alumno";
+    col("roles").doc(uid).set({ rol: rol, nombre: p.nombre || "", carrera: p.carrera || "", revisado: true, createdAt: (prev && prev.createdAt) || Date.now(), updatedAt: Date.now() })
+      .then(function(){ toast(rol === "docente" ? (p.nombre || "El usuario") + " ahora es docente." : kind === "rechazar" ? "Rol docente no validado: " + (p.nombre || "el usuario") + " sigue como alumno." : (p.nombre || "El usuario") + " volvió a ser alumno.", rol === "docente" ? "circle-check" : "info"); })
+      .catch(failed);
+  }
+  function openPerfil(next){
+    state.perfilNext = next || null;
+    var p = state.myPerfil, first = !p;
+    $("perfil-form").reset();
+    fill($("pf-carrera"), NOMBRES);
+    $("pf-carrera").insertAdjacentHTML("afterbegin", '<option value="">Selecciona tu carrera</option>');
+    $("pf-title").textContent = first ? "Completa tu perfil" : "Mi perfil";
+    $("pf-sub").textContent = first ? "Lo usamos para registrar quién responde por cada solicitud." : "Tus datos y tu rol en el pañol.";
+    $("pf-nombre").value = (p && p.nombre) || (state.me && state.me.name) || "";
+    $("pf-carrera").value = (p && p.carrera) || "";
+    var rolSol = (p && p.rolSolicitado) || "alumno";
+    document.querySelectorAll('input[name="pf-rol"]').forEach(function(x){ x.checked = x.value === rolSol; });
+    $("perfil-form").querySelector("fieldset").classList.toggle("hidden", state.isAdmin);
+    var note = "", rd = roleDocOf(state.userId);
+    if(state.isAdmin) note = "Eres encargado del pañol porque tienes acceso de editor a este portal. Tu nombre se usa como responsable en tus solicitudes.";
+    else if(rd && rd.rol === "docente") note = "Tu rol docente está validado: puedes solicitar compras y respaldar solicitudes de alumnos.";
+    else if(pendingDocente()) note = "Tu rol docente está pendiente de validación por el encargado. Mientras tanto usas el portal como alumno.";
+    else if(rd && rd.revisado && p && p.rolSolicitado === "docente") note = "El encargado no validó el rol docente para esta cuenta. Si es un error, conversa con el pañol.";
+    var n = $("pf-note"); n.textContent = note; n.classList.toggle("hidden", !note);
+    err("pf-error", "");
+    open("dlg-perfil");
+  }
+  $("perfil-form").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var form = this, nombre = $("pf-nombre").value.trim();
+    if(nombre.length < 3){ err("pf-error", "Escribe tu nombre y apellido."); $("pf-nombre").focus(); return; }
+    if(!canWrite() || !state.userId){ err("pf-error", "Abre el portal dentro de Claude con tu sesión para guardar el perfil."); return; }
+    var sel = document.querySelector('input[name="pf-rol"]:checked');
+    var rolSol = state.isAdmin ? "encargado" : (sel ? sel.value : "alumno");
+    var prev = state.myPerfil;
+    var data = { nombre: nombre, carrera: $("pf-carrera").value, rolSolicitado: rolSol, createdAt: (prev && prev.createdAt) || Date.now(), updatedAt: Date.now() };
+    busy(form, true);
+    state.db.doc("perfiles/" + state.userId).set(data).then(function(){
+      state.myPerfil = Object.assign({ id: state.userId }, data);
+      close("dlg-perfil");
+      var askedDoc = rolSol === "docente" && role() !== "docente";
+      toast(askedDoc ? "Perfil guardado. El encargado validará tu rol docente." : "Perfil guardado.", "id-card");
+      renderAll();
+      if(state.perfilNext === "checkout") openCheckout();
+      state.perfilNext = null;
+    }).catch(failed).then(function(){ busy(form, false); });
+  });
+
+  /* ---------- pase QR: verificación en el pañol ---------- */
+  function openPase(id){
+    var r = reqById(id); if(!r){ toast("No encontramos esa solicitud.", "info"); return; }
+    state.paseId = id; state.paseCheck = false;
+    close("dlg-escanear");
+    fillPase();
+    open("dlg-pase");
+  }
+  function fillPase(){
+    var r = reqById(state.paseId);
+    if(!r){ close("dlg-pase"); return; }
+    var e = shownEstado(r), mgr = state.canManage, w = canWrite() ? "" : " disabled";
+    var row = function(label, value){ return '<div class="flex justify-between gap-4 py-2 border-b border-gray-100 last:border-0"><span class="text-gray-400 flex-none">' + label + '</span><span class="font-semibold text-gray-800 text-right min-w-0 break-words">' + value + "</span></div>"; };
+    var verdict, tone;
+    if(r.estado === "Lista para retiro"){ tone = "emerald"; verdict = r.fechaRetiro && r.fechaRetiro > today() ? "Pase válido · retiro programado para el " + fmt(r.fechaRetiro) : "Pase válido · listo para entregar"; }
+    else if(r.estado === "En préstamo"){ tone = isLate(r) ? "rose" : "sky"; verdict = isLate(r) ? "Préstamo atrasado · devolución vencida el " + fmt(r.fechaDevolucion) : "Equipos en préstamo · devolución el " + fmt(r.fechaDevolucion); }
+    else if(r.estado === "Pendiente"){ tone = "amber"; verdict = needsRespaldo(r) ? "Aún no se puede entregar · falta el respaldo docente" : "Aún no se puede entregar · falta la aprobación"; }
+    else { tone = "gray"; verdict = "Pase cerrado · solicitud " + e.toLowerCase(); }
+    var TONE = { emerald:"bg-emerald-50 border-emerald-200 text-emerald-800", sky:"bg-cft-lightBlue border-cft-navy/20 text-cft-navy", rose:"bg-rose-50 border-rose-200 text-rose-800", amber:"bg-amber-50 border-amber-200 text-amber-900", gray:"bg-gray-50 border-gray-200 text-gray-600" };
+    var VI = { emerald:"badge-check", sky:"package", rose:"triangle-alert", amber:"hourglass", gray:"circle-slash" };
+    $("ps-title").textContent = "Pase " + r.codigo;
+    $("ps-body").innerHTML =
+      '<div class="flex items-center gap-3 p-4 rounded-2xl border ' + TONE[tone] + '">' + ic(VI[tone], "w-6 h-6 flex-none") + '<p class="font-bold text-sm">' + esc(verdict) + "</p></div>" +
+      '<div class="text-xs">' +
+        row("Responsable que retira", esc(r.responsable || personName(r) || "—")) +
+        (r.solicitanteNombre && r.solicitanteNombre !== r.responsable ? row("Solicitado por", esc(r.solicitanteNombre) + (r.solicitanteRol ? " · " + esc(ROLE_LABEL[r.solicitanteRol] || r.solicitanteRol) : "")) : (r.solicitanteRol ? row("Rol", esc(ROLE_LABEL[r.solicitanteRol] || r.solicitanteRol)) : "")) +
+        (r.requiereDocente ? row("Docente de respaldo", r.respaldo ? esc(r.respaldo.docenteNombre || "Docente") + " " + respPill(r.respaldo) : "—") : "") +
+        row("Carrera", esc(r.carrera || "—")) + row("Asignatura / taller", esc(r.asignatura || "—")) +
+        row("Retiro", esc(fmt(r.fechaEntregaReal || r.fechaRetiro))) + row("Devolución", '<span class="' + (isLate(r) ? "text-rose-600" : "") + '">' + esc(fmt(r.fechaDevolucion)) + "</span>") +
+      "</div>" +
+      '<div class="bg-gray-50 p-3 rounded-xl border border-gray-200 text-xs space-y-1.5"><span class="font-bold text-gray-700 block">' + plural((r.items || []).length, "equipo", "equipos") + "</span>" +
+        (r.items || []).map(function(it){ var inv = itemById(it.id); return '<p class="flex justify-between gap-3 text-gray-600"><span>• ' + esc(it.nombre) + (inv && inv.zona ? ' <span class="text-gray-400">· ' + esc(inv.zona) + "</span>" : "") + '</span><span class="font-mono text-gray-400 flex-none">' + esc(it.codigo || "") + "</span></p>"; }).join("") + "</div>" +
+      (mgr && r.estado === "Lista para retiro" ? '<label class="flex items-start gap-3 p-3 rounded-xl border border-cft-gold bg-cft-goldLight cursor-pointer text-xs text-cft-navy"><input id="ps-check" type="checkbox" class="mt-0.5 w-4 h-4 accent-[#1B365D] flex-none"' + (state.paseCheck ? " checked" : "") + "><span>Verifiqué la identidad de <strong>" + esc(r.responsable || personName(r) || "quien retira") + "</strong> y el estado de cada equipo antes de entregarlo.</span></label>" : "") +
+      (!mgr ? '<p class="text-[11px] text-gray-500 bg-gray-50 rounded-xl p-3">Solo el encargado del pañol puede entregar o recibir equipos con este pase.</p>' : "");
+    var btnNavy = "px-4 py-2.5 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed";
+    var btnGhost = "px-4 py-2.5 border border-gray-300 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition disabled:opacity-50";
+    var foot = ['<button type="button" data-close class="' + btnGhost + '">Cerrar</button>'];
+    if(mgr){
+      if(r.estado === "Pendiente"){
+        foot.push('<button type="button" data-req="rechazar" data-id="' + esc(r.id) + '" class="' + btnGhost + '"' + w + ">Rechazar</button>");
+        foot.push('<button type="button" data-req="aprobar" data-id="' + esc(r.id) + '" class="' + btnNavy + '"' + (needsRespaldo(r) ? " disabled" : w) + ">" + ic("check") + "<span>Aprobar y reservar</span></button>");
+      } else if(r.estado === "Lista para retiro"){
+        foot.push('<button type="button" id="ps-entregar" data-req="entregar" data-id="' + esc(r.id) + '" class="' + btnNavy + '"' + (state.paseCheck && canWrite() ? "" : " disabled") + ">" + ic("hand-helping") + "<span>Entregar equipos</span></button>");
+      } else if(r.estado === "En préstamo"){
+        if(r.prorroga === "Solicitada") foot.push('<button type="button" data-req="extender" data-id="' + esc(r.id) + '" class="' + btnGhost + '"' + w + ">Extender 7 días</button>");
+        foot.push('<button type="button" data-req="devolver" data-id="' + esc(r.id) + '" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 disabled:opacity-50"' + w + ">" + ic("undo-2") + "<span>Registrar devolución</span></button>");
+      }
+    } else if(r.requesterId === state.userId && ACTIVE.indexOf(r.estado) !== -1){
+      foot.push('<button type="button" data-qr="' + esc(r.id) + '" class="' + btnNavy + '">' + ic("qr-code") + "<span>Ver mi pase QR</span></button>");
+    }
+    $("ps-foot").innerHTML = foot.join("");
+    refreshIcons();
+  }
+  function findByCodigo(q){
+    var s = String(q || "").toUpperCase().replace(/\s+/g, "");
+    if(/^\d{1,5}$/.test(s)) s = "CFT-" + s.padStart(5, "0");
+    return requests().find(function(r){ return String(r.codigo).toUpperCase() === s; });
+  }
+  function paseFromText(text){
+    var m = /#pase-([A-Za-z0-9_.~-]+)/.exec(text || "");
+    if(m) return reqById(m[1]) || null;
+    var c = /(CFT-\d{5})/i.exec(text || "");
+    return c ? findByCodigo(c[1]) : null;
+  }
+  function openEscanear(){
+    $("code-form").reset(); $("qr-file").value = ""; err("es-error", "");
+    open("dlg-escanear");
+  }
+  function decodeImage(file){
+    var draw = function(src, w, h){
+      var out = null;
+      [1200, 800, 1800].some(function(max){
+        var k = Math.min(1, max / Math.max(w, h)), cw = Math.max(1, Math.round(w * k)), ch = Math.max(1, Math.round(h * k));
+        var cv = document.createElement("canvas"); cv.width = cw; cv.height = ch;
+        var cx = cv.getContext("2d", { willReadFrequently: true }); cx.drawImage(src, 0, 0, cw, ch);
+        var res = window.jsQR(cx.getImageData(0, 0, cw, ch).data, cw, ch, { inversionAttempts: "attemptBoth" });
+        if(res && res.data){ out = res.data; return true; }
+        return false;
+      });
+      return out;
+    };
+    if(window.createImageBitmap){
+      return createImageBitmap(file).then(function(bmp){ var t = draw(bmp, bmp.width, bmp.height); if(bmp.close) bmp.close(); return t; });
+    }
+    return new Promise(function(resolve, reject){
+      var fr = new FileReader();
+      fr.onload = function(){ var img = new Image(); img.onload = function(){ resolve(draw(img, img.naturalWidth, img.naturalHeight)); }; img.onerror = reject; img.src = fr.result; };
+      fr.onerror = reject; fr.readAsDataURL(file);
+    });
+  }
+  $("qr-file").addEventListener("change", function(){
+    var f = this.files && this.files[0]; if(!f) return;
+    if(!window.jsQR){ err("es-error", "El lector de QR no cargó. Escribe el código de la solicitud."); return; }
+    err("es-error", "");
+    $("es-title").textContent = "Leyendo el código…";
+    decodeImage(f).then(function(text){
+      if(!text){ err("es-error", "No encontramos un código QR en la imagen. Acércate, enfoca bien o escribe el código."); return; }
+      var r = paseFromText(text);
+      if(!r){ err("es-error", "Ese QR no es un pase del pañol o la solicitud ya no existe."); return; }
+      openPase(r.id);
+    }).catch(function(){ err("es-error", "No pudimos leer la imagen. Intenta con otra foto."); })
+      .then(function(){ $("es-title").textContent = "Escanear pase de retiro"; $("qr-file").value = ""; });
+  });
+  $("code-form").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var q = $("code-q").value.trim();
+    if(!q){ err("es-error", "Escribe el código que aparece bajo el QR, por ejemplo CFT-60252."); return; }
+    var r = findByCodigo(q) || paseFromText(q);
+    if(!r){ err("es-error", "No hay ninguna solicitud con el código " + q.toUpperCase() + "."); return; }
+    openPase(r.id);
+  });
+
   /* ---------- events ---------- */
   document.addEventListener("click", function(ev){
     var t = ev.target.closest("button");
@@ -1476,8 +1925,11 @@
     if(t.hasAttribute("data-add")){ addToCart(t.getAttribute("data-add")); return; }
     if(t.hasAttribute("data-remove")){ var id = t.getAttribute("data-remove"); state.cart = state.cart.filter(function(x){ return x !== id; }); saveCart(); renderAll(); return; }
     if(t.hasAttribute("data-tab")){ state.tab = t.getAttribute("data-tab"); renderSolicitudes(); refreshIcons(); return; }
-    if(t.hasAttribute("data-qr")){ openQR(t.getAttribute("data-qr")); return; }
+    if(t.hasAttribute("data-qr")){ close("dlg-pase"); openQR(t.getAttribute("data-qr")); return; }
+    if(t.hasAttribute("data-pase")){ openPase(t.getAttribute("data-pase")); return; }
     if(t.hasAttribute("data-req")){ reqAction(t.getAttribute("data-req"), t.getAttribute("data-id")); return; }
+    if(t.hasAttribute("data-resp")){ respAction(t.getAttribute("data-resp"), t.getAttribute("data-id")); return; }
+    if(t.hasAttribute("data-rol")){ roleAction(t.getAttribute("data-rol"), t.getAttribute("data-id")); return; }
     if(t.hasAttribute("data-compra")){ compraAction(t.getAttribute("data-compra"), t.getAttribute("data-id")); return; }
     if(t.hasAttribute("data-gtab")){ state.g.tab = t.getAttribute("data-gtab"); renderGestion(); refreshIcons(); return; }
     if(t.hasAttribute("data-kpi")){
@@ -1494,17 +1946,22 @@
     else if(a === "nuevo") openMaterial(null);
     else if(a === "nuevo-prov") openProveedor(null);
     else if(a === "nueva-orden") openOrden();
-    else if(a === "modo"){
-      state.preview = state.preview === "estudiante" ? null : "estudiante";
-      savePreview(); applyRole(); gShell = null; renderAll();
-      go(state.canManage ? "gestion" : "inicio");
-      toast(state.canManage ? "Volviste al modo encargado." : "Ahora ves el portal como lo ve un estudiante.", "eye");
-    }
+    else if(a === "escanear") openEscanear();
+    else if(a === "perfil"){ if(state.db) openPerfil(null); }
+    else if(a === "modo") setPreview(null);
   });
+  function setPreview(v){
+    state.preview = v; savePreview(); applyRole(); gShell = null; state.tab = "todas";
+    renderAll();
+    go(state.canManage ? "gestion" : "inicio");
+    toast(!v ? "Volviste al modo encargado." : "Ahora ves el portal como " + (v === "docente" ? "un docente" : "un alumno") + ".", "eye");
+  }
+  $("modo-select").addEventListener("change", function(){ setPreview(this.value || null); });
   document.addEventListener("input", function(ev){
     var id = ev.target.id;
     if(id === "g-q"){ state.g.q = ev.target.value; renderGTable(); refreshIcons(); }
     else if(id === "prov-q"){ state.g.provQ = ev.target.value; renderGTable(); refreshIcons(); }
+    else if(id === "us-q"){ state.g.usQ = ev.target.value; renderGTable(); refreshIcons(); }
   });
   document.addEventListener("change", function(ev){
     var t = ev.target;
@@ -1513,9 +1970,12 @@
     else if(t.id === "g-car"){ state.g.car = t.value; renderGTable(); refreshIcons(); }
     else if(t.id === "g-est"){ state.g.est = t.value; renderGTable(); refreshIcons(); }
     else if(t.id === "comp-estado"){ state.g.compEst = t.value; renderGTable(); refreshIcons(); }
+    else if(t.id === "us-f"){ state.g.usF = t.value; renderGTable(); refreshIcons(); }
+    else if(t.id === "ps-check"){ state.paseCheck = t.checked; var pe = $("ps-entregar"); if(pe) pe.disabled = !t.checked || !canWrite(); }
   });
   $("dd-add").addEventListener("click", function(){ var id = state.detalleId; close("dlg-detalle"); addToCart(id); });
   $("dlg-detalle").addEventListener("close", function(){ state.detalleId = null; });
+  $("dlg-pase").addEventListener("close", function(){ state.paseId = null; state.paseCheck = false; });
   $("btn-checkout").addEventListener("click", openCheckout);
   $("hero-search").addEventListener("submit", function(ev){ ev.preventDefault(); state.f = { carrera:"", q: $("hero-q").value.trim(), disp:"" }; renderCatalog(); refreshIcons(); go("catalogo"); });
   $("catalog-search").addEventListener("input", function(){ state.f.q = this.value; renderCatalog(); refreshIcons(); });
@@ -1555,14 +2015,33 @@
       }catch(e){}
     }
     applyRole();
-    state.roleKnown = true;
+    if(state.isAdmin || !state.userId) state.roleKnown = true;
     renderAll();
     subscribe("inventario", "inv", "inventario");
     subscribe("solicitudes", "sol", "solicitudes");
     subscribe("prestamos", "leg", "legacy");
     subscribe("compras", "com", "compras");
-    if(state.isAdmin) subscribe("proveedores", "prov", "proveedores");
-    else state.loaded.prov = true;
+    // role docs decide docente vs alumno, so the role is only known once they arrive
+    col("roles").onSnapshot(function(snap){
+      state.roles = snap.docs.map(function(d){ return Object.assign({ id: d.id }, d.data()); });
+      state.loaded.roles = true; applyRole(); state.roleKnown = true; renderAll();
+    }, function(e){ console.error("roles", e); state.loaded.roles = true; state.roleKnown = true; renderAll(); });
+    if(state.isAdmin){
+      subscribe("proveedores", "prov", "proveedores");
+      col("perfiles").orderBy("createdAt", "desc").onSnapshot(function(snap){
+        state.perfiles = snap.docs.map(function(d){ return Object.assign({ id: d.id }, d.data()); });
+        state.myPerfil = state.perfiles.find(function(p){ return p.id === state.userId; }) || null;
+        state.loaded.perf = true; renderAll();
+      }, function(e){ console.error("perfiles", e); state.loaded.perf = true; renderAll(); });
+    } else {
+      state.loaded.prov = true;
+      if(state.userId){
+        state.db.doc("perfiles/" + state.userId).onSnapshot(function(s){
+          state.myPerfil = s.exists ? Object.assign({ id: s.id }, s.data()) : null;
+          state.loaded.perf = true; renderAll();
+        }, function(e){ console.error("perfil", e); state.loaded.perf = true; renderAll(); });
+      } else state.loaded.perf = true;
+    }
   })();
 })();
 </script>
