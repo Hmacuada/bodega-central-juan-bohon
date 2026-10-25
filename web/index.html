@@ -32,6 +32,8 @@
   #qr img, #qr canvas { display: block; margin: 0 auto; }
   #toast { position: fixed; inset: auto auto 24px 50%; transform: translateX(-50%); margin: 0; border: 0; }
   #toast:popover-open { display: flex; }
+  .side-link[aria-current="page"], .side-link[aria-current="page"]:hover { background: #1B365D; color: #fff; box-shadow: 0 1px 2px rgba(15,33,61,.25); }
+  .side-link[aria-current="page"] .side-ic, .side-link[aria-current="page"]:hover .side-ic { color: #E5A813; }
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { scrollbar-width: none; }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
@@ -41,9 +43,14 @@
 
   <!-- HEADER INSTITUCIONAL -->
   <header class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-20 lg:h-24 gap-3">
 
+        <div class="flex items-center gap-3 min-w-0">
+        <button type="button" id="btn-menu" data-action="menu" class="lg:hidden relative p-2.5 rounded-xl text-cft-navy border border-gray-200 bg-white hover:bg-cft-goldLight transition flex-none" aria-label="Abrir menú" aria-controls="sidebar" aria-expanded="false">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+          <span id="menu-dot" class="hidden absolute -top-1 -right-1 w-3 h-3 rounded-full bg-cft-gold border-2 border-white"></span>
+        </button>
         <button type="button" data-go="inicio" class="flex items-center py-2 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-cft-gold" aria-label="CFT Juan Bohón, ir al inicio">
           <svg class="h-12 w-auto sm:hidden" viewBox="10 0 172 120" fill="none" aria-hidden="true">
             <path d="M70 12 L80 28 L95 18 L110 28 L120 12 L112 36 L128 36 L108 52 L118 100 L95 116 L72 100 L82 52 L62 36 L78 36 Z" stroke="#E5A813" stroke-width="4.5" fill="none" stroke-linejoin="round"/>
@@ -72,23 +79,9 @@
             <text x="290" y="86" font-family="Inter, sans-serif" font-weight="800" font-size="8.5" fill="#1B365D">HASTA ABRIL DE 2027</text>
           </svg>
         </button>
-
-        <nav class="hidden xl:flex gap-1 2xl:gap-3 h-full items-center whitespace-nowrap" aria-label="Secciones">
-          <button type="button" data-go="inicio" class="nav-link px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-cft-navy flex items-center gap-2 transition"><i data-lucide="home" class="w-4 h-4"></i><span>Inicio</span></button>
-          <button type="button" data-go="catalogo" class="nav-link px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-cft-navy flex items-center gap-2 transition"><i data-lucide="layout-grid" class="w-4 h-4"></i><span>Categorías</span></button>
-          <button type="button" data-go="solicitudes" class="nav-link relative px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-cft-navy flex items-center gap-2 transition"><i data-lucide="file-text" class="w-4 h-4"></i><span>Mis solicitudes</span><span data-badge="solicitudes" class="hidden absolute -top-1 -right-1 bg-cft-gold text-cft-navy text-[10px] font-black min-w-[1rem] h-4 px-1 rounded-full items-center justify-center shadow">0</span></button>
-          <button type="button" data-go="prestamos" class="nav-link px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-cft-navy flex items-center gap-2 transition"><i data-lucide="package" class="w-4 h-4"></i><span>Mis préstamos</span></button>
-          <button type="button" data-go="flujo" class="nav-link px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-cft-navy flex items-center gap-2 transition"><i data-lucide="workflow" class="w-4 h-4"></i><span>Flujo Pañol</span></button>
-          <button type="button" data-go="gestion" data-admin class="nav-link hidden px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-cft-navy items-center gap-2 transition"><i data-lucide="clipboard-check" class="w-4 h-4"></i><span>Gestión</span></button>
-        </nav>
+        </div>
 
         <div class="flex items-center gap-2 sm:gap-4">
-          <label id="modo-wrap" class="hidden items-center gap-1.5 pl-2.5 pr-1 py-1.5 rounded-xl border border-cft-gold/60 bg-cft-goldLight text-cft-navy text-xs font-bold hover:bg-amber-100 transition whitespace-nowrap cursor-pointer">
-            <i data-lucide="eye" class="w-4 h-4 flex-none"></i><span class="hidden sm:inline">Ver como</span>
-            <select id="modo-select" class="bg-transparent font-bold text-cft-navy outline-none cursor-pointer pr-1" aria-label="Ver el portal como">
-              <option value="">Encargado</option><option value="docente">Docente</option><option value="alumno">Alumno</option>
-            </select>
-          </label>
           <button type="button" data-action="bolsa" class="relative p-2.5 text-cft-navy hover:bg-cft-goldLight rounded-xl transition-all border border-gray-200 bg-white" aria-label="Abrir bolsa de solicitud">
             <i data-lucide="shopping-bag" class="w-5 h-5"></i>
             <span id="cart-counter" class="absolute -top-1 -right-1 bg-cft-gold text-cft-navy text-xs font-black w-5 h-5 rounded-full flex items-center justify-center shadow">0</span>
@@ -104,17 +97,53 @@
       </div>
     </div>
 
-    <!-- Menú móvil -->
-    <nav id="mob-nav" class="xl:hidden grid grid-cols-5 border-t border-gray-100 bg-white text-[11px] sm:text-xs text-gray-600" aria-label="Secciones">
-      <button type="button" data-go="inicio" class="mob-link flex flex-col items-center gap-0.5 py-2"><i data-lucide="home" class="w-4 h-4"></i><span>Inicio</span></button>
-      <button type="button" data-go="catalogo" class="mob-link flex flex-col items-center gap-0.5 py-2"><i data-lucide="layout-grid" class="w-4 h-4"></i><span>Catálogo</span></button>
-      <button type="button" data-go="solicitudes" class="mob-link relative flex flex-col items-center gap-0.5 py-2"><i data-lucide="file-text" class="w-4 h-4"></i><span>Solicitudes</span><span data-badge="solicitudes" class="hidden absolute top-1 right-[22%] bg-cft-gold text-cft-navy text-[9px] font-black min-w-[0.9rem] h-[0.9rem] px-0.5 rounded-full items-center justify-center">0</span></button>
-      <button type="button" data-go="prestamos" class="mob-link flex flex-col items-center gap-0.5 py-2"><i data-lucide="package" class="w-4 h-4"></i><span>Préstamos</span></button>
-      <button type="button" data-go="flujo" class="mob-link flex flex-col items-center gap-0.5 py-2"><i data-lucide="workflow" class="w-4 h-4"></i><span>Flujo</span></button>
-      <button type="button" data-go="gestion" data-admin class="mob-link hidden flex-col items-center gap-0.5 py-2"><i data-lucide="clipboard-check" class="w-4 h-4"></i><span>Gestión</span></button>
-    </nav>
   </header>
 
+  <div class="flex-1 flex">
+  <!-- MENÚ LATERAL: fijo en escritorio, panel deslizable en celular -->
+  <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] bg-white border-r border-gray-200 flex flex-col -translate-x-full max-lg:invisible transition-[transform,visibility] duration-200 lg:translate-x-0 lg:sticky lg:top-24 lg:z-30 lg:self-start lg:h-[calc(100dvh-6rem)] lg:w-64 lg:max-w-none lg:flex-none" aria-label="Menú principal">
+    <div class="lg:hidden flex items-center justify-between px-4 h-20 border-b border-gray-100 flex-none">
+      <span class="flex items-center gap-2 font-black text-cft-navy"><i data-lucide="layout-grid" class="w-5 h-5 text-cft-gold"></i>Pañol CFT Juan Bohón</span>
+      <button type="button" data-action="menu-close" class="p-2 rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gray-100" aria-label="Cerrar menú"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <nav class="flex-1 overflow-y-auto px-3 py-5 space-y-6" aria-label="Secciones">
+      <div>
+        <p class="px-3 mb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">Portal</p>
+        <ul class="space-y-1">
+          <li><button type="button" data-go="inicio" class="side-link group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-cft-goldLight hover:text-cft-navy transition text-left"><i data-lucide="home" class="side-ic w-5 h-5 flex-none text-gray-400 group-hover:text-cft-navy"></i><span>Inicio</span></button></li>
+          <li><button type="button" data-go="catalogo" class="side-link group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-cft-goldLight hover:text-cft-navy transition text-left"><i data-lucide="layout-grid" class="side-ic w-5 h-5 flex-none text-gray-400 group-hover:text-cft-navy"></i><span>Catálogo</span></button></li>
+          <li><button type="button" data-go="solicitudes" class="side-link group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-cft-goldLight hover:text-cft-navy transition text-left"><i data-lucide="file-text" class="side-ic w-5 h-5 flex-none text-gray-400 group-hover:text-cft-navy"></i><span id="side-sol">Mis solicitudes</span><span data-badge="solicitudes" class="hidden ml-auto bg-cft-gold text-cft-navy text-[10px] font-black min-w-[1.25rem] h-5 px-1.5 rounded-full items-center justify-center">0</span></button></li>
+          <li><button type="button" data-go="prestamos" class="side-link group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-cft-goldLight hover:text-cft-navy transition text-left"><i data-lucide="package" class="side-ic w-5 h-5 flex-none text-gray-400 group-hover:text-cft-navy"></i><span id="side-loan">Mis préstamos</span></button></li>
+          <li><button type="button" data-go="flujo" class="side-link group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-cft-goldLight hover:text-cft-navy transition text-left"><i data-lucide="workflow" class="side-ic w-5 h-5 flex-none text-gray-400 group-hover:text-cft-navy"></i><span>Flujo del pañol</span></button></li>
+        </ul>
+      </div>
+      <div id="side-admin" class="hidden">
+        <p class="px-3 mb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">Encargado</p>
+        <ul class="space-y-1">
+          <li><button type="button" data-go="gestion" class="side-link group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-cft-goldLight hover:text-cft-navy transition text-left"><i data-lucide="clipboard-check" class="side-ic w-5 h-5 flex-none text-gray-400 group-hover:text-cft-navy"></i><span>Panel del encargado</span><span data-badge="gestion" class="hidden ml-auto bg-amber-400 text-cft-navy text-[10px] font-black min-w-[1.25rem] h-5 px-1.5 rounded-full items-center justify-center" title="Docentes por validar">0</span></button></li>
+          <li><button type="button" data-action="escanear" class="side-link group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-cft-goldLight hover:text-cft-navy transition text-left"><i data-lucide="scan-line" class="side-ic w-5 h-5 flex-none text-gray-400 group-hover:text-cft-navy"></i><span>Escanear pase</span></button></li>
+        </ul>
+      </div>
+    </nav>
+    <div class="p-3 border-t border-gray-100 flex-none">
+      <div class="rounded-2xl bg-cft-goldLight border border-cft-gold/40 p-3.5 space-y-2.5">
+        <div class="flex items-center gap-3">
+          <span id="side-role-ic" class="w-9 h-9 rounded-xl bg-cft-navy text-cft-gold flex items-center justify-center flex-none"><i data-lucide="user" class="w-5 h-5"></i></span>
+          <div class="min-w-0"><p class="text-[10px] font-bold uppercase tracking-wider text-gray-500">Tu rol</p><p id="side-role" class="text-sm font-black text-cft-navy truncate">—</p></div>
+        </div>
+        <p id="side-role-text" class="text-[11px] text-gray-600 leading-snug"></p>
+        <label id="modo-wrap" class="hidden items-center justify-between gap-2 w-full pl-2.5 pr-1.5 py-1.5 rounded-xl border border-cft-gold/60 bg-white text-cft-navy text-xs font-bold cursor-pointer">
+          <span class="flex items-center gap-1.5 whitespace-nowrap"><i data-lucide="eye" class="w-4 h-4 flex-none"></i>Ver como</span>
+          <select id="modo-select" class="bg-transparent font-bold text-cft-navy outline-none cursor-pointer min-w-0" aria-label="Ver el portal como">
+            <option value="">Encargado</option><option value="docente">Docente</option><option value="alumno">Alumno</option>
+          </select>
+        </label>
+      </div>
+    </div>
+  </aside>
+  <div id="sidebar-backdrop" class="hidden fixed inset-0 z-40 bg-gray-900/60 backdrop-blur-sm lg:hidden" aria-hidden="true"></div>
+
+  <div class="flex-1 min-w-0 flex flex-col">
   <div id="preview-banner" class="hidden bg-cft-gold text-cft-navy">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs sm:text-sm font-semibold">
       <span class="flex items-center gap-2"><i data-lucide="eye" class="w-4 h-4 flex-none"></i><span id="preview-text">Estás viendo el portal como alumno.</span></span>
@@ -129,7 +158,7 @@
       <div class="relative bg-gradient-to-r from-cft-navy via-cft-darkNavy to-blue-950 rounded-3xl p-8 sm:p-12 text-white overflow-hidden shadow-xl border-b-4 border-cft-gold">
         <div class="absolute inset-0 opacity-[0.07] pointer-events-none" style="background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);background-size:32px 32px;-webkit-mask-image:radial-gradient(ellipse at 90% 20%,#000,transparent 65%);mask-image:radial-gradient(ellipse at 90% 20%,#000,transparent 65%)"></div>
         <div class="absolute -right-10 -bottom-16 w-80 h-80 rounded-full border-[28px] border-cft-gold/10 pointer-events-none hidden md:block"></div>
-        <div class="relative z-10 grid lg:grid-cols-[minmax(0,1fr)_auto] gap-8 items-end">
+        <div class="relative z-10 grid xl:grid-cols-[minmax(0,1fr)_auto] gap-8 items-end">
           <div class="max-w-2xl space-y-4">
             <span class="inline-block px-3 py-1 bg-cft-gold/20 border border-cft-gold/40 text-cft-gold rounded-full text-xs font-bold uppercase tracking-wide">Pañol oficial · CFT acreditado nivel avanzado</span>
             <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight">Tu pañol, conectado con tu carrera</h1>
@@ -143,7 +172,7 @@
               </div>
             </form>
           </div>
-          <dl class="grid grid-cols-3 gap-3 lg:w-80">
+          <dl class="grid grid-cols-3 gap-3 max-w-xl xl:w-80">
             <div class="bg-white/[0.07] border border-white/15 rounded-2xl p-3 sm:p-4 min-w-0"><dt class="text-[11px] font-semibold text-gray-300 sm:uppercase sm:tracking-wide">Materiales</dt><dd id="st-total" class="text-2xl sm:text-3xl font-black mt-1 tabular-nums">—</dd></div>
             <div class="bg-white/[0.07] border border-white/15 rounded-2xl p-3 sm:p-4 min-w-0"><dt class="text-[11px] font-semibold text-gray-300 sm:uppercase sm:tracking-wide">Disponibles</dt><dd id="st-disp" class="text-2xl sm:text-3xl font-black mt-1 text-cft-gold tabular-nums">—</dd></div>
             <div class="bg-white/[0.07] border border-white/15 rounded-2xl p-3 sm:p-4 min-w-0"><dt class="text-[11px] font-semibold text-gray-300 sm:uppercase sm:tracking-wide">Prestados</dt><dd id="st-out" class="text-2xl sm:text-3xl font-black mt-1 tabular-nums">—</dd></div>
@@ -156,7 +185,7 @@
           <h2 class="text-2xl font-bold text-gray-800">Explora por carrera</h2>
           <button type="button" data-carrera="" class="text-sm font-semibold text-cft-navy hover:underline flex items-center gap-1 flex-none"><span>Ver todas las carreras</span><i data-lucide="arrow-right" class="w-4 h-4"></i></button>
         </div>
-        <div id="career-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4"></div>
+        <div id="career-grid" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4"></div>
       </div>
 
       <div class="space-y-4">
@@ -193,12 +222,12 @@
             <span id="active-career-text">Carrera</span>
             <button type="button" data-clear="carrera" class="w-5 h-5 rounded-full hover:bg-white flex items-center justify-center hover:text-red-600" aria-label="Quitar filtro de carrera"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
           </div>
-          <button type="button" id="btn-nuevo" data-action="nuevo" class="hidden px-4 py-2 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i><span>Agregar material</span></button>
+          <button type="button" id="btn-nuevo" data-action="nuevo" class="hidden whitespace-nowrap flex-none px-4 py-2 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i><span>Agregar material</span></button>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-[17.5rem_minmax(0,1fr)] gap-8">
-        <aside class="space-y-6 min-w-0">
+      <div class="grid grid-cols-1 xl:grid-cols-[17.5rem_minmax(0,1fr)] gap-8">
+        <aside class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start content-start min-w-0 xl:flex xl:flex-col xl:items-stretch xl:gap-6">
           <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-3">
             <label for="catalog-search" class="text-xs font-bold text-gray-700 uppercase tracking-wider block">Búsqueda rápida</label>
             <div class="relative">
@@ -206,7 +235,7 @@
               <input type="search" id="catalog-search" autocomplete="off" placeholder="Buscar por código, nombre…" class="w-full pl-9 pr-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-cft-navy focus:bg-white">
             </div>
           </div>
-          <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-3">
+          <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-3 sm:col-start-1 sm:row-start-1 sm:row-span-3">
             <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Filtrar por carrera</h3>
             <div class="space-y-1 text-sm max-h-80 overflow-y-auto overflow-x-hidden pr-1" id="career-filter-list" role="radiogroup" aria-label="Carrera"></div>
           </div>
@@ -230,7 +259,7 @@
             <span id="catalog-count-text">Cargando inventario…</span>
             <button type="button" data-clear="all" class="text-cft-navy font-bold hover:underline">Limpiar todos los filtros</button>
           </div>
-          <div id="catalog-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+          <div id="catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 gap-6"></div>
         </div>
       </div>
     </section>
@@ -288,7 +317,7 @@
         <p class="text-sm text-gray-600">El recorrido completo desde que buscas una herramienta hasta su devolución segura en la bodega CFT Juan Bohón.</p>
       </div>
 
-      <ol class="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <ol class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4">
         <li class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-cft-gold transition"><div class="w-10 h-10 rounded-xl bg-cft-navy text-cft-gold flex items-center justify-center font-bold text-lg mb-4">1</div><h3 class="font-bold text-gray-800 text-base mb-2">Búsqueda y selección</h3><p class="text-xs text-gray-500 leading-relaxed">Navegas por carrera o código y verificas la disponibilidad en tiempo real.</p><span class="inline-flex items-center gap-1 mt-4 px-2 py-0.5 rounded-full bg-gray-100 text-[11px] font-bold text-gray-600"><i data-lucide="user" class="w-3 h-3"></i>Alumno o docente</span></li>
         <li class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-cft-gold transition"><div class="w-10 h-10 rounded-xl bg-cft-navy text-cft-gold flex items-center justify-center font-bold text-lg mb-4">2</div><h3 class="font-bold text-gray-800 text-base mb-2">Bolsa y solicitud</h3><p class="text-xs text-gray-500 leading-relaxed">Indicas asignatura, fechas y el responsable que retira (obligatorio). Si el equipo lo exige, eliges un docente de respaldo.</p><span class="inline-flex items-center gap-1 mt-4 px-2 py-0.5 rounded-full bg-gray-100 text-[11px] font-bold text-gray-600"><i data-lucide="user" class="w-3 h-3"></i>Alumno o docente</span></li>
         <li class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-cft-gold transition"><div class="w-10 h-10 rounded-xl bg-cft-navy text-cft-gold flex items-center justify-center font-bold text-lg mb-4">3</div><h3 class="font-bold text-gray-800 text-base mb-2">Aprobación y pase QR</h3><p class="text-xs text-gray-500 leading-relaxed">Si hace falta, el docente confirma su respaldo. Luego el encargado aprueba y reserva los equipos, y tu pase QR queda listo.</p><span class="inline-flex items-center gap-1 mt-4 px-2 py-0.5 rounded-full bg-cft-goldLight text-[11px] font-bold text-cft-navy"><i data-lucide="shield-check" class="w-3 h-3"></i>Encargado de pañol</span></li>
@@ -301,7 +330,7 @@
           <div class="p-3 bg-cft-goldLight rounded-2xl text-cft-navy flex-none"><i data-lucide="shopping-cart" class="w-6 h-6"></i></div>
           <div><h2 class="text-xl font-black text-cft-navy">¿Y si el pañol no tiene el material?</h2><p class="text-sm text-gray-500 mt-1">Los docentes piden la compra; los alumnos se la piden a su profesor. Así crece el inventario compartido de todas las carreras.</p></div>
         </div>
-        <ol class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <ol class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
           <li class="rounded-2xl bg-gray-50 border border-gray-100 p-5"><span class="text-xs font-black text-cft-gold">PASO A</span><h3 class="font-bold text-gray-800 mt-1">El docente pide la compra</h3><p class="text-xs text-gray-500 mt-1 leading-relaxed">Desde el catálogo describe el material y para qué se usará.</p></li>
           <li class="rounded-2xl bg-gray-50 border border-gray-100 p-5"><span class="text-xs font-black text-cft-gold">PASO B</span><h3 class="font-bold text-gray-800 mt-1">Revisión</h3><p class="text-xs text-gray-500 mt-1 leading-relaxed">El encargado aprueba o rechaza la solicitud.</p></li>
           <li class="rounded-2xl bg-gray-50 border border-gray-100 p-5"><span class="text-xs font-black text-cft-gold">PASO C</span><h3 class="font-bold text-gray-800 mt-1">Compra y registro</h3><p class="text-xs text-gray-500 mt-1 leading-relaxed">Cuando llega, se ingresa al inventario con su código.</p></li>
@@ -328,7 +357,7 @@
         </div>
         <button type="button" data-action="escanear" class="self-start md:self-auto flex-none whitespace-nowrap px-4 py-2.5 bg-cft-gold hover:bg-amber-500 text-cft-navy rounded-xl text-xs font-bold transition flex items-center gap-2"><i data-lucide="scan-line" class="w-4 h-4"></i><span>Escanear pase</span></button>
       </div>
-      <div id="kpis" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4"></div>
+      <div id="kpis" class="grid grid-cols-2 sm:grid-cols-3 2xl:grid-cols-6 gap-4"></div>
       <div class="flex border-b border-gray-200 gap-6 overflow-x-auto no-scrollbar text-sm font-medium" role="tablist" id="g-tabs"></div>
       <div id="g-body"></div>
     </section>
@@ -359,6 +388,8 @@
       <div class="text-xs text-gray-500 text-center lg:text-right font-medium">© 2026 Centro de Formación Técnica Juan Bohón.<br>Acreditado por la Comisión Nacional de Acreditación (CNA-Chile).</div>
     </div>
   </footer>
+  </div>
+  </div>
 </div>
 
 <!-- ==================== MODALES ==================== -->
@@ -815,19 +846,31 @@
     if(ROUTES.indexOf(view) === -1) view = "inicio";
     state.view = view;
     ROUTES.forEach(function(r){ $("page-" + r).classList.toggle("hidden", r !== view); });
-    document.querySelectorAll(".nav-link").forEach(function(b){
-      var on = b.getAttribute("data-go") === view;
-      b.classList.toggle("bg-cft-lightBlue", on); b.classList.toggle("text-cft-navy", on); b.classList.toggle("font-bold", on); b.classList.toggle("text-gray-600", !on);
-      if(on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+    document.querySelectorAll(".side-link[data-go]").forEach(function(b){
+      if(b.getAttribute("data-go") === view) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
     });
-    document.querySelectorAll(".mob-link").forEach(function(b){
-      var on = b.getAttribute("data-go") === view;
-      b.classList.toggle("text-cft-navy", on); b.classList.toggle("font-bold", on);
-      if(on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
-    });
+    closeSidebar();
     try{ history.replaceState(null, "", "#" + view); }catch(e){}
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
+  /* ---------- menú lateral (panel deslizable bajo 1024px) ---------- */
+  var sideOpen = false;
+  function setSidebar(open){
+    if(open === sideOpen) return;
+    sideOpen = open;
+    var s = $("sidebar");
+    s.classList.toggle("-translate-x-full", !open); s.classList.toggle("max-lg:invisible", !open);
+    $("sidebar-backdrop").classList.toggle("hidden", !open);
+    $("btn-menu").setAttribute("aria-expanded", String(open));
+    document.documentElement.classList.toggle("overflow-hidden", open);
+    if(open) setTimeout(function(){ var f = s.querySelector('.side-link[aria-current="page"]') || s.querySelector(".side-link"); if(sideOpen && f) f.focus(); }, 60);
+    else if(s.contains(document.activeElement)) $("btn-menu").focus();
+  }
+  function closeSidebar(){ setSidebar(false); }
+  $("sidebar-backdrop").addEventListener("click", closeSidebar);
+  document.addEventListener("keydown", function(ev){ if(ev.key === "Escape" && sideOpen) closeSidebar(); });
+  if(window.matchMedia){ var mqDesk = window.matchMedia("(min-width: 1024px)"); var onMq = function(){ if(mqDesk.matches) closeSidebar(); }; if(mqDesk.addEventListener) mqDesk.addEventListener("change", onMq); else if(mqDesk.addListener) mqDesk.addListener(onMq); }
+
   function routeFromHash(h){
     if(h === "alumno" || h === "estudiante"){ state.preview = "alumno"; savePreview(); applyRole(); return "inicio"; }
     if(h === "docente"){ state.preview = "docente"; savePreview(); applyRole(); return "inicio"; }
@@ -989,7 +1032,10 @@
     var reqs = mine(requests());
     var n = state.canManage ? reqs.filter(function(r){ return r.estado === "Pendiente"; }).length : reqs.filter(function(r){ return r.estado === "Pendiente" || r.estado === "Lista para retiro"; }).length;
     if(role() === "docente") n += respaldosPendientes().length;
+    var g = state.canManage ? porValidar().length : 0;
     document.querySelectorAll('[data-badge="solicitudes"]').forEach(function(b){ b.textContent = n; b.classList.toggle("hidden", !n); b.classList.toggle("flex", !!n); });
+    document.querySelectorAll('[data-badge="gestion"]').forEach(function(b){ b.textContent = g; b.classList.toggle("hidden", !g); b.classList.toggle("flex", !!g); });
+    $("menu-dot").classList.toggle("hidden", !(n || g));
   }
 
   var TABS = [
@@ -1059,7 +1105,7 @@
     var resp = r.requiereDocente
       ? cell("Docente de respaldo:", r.respaldo ? esc(r.respaldo.docenteNombre || "Docente") + " " + respPill(r.respaldo) : "—")
       : cell("Profesor de la asignatura:", esc(r.profesor || "—"));
-    return '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">' +
+    return '<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 text-xs">' +
       cell("Carrera:", esc(r.carrera || "—")) + cell("Asignatura / taller:", esc(r.asignatura || "—")) +
       cell("Responsable que retira:", esc(r.responsable || personName(r) || "—")) + resp + "</div>";
   }
@@ -1171,7 +1217,16 @@
 
   function renderRoleUI(){
     document.querySelectorAll("[data-admin]").forEach(function(el){ el.classList.toggle("hidden", !state.canManage); el.classList.toggle("flex", state.canManage); });
-    var mob = $("mob-nav"); mob.classList.toggle("grid-cols-5", !state.canManage); mob.classList.toggle("grid-cols-6", state.canManage);
+    $("side-admin").classList.toggle("hidden", !state.canManage);
+    $("side-sol").textContent = state.canManage ? "Solicitudes" : "Mis solicitudes";
+    $("side-loan").textContent = state.canManage ? "Préstamos activos" : "Mis préstamos";
+    var r = role(), known = state.db && state.roleKnown;
+    $("side-role").textContent = !state.db ? (state.dbTried ? "Sin conexión" : "Conectando…") : !known ? "Verificando…" : roleLabel();
+    $("side-role-ic").innerHTML = ic(r === "encargado" ? "shield-check" : r === "docente" ? "presentation" : "graduation-cap", "w-5 h-5");
+    $("side-role-text").textContent = !known ? "" : r === "encargado" ? "Ves todo el pañol: aprueba, entrega, recibe y gestiona inventario, usuarios y compras."
+      : r === "docente" ? "Pides préstamos, solicitas compras y confirmas los respaldos de tus alumnos."
+      : pendingDocente() ? "Pides préstamos como alumno hasta que el encargado valide tu rol docente."
+      : "Pides préstamos. Los equipos con escudo necesitan un docente de respaldo.";
     var mw = $("modo-wrap"); mw.classList.toggle("hidden", !state.isAdmin); mw.classList.toggle("flex", state.isAdmin);
     $("modo-select").value = state.preview || "";
     var b = canBuy();
@@ -1946,7 +2001,9 @@
     else if(a === "nuevo") openMaterial(null);
     else if(a === "nuevo-prov") openProveedor(null);
     else if(a === "nueva-orden") openOrden();
-    else if(a === "escanear") openEscanear();
+    else if(a === "menu") setSidebar(!sideOpen);
+    else if(a === "menu-close") closeSidebar();
+    else if(a === "escanear"){ closeSidebar(); openEscanear(); }
     else if(a === "perfil"){ if(state.db) openPerfil(null); }
     else if(a === "modo") setPreview(null);
   });
