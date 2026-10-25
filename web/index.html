@@ -310,18 +310,18 @@
 
     <!-- ==================== SOLICITUDES ==================== -->
     <section id="page-solicitudes" class="spa-page hidden space-y-6">
-      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200 pb-4">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 id="sol-title" class="text-2xl font-black text-gray-800">Mis Solicitudes</h1>
-          <p id="sol-sub" class="text-sm text-gray-500">Revisa el estado de tus reservas de materiales y accede a tu pase QR de retiro.</p>
+          <h1 id="sol-title" class="text-2xl sm:text-[1.75rem] font-extrabold tracking-tight text-cft-navy">Mis Solicitudes</h1>
+          <p id="sol-sub" class="text-sm text-gray-500 mt-0.5">Revisa el estado de tus reservas de materiales y accede a tu pase QR de retiro.</p>
         </div>
         <div class="flex flex-wrap gap-2 self-start md:self-auto">
-          <button type="button" data-admin data-action="escanear" class="hidden px-4 py-2.5 bg-cft-gold hover:bg-amber-500 text-cft-navy rounded-xl text-xs font-bold transition items-center gap-2"><i data-lucide="scan-line" class="w-4 h-4"></i><span>Escanear pase</span></button>
-          <button type="button" data-go="catalogo" class="px-4 py-2.5 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition flex items-center gap-2"><i data-lucide="package-plus" class="w-4 h-4"></i><span>Nueva solicitud</span></button>
+          <button type="button" data-admin data-action="escanear" class="hidden whitespace-nowrap px-4 py-2 bg-white border border-gray-200 hover:border-cft-navy/40 text-cft-navy rounded-xl text-xs font-bold transition items-center gap-2"><i data-lucide="scan-line" class="w-4 h-4"></i><span>Escanear pase</span></button>
+          <button type="button" data-go="catalogo" class="whitespace-nowrap px-4 py-2 bg-cft-navy hover:bg-cft-darkNavy text-white rounded-xl text-xs font-bold transition flex items-center gap-2"><i data-lucide="package-plus" class="w-4 h-4"></i><span>Nueva solicitud</span></button>
         </div>
       </div>
       <div class="flex border-b border-gray-200 gap-6 overflow-x-auto no-scrollbar text-sm font-medium" role="tablist" id="req-tabs"></div>
-      <div id="requests-list" class="space-y-4"></div>
+      <div id="requests-list" class="space-y-3"></div>
     </section>
 
     <!-- ==================== PRÉSTAMOS ==================== -->
@@ -752,7 +752,7 @@
     db: null, user: null, dbTried: false, me: null, userId: null, myPerfil: null,
     isAdmin: false, preview: null, roleKnown: false, canManage: false, readOnly: false,
     perfilPrompted: false, pendingPase: null, paseId: null,
-    names: {}, smap: {},
+    names: {}, smap: {}, openReq: {},
     view: "inicio", f: { carrera:"", q:"", disp:"" }, tab: "todas",
     g: { tab:"inventario", q:"", car:"", est:"", provQ:"", compEst:"", usQ:"", usF:"" },
     cart: [], detalleId: null, devolverId: null, compraId: null, materialId: null, proveedorId: null,
@@ -1136,7 +1136,7 @@
     if(state.tab === "compras"){ renderCompras(box, comps); return; }
     if(state.tab === "respaldos"){
       box.innerHTML = '<div class="bg-cft-lightBlue border border-cft-navy/15 rounded-2xl p-4 flex items-start gap-3 text-cft-navy text-xs">' + ic("shield-check", "w-5 h-5 flex-none") + "<p><span class=\"font-bold\">Solicitudes donde te eligieron como docente de respaldo.</span> Al confirmar, respondes junto al responsable por los equipos hasta su devolución. Si rechazas, la solicitud se cierra.</p></div>" +
-        (resp.length ? resp.map(requestCard).join("") : '<div class="bg-white p-8 rounded-3xl text-center text-gray-500 text-sm border border-gray-100">Ningún alumno te ha pedido respaldo todavía.</div>');
+        (resp.length ? reqTable(resp) : '<div class="bg-white p-8 rounded-3xl text-center text-gray-500 text-sm border border-gray-100">Ningún alumno te ha pedido respaldo todavía.</div>');
       return;
     }
     var list = reqs.filter(function(r){
@@ -1150,7 +1150,7 @@
         (reqs.length ? "" : '<div><button type="button" data-go="catalogo" class="mt-2 px-4 py-2 bg-cft-navy text-cft-gold rounded-xl text-xs font-bold">Ir al catálogo</button></div>') + "</div>";
       return;
     }
-    box.innerHTML = list.map(requestCard).join("");
+    box.innerHTML = reqTable(list);
   }
 
   var RESP_PILL = { "Pendiente":["bg-amber-100 text-amber-700","Por confirmar"], "Confirmado":["bg-emerald-100 text-emerald-700","Confirmado"], "Rechazado":["bg-rose-100 text-rose-700","Rechazado"] };
@@ -1164,70 +1164,100 @@
       cell("Carrera:", esc(r.carrera || "—")) + cell("Asignatura / taller:", esc(r.asignatura || "—")) +
       cell("Responsable que retira:", esc(r.responsable || personName(r) || "—")) + resp + "</div>";
   }
-  function requestCard(r){
+  // Tabla de solicitudes: en pantallas chicas cada fila se apila como ficha (la celda muestra su data-label).
+  var REQ_TD = "px-3 first:pl-5 max-md:first:pl-0 py-3 align-top max-md:flex max-md:items-start max-md:justify-between max-md:gap-4 max-md:px-0 max-md:py-1.5 max-md:before:content-[attr(data-label)] max-md:before:text-xs max-md:before:font-medium max-md:before:text-gray-400 max-md:before:flex-none";
+  var REQ_TH = "px-3 first:pl-5 py-3 font-bold whitespace-nowrap";
+  var REQ_BTN = "h-8 px-3 bg-cft-navy hover:bg-cft-darkNavy text-white rounded-lg text-xs font-bold transition inline-flex items-center gap-1.5 whitespace-nowrap disabled:opacity-50";
+  var REQ_GHOST = "h-8 px-3 border border-gray-200 bg-white rounded-lg text-xs font-bold text-gray-700 hover:bg-gray-100 transition inline-flex items-center whitespace-nowrap disabled:opacity-50";
+  function reqTableWrap(head, rows){
+    return '<div class="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-x-auto"><table class="w-full text-sm text-left max-md:block">' +
+      '<thead class="bg-gray-50 text-[11px] uppercase tracking-wide text-gray-500 border-b border-gray-200 max-md:hidden"><tr>' + head + "</tr></thead>" +
+      '<tbody class="max-md:block">' + rows + "</tbody></table></div>";
+  }
+  function reqTable(list){
+    return reqTableWrap(
+      '<th scope="col" class="' + REQ_TH + '">Solicitud</th><th scope="col" class="' + REQ_TH + '">Materiales</th>' +
+      '<th scope="col" class="' + REQ_TH + ' hidden lg:table-cell">Responsable</th><th scope="col" class="' + REQ_TH + '">Fechas</th><th scope="col" class="' + REQ_TH + '">Estado</th>' +
+      '<th scope="col" class="' + REQ_TH + '"><span class="sr-only">Acciones</span></th>',
+      list.map(reqRow).join(""));
+  }
+  function reqRow(r){
     var e = shownEstado(r), forOthers = state.canManage || r.requesterId !== state.userId;
     var who = forOthers ? personName(r) : "";
-    var actions = [];
     var w = canWrite() ? "" : " disabled";
-    var btnNavy = "px-4 py-2 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold transition flex items-center gap-2 disabled:opacity-50";
-    var btnGhost = "px-4 py-2 border border-gray-300 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 transition disabled:opacity-50";
-    var blocked = needsRespaldo(r);
-    var myResp = isMyRespaldo(r);
+    var blocked = needsRespaldo(r), myResp = isMyRespaldo(r);
+    var actions = [];
     if(state.canManage){
-      if(r.estado === "Pendiente"){ actions.push('<button type="button" data-req="rechazar" data-id="' + esc(r.id) + '" class="' + btnGhost + '"' + w + ">Rechazar</button>"); actions.push('<button type="button" data-req="aprobar" data-id="' + esc(r.id) + '" class="' + btnNavy + '"' + (blocked ? ' disabled title="Falta la confirmación del docente de respaldo"' : w) + ">" + ic("check") + "<span>Aprobar y reservar</span></button>"); }
-      if(r.estado === "Lista para retiro") actions.push('<button type="button" data-pase="' + esc(r.id) + '" class="' + btnNavy + '"' + w + ">" + ic("hand-helping") + "<span>Verificar y entregar</span></button>");
+      if(r.estado === "Pendiente"){
+        actions.push('<button type="button" data-req="rechazar" data-id="' + esc(r.id) + '" class="' + REQ_GHOST + '"' + w + ">Rechazar</button>");
+        actions.push('<button type="button" data-req="aprobar" data-id="' + esc(r.id) + '" class="' + REQ_BTN + '"' + (blocked ? ' disabled title="Falta la confirmación del docente de respaldo"' : w + ' title="Aprobar y reservar los equipos"') + ">" + ic("check", "w-3.5 h-3.5") + "<span>Aprobar</span></button>");
+      }
+      if(r.estado === "Lista para retiro") actions.push('<button type="button" data-pase="' + esc(r.id) + '" class="' + REQ_BTN + '" title="Verificar el pase y entregar"' + w + ">" + ic("hand-helping", "w-3.5 h-3.5") + "<span>Entregar</span></button>");
       if(r.estado === "En préstamo"){
-        if(r.prorroga === "Solicitada") actions.push('<button type="button" data-req="extender" data-id="' + esc(r.id) + '" class="' + btnGhost + '"' + w + ">Extender 7 días</button>");
-        actions.push('<button type="button" data-req="devolver" data-id="' + esc(r.id) + '" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 disabled:opacity-50"' + w + ">" + ic("undo-2") + "<span>Registrar devolución</span></button>");
+        if(r.prorroga === "Solicitada") actions.push('<button type="button" data-req="extender" data-id="' + esc(r.id) + '" class="' + REQ_GHOST + '" title="Extender 7 días"' + w + ">Extender</button>");
+        actions.push('<button type="button" data-req="devolver" data-id="' + esc(r.id) + '" class="h-8 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition inline-flex items-center gap-1.5 whitespace-nowrap disabled:opacity-50" title="Registrar devolución"' + w + ">" + ic("undo-2", "w-3.5 h-3.5") + "<span>Recibir</span></button>");
       }
     } else if(myResp){
       if(r.estado === "Pendiente" && r.respaldo.estado === "Pendiente"){
-        actions.push('<button type="button" data-resp="rechazar" data-id="' + esc(r.id) + '" class="' + btnGhost + '"' + w + ">Rechazar respaldo</button>");
-        actions.push('<button type="button" data-resp="confirmar" data-id="' + esc(r.id) + '" class="' + btnNavy + '"' + w + ">" + ic("shield-check") + "<span>Confirmar respaldo</span></button>");
+        actions.push('<button type="button" data-resp="rechazar" data-id="' + esc(r.id) + '" class="' + REQ_GHOST + '" title="Rechazar respaldo"' + w + ">Rechazar</button>");
+        actions.push('<button type="button" data-resp="confirmar" data-id="' + esc(r.id) + '" class="' + REQ_BTN + '" title="Confirmar respaldo"' + w + ">" + ic("shield-check", "w-3.5 h-3.5") + "<span>Confirmar</span></button>");
       }
     } else if((r.estado === "Pendiente" || r.estado === "Lista para retiro") && r._src !== "prestamos"){
-      actions.push('<button type="button" data-req="cancelar" data-id="' + esc(r.id) + '" class="' + btnGhost + '"' + w + ">Cancelar</button>");
+      actions.push('<button type="button" data-req="cancelar" data-id="' + esc(r.id) + '" class="' + REQ_GHOST + '"' + w + ">Cancelar</button>");
     }
-    if(ACTIVE.indexOf(r.estado) !== -1 && !myResp && !state.canManage) actions.push('<button type="button" data-qr="' + esc(r.id) + '" class="' + btnNavy + '">' + ic("qr-code") + "<span>Ver pase QR</span></button>");
+    if(ACTIVE.indexOf(r.estado) !== -1 && !myResp && !state.canManage) actions.push('<button type="button" data-qr="' + esc(r.id) + '" class="' + REQ_BTN + '" title="Ver pase QR">' + ic("qr-code", "w-3.5 h-3.5") + "<span>Pase QR</span></button>");
 
-    var closing = "";
+    var hint = "", hintCls = "text-gray-500", closing = "";
     if(r.estado === "Pendiente" && blocked && r.respaldo){
-      closing = '<p class="text-xs text-amber-700 font-semibold flex items-center gap-1.5">' + ic("hourglass", "w-3.5 h-3.5") + (myResp ? "Tu confirmación es necesaria para que el pañol pueda aprobarla." : "Esperando que " + esc(r.respaldo.docenteNombre || "el docente") + " confirme su respaldo.") + "</p>";
+      hint = myResp ? "Falta tu confirmación" : "Esperando al docente"; hintCls = "text-amber-700 font-semibold";
+      closing = myResp ? "Tu confirmación es necesaria para que el pañol pueda aprobarla." : "Esperando que " + esc(r.respaldo.docenteNombre || "el docente") + " confirme su respaldo.";
     }
-    if(r.estado === "Devuelta") closing = '<p class="text-xs text-gray-500">Devuelta el ' + esc(fmt(r.fechaDevolucionReal)) + (r.estadoDevolucion ? " · estado: " + esc(r.estadoDevolucion.toLowerCase()) : "") + "</p>";
-    if(r.estado === "Rechazada") closing = '<p class="text-xs text-rose-600">' + (r.respaldo && r.respaldo.estado === "Rechazado" ? "El docente de respaldo no la confirmó." : "El encargado rechazó esta solicitud.") + "</p>";
-    if(r.estado === "Cancelada") closing = '<p class="text-xs text-gray-500">Cancelada por quien la pidió.</p>';
-    if(r.prorroga === "Solicitada" && r.estado === "En préstamo") closing = '<p class="text-xs text-amber-700 font-semibold">Prórroga solicitada, esperando al encargado.</p>';
+    if(r.estado === "Devuelta"){ hint = "el " + esc(fmt(r.fechaDevolucionReal)); closing = "Devuelta el " + esc(fmt(r.fechaDevolucionReal)) + (r.estadoDevolucion ? " · estado: " + esc(r.estadoDevolucion.toLowerCase()) : ""); }
+    if(r.estado === "Rechazada"){ var porDoc = r.respaldo && r.respaldo.estado === "Rechazado"; hint = porDoc ? "El docente no confirmó" : "Por el encargado"; hintCls = "text-rose-600"; closing = porDoc ? "El docente de respaldo no la confirmó." : "El encargado rechazó esta solicitud."; }
+    if(r.estado === "Cancelada") closing = "Cancelada por quien la pidió.";
+    if(r.prorroga === "Solicitada" && r.estado === "En préstamo"){ hint = "Prórroga solicitada"; hintCls = "text-amber-700 font-semibold"; closing = "Prórroga solicitada, esperando al encargado."; }
 
-    return '<article class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm space-y-4">' +
-      '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 pb-3">' +
-        '<div class="flex items-center gap-3 flex-wrap"><span class="font-black text-cft-navy text-base">' + esc(r.codigo) + "</span>" + pill(e) +
-          (r.requiereDocente ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cft-lightBlue text-cft-navy text-[10px] font-bold">' + ic("shield-check", "w-3 h-3") + "Con respaldo docente</span>" : "") +
-          (who ? '<span class="text-xs text-gray-500 flex items-center gap-1">' + ic("user", "w-3.5 h-3.5") + esc(who) + (r.solicitanteRol ? " · " + esc(ROLE_LABEL[r.solicitanteRol] || r.solicitanteRol) : "") + "</span>" : "") + "</div>" +
-        '<span class="text-xs text-gray-400 font-medium">Retiro: ' + esc(fmt(r.fechaRetiro)) + " · Devolución: " + '<span class="' + (isLate(r) ? "text-rose-600 font-bold" : "") + '">' + esc(fmt(r.fechaDevolucion)) + "</span></span>" +
-      "</div>" +
-      infoGrid(r) +
-      '<div class="bg-gray-50 p-3 rounded-xl border border-gray-200 text-xs space-y-1"><span class="font-bold text-gray-700 block">Materiales solicitados:</span>' +
-        (r.items || []).map(function(it){ return '<p class="text-gray-600">• ' + esc(it.nombre) + ' <span class="font-mono text-gray-400">' + esc(it.codigo || "") + "</span></p>"; }).join("") + "</div>" +
-      (closing || actions.length ? '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1"><div class="min-w-0">' + closing + '</div><div class="flex flex-wrap justify-end gap-2 sm:flex-none">' + actions.join("") + "</div></div>" : "") +
-    "</article>";
+    var items = r.items || [], open = !!state.openReq[r.id];
+    var mats = items.length ? esc(items[0].nombre) + (items.length > 1 ? ' <span class="text-gray-400 font-medium whitespace-nowrap">+' + (items.length - 1) + " más</span>" : "") : "—";
+    var sub = r.requiereDocente ? (r.respaldo ? "Respaldo: " + esc(r.respaldo.docenteNombre || "Docente") + " " + respPill(r.respaldo) : "Requiere respaldo") : (r.profesor ? "Prof. " + esc(r.profesor) : "");
+    var cell = function(label, cls, html){ return '<td data-label="' + label + '" class="' + REQ_TD + (cls ? " " + cls : "") + '"><div class="min-w-0 max-md:text-right">' + html + "</div></td>"; };
+
+    var row = '<tr class="border-b border-gray-100 last:border-b-0 hover:bg-gray-50/70 max-md:block max-md:px-4 max-md:py-3' + (open ? " bg-gray-50/70 border-b-0" : "") + '">' +
+      cell("Solicitud", "", '<span class="inline-flex items-center gap-1 font-bold text-cft-navy whitespace-nowrap">' + esc(r.codigo) + (r.requiereDocente ? '<span title="Con respaldo docente" class="text-cft-navy/60">' + ic("shield-check", "w-3.5 h-3.5") + "</span>" : "") + "</span>" +
+        (who ? '<span class="block text-xs text-gray-500 truncate max-w-[11rem] max-md:max-w-none">' + esc(who) + (r.solicitanteRol ? " · " + esc(ROLE_LABEL[r.solicitanteRol] || r.solicitanteRol) : "") + "</span>" : "")) +
+      cell("Materiales", "", '<span class="block text-gray-800 line-clamp-2">' + mats + "</span>" + (r.carrera ? '<span class="block text-xs text-gray-500 line-clamp-1">' + esc(r.carrera) + "</span>" : "")) +
+      cell("Responsable", "md:max-lg:hidden", '<span class="block text-gray-800">' + esc(r.responsable || personName(r) || "—") + "</span>" + (sub ? '<span class="block text-xs text-gray-500">' + sub + "</span>" : "")) +
+      cell("Fechas", "whitespace-nowrap", '<span class="block text-gray-800">' + esc(fmt(r.fechaRetiro)) + '</span><span class="block text-xs ' + (isLate(r) ? "text-rose-600 font-bold" : "text-gray-500") + '">hasta ' + esc(fmt(r.fechaDevolucion)) + "</span>") +
+      cell("Estado", "", pill(e) + (hint ? '<span class="block text-[11px] mt-1 ' + hintCls + '">' + hint + "</span>" : "")) +
+      '<td class="px-3 pr-4 py-3 align-top w-px whitespace-nowrap max-md:block max-md:w-auto max-md:px-0 max-md:pt-3"><div class="flex items-center justify-end gap-1.5">' + actions.join("") +
+        '<button type="button" data-expand="' + esc(r.id) + '" aria-expanded="' + open + '" aria-label="' + (open ? "Ocultar" : "Ver") + " detalle de " + esc(r.codigo) + '" title="' + (open ? "Ocultar detalle" : "Ver detalle") + '" class="w-8 h-8 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-cft-navy flex items-center justify-center flex-none">' + ic(open ? "chevron-up" : "chevron-down", "w-4 h-4") + "</button></div></td></tr>";
+    if(!open) return row;
+    return row + '<tr class="bg-gray-50/70 border-b border-gray-100 last:border-b-0 max-md:block"><td colspan="6" class="px-5 pb-4 max-md:block max-md:px-4"><div class="rounded-xl bg-white border border-gray-200 p-4 space-y-4">' + infoGrid(r) +
+      '<div class="space-y-1.5"><p class="text-xs text-gray-400">Materiales solicitados (' + items.length + "):</p>" +
+        '<ul class="flex flex-wrap gap-1.5">' + items.map(function(it){ return '<li class="px-2.5 py-1 rounded-lg bg-gray-50 border border-gray-200 text-xs text-gray-700">' + esc(it.nombre) + (it.codigo ? ' <span class="font-mono text-gray-400">' + esc(it.codigo) + "</span>" : "") + "</li>"; }).join("") + "</ul></div>" +
+      (closing ? '<p class="text-xs text-gray-600">' + closing + "</p>" : "") + "</div></td></tr>";
   }
 
   function renderCompras(box, comps){
     resolveNames(comps);
-    var head = '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-cft-goldLight border border-dashed border-cft-gold rounded-2xl p-4"><p class="text-xs text-cft-navy"><span class="font-bold">¿Falta algo en el pañol?</span> Pide su compra y sigue aquí la revisión del encargado.</p><button type="button" data-action="compra" class="px-4 py-2 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold flex items-center gap-2 self-start disabled:opacity-50"' + (canWrite() ? "" : " disabled") + ">" + ic("shopping-cart") + "<span>Solicitar compra</span></button></div>";
-    if(!comps.length){ box.innerHTML = head + '<div class="bg-white p-8 rounded-3xl text-center text-gray-500 text-sm border border-gray-100">Aún no hay solicitudes de compra.</div>'; return; }
+    var head = '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-cft-lightBlue/60 rounded-2xl p-4"><p class="text-xs text-cft-navy"><span class="font-bold">¿Falta algo en el pañol?</span> Pide su compra y sigue aquí la revisión del encargado.</p><button type="button" data-action="compra" class="' + REQ_BTN + ' self-start sm:self-auto"' + (canWrite() ? "" : " disabled") + ">" + ic("shopping-cart", "w-3.5 h-3.5") + "<span>Solicitar compra</span></button></div>";
+    if(!comps.length){ box.innerHTML = head + '<div class="bg-white p-8 rounded-2xl text-center text-gray-500 text-sm border border-gray-200/80">Aún no hay solicitudes de compra.</div>'; return; }
     var w = canWrite() ? "" : " disabled";
-    box.innerHTML = head + comps.map(function(c){
-      var e = c.estado || "Pendiente", who = state.canManage ? personName(c) : "", act = "";
-      if(state.canManage && e === "Pendiente") act = '<button type="button" data-compra="rechazar" data-id="' + esc(c.id) + '" class="px-4 py-2 border border-gray-300 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 disabled:opacity-50"' + w + '>Rechazar</button><button type="button" data-compra="aprobar" data-id="' + esc(c.id) + '" class="px-4 py-2 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold flex items-center gap-2 disabled:opacity-50"' + w + ">" + ic("check") + "<span>Aprobar</span></button>";
-      else if(state.canManage && e === "Aprobada") act = '<button type="button" data-compra="registrar" data-id="' + esc(c.id) + '" class="px-4 py-2 bg-cft-navy hover:bg-cft-darkNavy text-cft-gold rounded-xl text-xs font-bold flex items-center gap-2 disabled:opacity-50"' + w + ">" + ic("package-check") + "<span>Registrar compra</span></button>";
-      var note = e === "Pendiente" ? "Esperando revisión del encargado." : e === "Aprobada" ? "Aprobada, en proceso de compra." : e === "Comprada" ? "Ya está en el catálogo." : "No se comprará.";
-      return '<article class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm space-y-3">' +
-        '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 pb-3"><div class="flex items-center gap-3 flex-wrap"><span class="font-black text-cft-navy text-base">' + esc(c.material) + "</span>" + pill(e) + (who ? '<span class="text-xs text-gray-500 flex items-center gap-1">' + ic("user", "w-3.5 h-3.5") + esc(who) + "</span>" : "") + '</div><span class="text-xs text-gray-400 font-medium">' + esc(c.carrera) + "</span></div>" +
-        (c.justificacion ? '<p class="text-xs text-gray-600"><span class="text-gray-400">Uso: </span>' + esc(c.justificacion) + "</p>" : "") +
-        '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3"><p class="text-xs text-gray-500">' + note + '</p><div class="flex flex-wrap justify-end gap-2">' + act + "</div></div></article>";
-    }).join("");
+    var cell = function(label, cls, html){ return '<td data-label="' + label + '" class="' + REQ_TD + (cls ? " " + cls : "") + '"><div class="min-w-0 max-md:text-right">' + html + "</div></td>"; };
+    box.innerHTML = head + reqTableWrap(
+      '<th scope="col" class="' + REQ_TH + '">Material</th><th scope="col" class="' + REQ_TH + '">Carrera</th><th scope="col" class="' + REQ_TH + ' hidden lg:table-cell">Uso</th><th scope="col" class="' + REQ_TH + '">Estado</th><th scope="col" class="' + REQ_TH + '"><span class="sr-only">Acciones</span></th>',
+      comps.map(function(c){
+        var e = c.estado || "Pendiente", who = state.canManage ? personName(c) : "", act = "";
+        if(state.canManage && e === "Pendiente") act = '<button type="button" data-compra="rechazar" data-id="' + esc(c.id) + '" class="' + REQ_GHOST + '"' + w + '>Rechazar</button><button type="button" data-compra="aprobar" data-id="' + esc(c.id) + '" class="' + REQ_BTN + '"' + w + ">" + ic("check", "w-3.5 h-3.5") + "<span>Aprobar</span></button>";
+        else if(state.canManage && e === "Aprobada") act = '<button type="button" data-compra="registrar" data-id="' + esc(c.id) + '" class="' + REQ_BTN + '"' + w + ">" + ic("package-check", "w-3.5 h-3.5") + "<span>Registrar compra</span></button>";
+        var note = e === "Pendiente" ? "Esperando revisión" : e === "Aprobada" ? "En proceso de compra" : e === "Comprada" ? "Ya está en el catálogo" : "No se comprará";
+        return '<tr class="border-b border-gray-100 last:border-b-0 hover:bg-gray-50/70 max-md:block max-md:px-4 max-md:py-3">' +
+          cell("Material", "", '<span class="block font-bold text-gray-900">' + esc(c.material) + "</span>" + (who ? '<span class="block text-xs text-gray-500">' + esc(who) + "</span>" : "")) +
+          cell("Carrera", "", '<span class="block text-gray-800">' + esc(c.carrera || "—") + "</span>") +
+          cell("Uso", "md:max-lg:hidden", '<span class="block text-xs text-gray-600 line-clamp-2">' + esc(c.justificacion || "—") + "</span>") +
+          cell("Estado", "", pill(e) + '<span class="block text-[11px] mt-1 text-gray-500">' + note + "</span>") +
+          '<td class="px-3 pr-4 py-3 align-top w-px whitespace-nowrap max-md:block max-md:w-auto max-md:px-0 max-md:pt-1"><div class="flex items-center justify-end gap-1.5">' + act + "</div></td></tr>";
+      }).join(""));
   }
 
   function renderPrestamos(){
@@ -2035,6 +2065,7 @@
     if(t.hasAttribute("data-add")){ addToCart(t.getAttribute("data-add")); return; }
     if(t.hasAttribute("data-remove")){ var id = t.getAttribute("data-remove"); state.cart = state.cart.filter(function(x){ return x !== id; }); saveCart(); renderAll(); return; }
     if(t.hasAttribute("data-tab")){ state.tab = t.getAttribute("data-tab"); renderSolicitudes(); refreshIcons(); return; }
+    if(t.hasAttribute("data-expand")){ var ex = t.getAttribute("data-expand"); state.openReq[ex] = !state.openReq[ex]; renderSolicitudes(); refreshIcons(); return; }
     if(t.hasAttribute("data-qr")){ close("dlg-pase"); openQR(t.getAttribute("data-qr")); return; }
     if(t.hasAttribute("data-pase")){ openPase(t.getAttribute("data-pase")); return; }
     if(t.hasAttribute("data-req")){ reqAction(t.getAttribute("data-req"), t.getAttribute("data-id")); return; }
