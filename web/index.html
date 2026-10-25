@@ -2,7 +2,8 @@
 <style>
 /* layout: navy hero portal (home / categorias / mis pedidos), card catalog below a career icon grid, light-blue quick-access band */
 :root{
-  --navy-900:#0E2347; --navy-700:#1B3F7A; --yellow:#F6C500; --yellow-50:#FFF6D1;
+  --navy-900:#0E2347; --navy-700:#1B3F7A; --blue-600:#2F6FE4; --blue-500:#3E7CF0; --blue-50:#EAF2FD;
+  --yellow:#F6C500;
   --gold:#C99A3B; --gold-ink:#8A6A22;
   --bg:#F6F8FC; --surface:#FFFFFF; --border:#E2E8F3;
   --ink:#16233D; --ink-muted:#5B6B85;
@@ -14,7 +15,8 @@
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --navy-900:#14315C; --navy-700:#1F4677; --yellow:#FFD23F; --yellow-50:#2E2810;
+    --navy-900:#14315C; --navy-700:#1F4677; --blue-600:#4C8DF5; --blue-500:#5B99FB; --blue-50:#152238;
+    --yellow:#FFD23F;
     --gold:#DDB35F; --gold-ink:#E8C178;
     --bg:#0B1220; --surface:#121A2C; --border:#223049;
     --ink:#E7ECF6; --ink-muted:#8FA0BE;
@@ -26,7 +28,8 @@
   }
 }
 :root[data-theme="dark"]{
-  --navy-900:#14315C; --navy-700:#1F4677; --yellow:#FFD23F; --yellow-50:#2E2810;
+  --navy-900:#14315C; --navy-700:#1F4677; --blue-600:#4C8DF5; --blue-500:#5B99FB; --blue-50:#152238;
+  --yellow:#FFD23F;
   --gold:#DDB35F; --gold-ink:#E8C178;
   --bg:#0B1220; --surface:#121A2C; --border:#223049;
   --ink:#E7ECF6; --ink-muted:#8FA0BE;
@@ -39,13 +42,13 @@
 *{box-sizing:border-box;}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Inter",system-ui,sans-serif;}
 .mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;}
-a{color:var(--navy-700);text-decoration:none;}
+a{color:var(--blue-600);text-decoration:none;}
 button{font-family:inherit;}
 svg{display:block;}
 .icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
 
 /* ---- top nav ---- */
-.topnav{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--border);}
+.topnav{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--border);border-top:3px solid var(--yellow);}
 .topnav-inner{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:20px;padding:12px max(16px, env(safe-area-inset-left,0px)) 12px max(16px, env(safe-area-inset-right,0px));}
 .logo{display:flex;align-items:center;gap:10px;flex:0 0 auto;}
 .logo-mark{width:34px;height:39px;flex:none;}
@@ -56,7 +59,7 @@ svg{display:block;}
 :root[data-theme="dark"] .logo-text .l1{color:var(--ink);}
 .navlinks{display:flex;gap:4px;margin-left:12px;flex:1 1 auto;}
 .navlink{display:flex;align-items:center;gap:7px;padding:8px 12px;border-radius:8px;border:none;background:none;color:var(--ink-muted);font-weight:600;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;}
-.navlink.active{color:var(--navy-900);border-bottom-color:var(--yellow);}
+.navlink.active{color:var(--blue-600);border-bottom-color:var(--blue-600);}
 .navlink:hover{background:var(--neutral-bg);}
 .profile{display:flex;align-items:center;gap:10px;flex:0 0 auto;padding:6px 8px;border-radius:10px;cursor:default;}
 .avatar{width:36px;height:36px;border-radius:50%;background:var(--navy-700);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none;}
@@ -75,7 +78,7 @@ main{max-width:1180px;margin:0 auto;padding:0 max(16px, env(safe-area-inset-left
 .search-box{display:flex;align-items:center;gap:8px;background:#fff;border-radius:999px;padding:6px 6px 6px 16px;max-width:520px;}
 .search-box input{flex:1;border:none;outline:none;font-size:14px;padding:8px 0;color:var(--ink);background:none;}
 .search-box .icon{color:var(--ink-muted);}
-.search-go{background:var(--yellow);color:var(--navy-900);border:none;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;}
+.search-go{background:var(--blue-600);color:#fff;border:none;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;}
 .hero-art{display:flex;align-items:center;justify-content:center;}
 .hero-art svg{width:100%;height:auto;max-width:150px;}
 @media (max-width:760px){
@@ -92,18 +95,18 @@ main{max-width:1180px;margin:0 auto;padding:0 max(16px, env(safe-area-inset-left
 .career-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:18px;}
 .career-grid.full{grid-template-columns:repeat(5,1fr);}
 .career{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;background:none;border:none;cursor:pointer;padding:6px;}
-.career-icon{width:68px;height:68px;border-radius:50%;background:var(--yellow-50);color:var(--navy-700);display:flex;align-items:center;justify-content:center;}
+.career-icon{width:68px;height:68px;border-radius:50%;background:var(--blue-50);color:var(--navy-700);display:flex;align-items:center;justify-content:center;}
 .career-icon .icon{width:28px;height:28px;}
 .career-name{font-size:13px;font-weight:600;color:var(--ink);line-height:1.25;}
 @media (max-width:900px){ .career-grid{grid-template-columns:repeat(3,1fr);} .career-grid.full{grid-template-columns:repeat(3,1fr);} }
 @media (max-width:480px){ .career-grid{grid-template-columns:repeat(2,1fr);} .career-grid.full{grid-template-columns:repeat(2,1fr);} }
 
-.quick-band{background:var(--yellow-50);border-radius:16px;padding:22px;}
+.quick-band{background:var(--blue-50);border-radius:16px;padding:22px;}
 .quick-band h2{font-size:18px;font-weight:800;margin:0 0 14px;}
 .quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
 .quick-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;text-align:left;}
-.quick-card:hover{border-color:var(--navy-700);}
-.quick-ico{width:40px;height:40px;border-radius:10px;background:var(--yellow-50);color:var(--navy-700);display:flex;align-items:center;justify-content:center;flex:none;}
+.quick-card:hover{border-color:var(--blue-500);}
+.quick-ico{width:40px;height:40px;border-radius:10px;background:var(--blue-50);color:var(--navy-700);display:flex;align-items:center;justify-content:center;flex:none;}
 .quick-title{font-weight:700;font-size:14.5px;margin:0 0 4px;}
 .quick-desc{font-size:12.5px;color:var(--ink-muted);line-height:1.35;}
 .quick-arrow{margin-left:auto;align-self:center;color:var(--ink-muted);}
@@ -113,9 +116,9 @@ main{max-width:1180px;margin:0 auto;padding:0 max(16px, env(safe-area-inset-left
 .catalog-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px;}
 .chip-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink-muted);background:none;border:none;cursor:pointer;padding:4px 0;}
 select,input,textarea{font-family:inherit;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 10px;}
-select:focus,input:focus,textarea:focus{outline:2px solid var(--navy-700);outline-offset:1px;}
+select:focus,input:focus,textarea:focus{outline:2px solid var(--blue-500);outline-offset:1px;}
 .btn{font-weight:700;font-size:13.5px;border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:8px;padding:9px 16px;cursor:pointer;}
-.btn-primary{background:var(--navy-900);color:#fff;border-color:var(--navy-900);}
+.btn-primary{background:var(--blue-600);color:#fff;border-color:var(--blue-600);}
 .btn-small{padding:6px 12px;font-size:12.5px;}
 .btn[disabled]{opacity:.5;cursor:not-allowed;}
 .btn-ghost{background:none;border-color:transparent;color:var(--ink-muted);}
@@ -202,20 +205,20 @@ footer{border-top:1px solid var(--border);margin-top:48px;}
           <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
           <input id="hero-search" placeholder="Buscar materiales, herramientas o equipos...">
           <button class="search-go" type="submit" aria-label="Buscar">
-            <svg class="icon" viewBox="0 0 24 24" style="stroke:var(--navy-900);width:18px;height:18px;"><path d="M5 12h14"/><path d="M13 5l7 7-7 7"/></svg>
+            <svg class="icon" viewBox="0 0 24 24" style="stroke:#fff;width:18px;height:18px;"><path d="M5 12h14"/><path d="M13 5l7 7-7 7"/></svg>
           </button>
         </form>
       </div>
       <div class="hero-art">
         <svg viewBox="0 0 220 220" aria-hidden="true">
           <circle cx="110" cy="110" r="100" fill="rgba(255,255,255,.08)"/>
-          <circle cx="110" cy="110" r="72" fill="rgba(255,255,255,.08)"/>
-          <g stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".92">
-            <path d="M70 150c0-30 18-55 40-55s40 25 40 55" />
-            <circle cx="110" cy="80" r="26"/>
-            <path d="M92 150h36"/>
-            <path d="M60 170h100"/>
-          </g>
+          <circle cx="110" cy="110" r="74" fill="rgba(255,255,255,.08)"/>
+          <ellipse cx="110" cy="116" rx="50" ry="10" fill="#fff" opacity=".95"/>
+          <path d="M110 55a38 38 0 0 1 38 38v16H72V93a38 38 0 0 1 38-38z" fill="#fff" opacity=".97"/>
+          <rect x="103" y="42" width="14" height="16" rx="4" fill="#fff" opacity=".97"/>
+          <path d="M80 93a30 30 0 0 1 60 0" fill="none" stroke="var(--navy-900)" stroke-width="2.5" stroke-linecap="round" opacity=".5"/>
+          <circle cx="166" cy="150" r="11" fill="var(--yellow)"/>
+          <path d="M160 150l4 4 7-8" stroke="var(--navy-900)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
         </svg>
       </div>
     </div>
