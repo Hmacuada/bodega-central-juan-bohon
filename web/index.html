@@ -1,4 +1,4 @@
-<title>CFT Juan Bohón · Bodega</title>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>CFT Juan Bohón · Bodega</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <script>
@@ -121,6 +121,24 @@
   <div id="sidebar-backdrop" class="hidden fixed inset-0 z-40 bg-gray-900/60 backdrop-blur-sm lg:hidden" aria-hidden="true"></div>
 
   <div class="flex-1 min-w-0 flex flex-col">
+  <div id="demo-banner" class="hidden bg-white border-b border-gray-200/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex flex-col xl:flex-row xl:items-center justify-between gap-x-6 gap-y-2.5">
+      <p class="min-w-0 flex items-start gap-2.5 text-[13px] leading-snug text-cft-ink">
+        <span class="mt-px px-2 py-0.5 rounded-md bg-cft-goldLight text-[#8a5a00] border border-cft-gold/40 text-[10px] font-black uppercase tracking-wider flex-none">Demo</span>
+        <span>Datos de ejemplo. Lo que hagas aquí se guarda solo en este navegador.</span>
+      </p>
+      <div class="xl:flex-none flex flex-wrap items-center gap-x-2 gap-y-1.5">
+        <span class="text-xs font-semibold text-[#3d6496]">Ver como</span>
+        <div class="inline-flex items-center p-0.5 rounded-full bg-cft-panel border border-[#dbe6f2]" role="group" aria-label="Ver la demo como">
+          <button type="button" data-demo-as="encargado">Encargado</button>
+          <button type="button" data-demo-as="docente">Docente</button>
+          <button type="button" data-demo-as="alumno">Alumno</button>
+        </div>
+        <button type="button" data-action="demo-reset" class="px-2.5 h-8 rounded-full text-xs font-semibold text-cft-ink hover:bg-cft-lightBlue flex items-center gap-1.5 transition"><i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>Reiniciar</button>
+        <a id="demo-real" href="#" target="_blank" rel="noopener" class="px-2.5 h-8 rounded-full text-xs font-semibold text-cft-accent hover:underline flex items-center gap-1.5">Versión en vivo<i data-lucide="external-link" class="w-3.5 h-3.5"></i></a>
+      </div>
+    </div>
+  </div>
   <div id="preview-banner" class="hidden bg-cft-lightBlue text-cft-navy border-b border-cft-navy/10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs sm:text-[13px] font-medium">
       <span class="flex items-center gap-2"><i data-lucide="eye" class="w-4 h-4 flex-none"></i><span id="preview-text">Estás viendo el portal como alumno.</span></span>
@@ -650,6 +668,8 @@
   var VIEW_KEY = "panol-vista-v1";
 
   var ARTIFACT_URL = "https://claude.ai/artifact/CgjMqxL77HHKxNFfRqnCzL";
+  // outside Claude (GitHub Pages, a local file) there is no window.claude: the page runs on sample data kept in this browser
+  var DEMO = !(window.claude && typeof window.claude.use === "function");
   var ROLE_LABEL = { encargado:"Encargado de pañol", docente:"Docente", alumno:"Alumno" };
 
   var state = {
@@ -1219,7 +1239,8 @@
       : r === "docente" ? "Pides préstamos, solicitas compras y confirmas los respaldos de tus alumnos."
       : pendingDocente() ? "Pides préstamos como alumno hasta que el encargado valide tu rol docente."
       : "Pides préstamos. Los equipos con escudo necesitan un docente de respaldo.";
-    var mw = $("modo-wrap"); mw.classList.toggle("hidden", !state.isAdmin); mw.classList.toggle("flex", state.isAdmin);
+    var modo = state.isAdmin && !DEMO; // the demo banner switches identity instead
+    var mw = $("modo-wrap"); mw.classList.toggle("hidden", !modo); mw.classList.toggle("flex", modo);
     $("modo-select").value = state.preview || "";
     var b = canBuy();
     document.querySelectorAll("[data-buy]").forEach(function(el){ el.classList.toggle("hidden", !b); });
@@ -1988,8 +2009,10 @@
     }
     if(t.hasAttribute("data-edit-material")){ openMaterial(t.getAttribute("data-edit-material")); return; }
     if(t.hasAttribute("data-edit-prov")){ openProveedor(t.getAttribute("data-edit-prov")); return; }
+    if(t.hasAttribute("data-demo-as")){ setDemoAs(t.getAttribute("data-demo-as")); return; }
     var a = t.getAttribute("data-action");
-    if(a === "bolsa"){ close("dlg-detalle"); renderCart(); refreshIcons(); open("dlg-bolsa"); }
+    if(a === "demo-reset") resetDemo();
+    else if(a === "bolsa"){ close("dlg-detalle"); renderCart(); refreshIcons(); open("dlg-bolsa"); }
     else if(a === "compra") openCompra();
     else if(a === "nuevo") openMaterial(null);
     else if(a === "nuevo-prov") openProveedor(null);
@@ -2037,8 +2060,134 @@
   fill($("f-carrera"), NOMBRES); fill($("c-carrera"), NOMBRES); fill($("n-carrera"), NOMBRES);
   loadCart();
 
+  /* ---------- modo demo: datos de ejemplo en memoria, con el mismo API que db/user ---------- */
+  var DEMO_KEY = "panol-demo-v1", DEMO_AS_KEY = "panol-demo-quien-v1";
+  var DEMO_USERS = { encargado: { id:"u_me", nombre:"Juan Díaz" }, docente: { id:"u_doc1", nombre:"Patricia Muñoz" }, alumno: { id:"u_al1", nombre:"Diego Castillo" } };
+  function demoAs(){
+    var q = null;
+    try{ q = new URLSearchParams(location.search).get("como"); }catch(e){}
+    if(DEMO_USERS[q]) return q;
+    try{ q = localStorage.getItem(DEMO_AS_KEY); }catch(e){ q = null; }
+    return DEMO_USERS[q] ? q : "encargado";
+  }
+  function setDemoAs(v){
+    if(!DEMO_USERS[v] || v === demoAs()) return;
+    try{ localStorage.setItem(DEMO_AS_KEY, v); }catch(e){}
+    var h = v !== "encargado" && location.hash === "#gestion" ? "" : location.hash;
+    location.href = location.pathname + "?como=" + v + h;
+  }
+  function resetDemo(){ try{ localStorage.removeItem(DEMO_KEY); localStorage.removeItem(CART_KEY); }catch(e){} location.reload(); }
+  function demoSeed(){
+    var CAR = ["Administración de Procesos Mineros","Asistente de Educación Diferencial","Cosmetología","Electricidad y Electrónica Industrial","Electricidad y Energías Renovables","Electromecánica","Estética Integral","Gastronomía y Cocina Internacional","Instrumentación Automatización y Control Industrial","Logística Industrial","Mantenimiento Mecánico Industrial","Mecánica en Maquinaria Pesada","Minería y Metalurgia","Operación y Mantención de Maquinaria Pesada","Topografía"];
+    var INV = [["Calculadora de ingeniería",0,"Casio FX-991","B","2024-03-04"],["Maqueta de yacimiento minero",0,"","B","2024-04-11"],["Set de material didáctico sensorial",1,"","B","2024-03-18"],["Pizarra táctil",1,"","R","2024-05-02"],["Vaporizador facial",2,"","B","2024-02-20"],["Set de pinceles profesionales",2,"","B","2024-02-20"],["Multímetro digital",3,"Fluke 117","B","2024-03-10"],["Osciloscopio digital",3,"Tektronix TBS1052B","B","2024-03-10"],["Panel solar fotovoltaico 100W",4,"","B","2024-06-01"],["Regulador de carga solar",4,"","B","2024-06-01"],["Motor eléctrico trifásico 1HP",5,"","B","2024-04-22"],["Variador de frecuencia",5,"","R","2024-04-22"],["Lámpara de aumento LED",6,"","B","2024-05-15"],["Camilla eléctrica",6,"","B","2024-05-15"],["Batería de ollas profesional",7,"","B","2024-01-29"],["Horno combinado de convección",7,"","B","2024-01-29"],["PLC Siemens S7-1200",8,"Siemens","B","2024-03-27"],["Sensor de proximidad inductivo",8,"","B","2024-03-27"],["Transpaleta manual",9,"","B","2024-02-08"],["Lector de código de barras",9,"","B","2024-02-08"],["Juego de llaves torquímetro",10,"","B","2024-04-05"],["Alineador láser de poleas",10,"","R","2024-04-05"],["Scanner de diagnóstico para maquinaria pesada",11,"","B","2024-05-20"],["Gata hidráulica de piso",11,"","B","2024-05-20"],["Microscopio metalúrgico",12,"","B","2024-03-14"],["Balanza de precisión",12,"","B","2024-03-14"],["Simulador de manejo de excavadora",13,"","B","2024-06-10"],["Kit de mantención de filtros",13,"","B","2024-06-10"],["Estación total",14,"Leica TS06","B","2024-03-10"],["Nivel óptico automático",14,"","B","2024-03-10"],["Proyector para presentaciones",0,"Epson PowerLite","B","2024-07-08"],["Software de planificación minera (licencia educativa)",0,"","B","2024-07-08"],["Juego de bloques de construcción",1,"","B","2024-08-14"],["Set de tarjetas pictográficas (PECS)",1,"","B","2024-08-14"],["Autoclave para esterilización",2,"","B","2024-09-02"],["Carro de manicure",2,"","R","2024-09-02"],["Pinza amperométrica",3,"Fluke 323","B","2024-06-19"],["Fuente de poder regulable",3,"","B","2024-06-19"],["Inversor de corriente 1000W",4,"","B","2024-10-01"],["Kit de medición de irradiancia",4,"","B","2024-10-01"],["Banco de pruebas de motores",5,"","B","2024-05-27"],["Reductor de velocidad (caja reductora)",5,"","B","2024-05-27"],["Máquina de microdermoabrasión",6,"","B","2024-11-05"],["Esterilizador de instrumentos UV",6,"","B","2024-11-05"],["Abatidor de temperatura",7,"","B","2024-04-30"],["Set de cuchillos profesionales",7,"","B","2024-04-30"],["Variador de frecuencia con HMI",8,"","B","2024-09-23"],["Transmisor de presión industrial",8,"","B","2024-09-23"],["Báscula industrial de piso",9,"","B","2024-08-27"],["Carro porta pallets eléctrico",9,"","M","2024-08-27"],["Compresor de aire portátil",10,"","B","2024-07-15"],["Extractor de rodamientos",10,"","B","2024-07-15"],["Polipasto eléctrico",11,"","B","2024-10-18"],["Juego de dados de impacto",11,"","B","2024-10-18"],["Equipo de muestreo geológico",12,"","B","2024-06-07"],["Horno de fusión de laboratorio",12,"","R","2024-06-07"],["Simulador de manejo de cargador frontal",13,"","B","2024-11-20"],["Kit de mangueras hidráulicas",13,"","B","2024-11-20"],["GPS diferencial (RTK)",14,"","B","2024-09-09"],["Mira topográfica",14,"","B","2024-09-09"]];
+    var EST = { B:"Bueno", R:"Regular", M:"Necesita mantenimiento" };
+    var DOC = [8, 16, 17, 23, 25, 27, 29, 35, 41, 43, 47, 53, 56, 57, 59];
+    var t = today(), now = Date.now(), H = 36e5, D = 864e5;
+    function d(n){ return plusDays(t, n); }
+    INV.push(["Juego de llaves combinadas", CAR.indexOf("Mantenimiento Mecánico Industrial"), "Juego de 12 piezas", "B", d(-6)]);
+    var inv = INV.map(function(r, i){
+      var n = i + 1, o = { id:"seed-" + pad(n), codigo:codeOf(n), nombre:r[0], carrera:CAR[r[1]], marcaModelo:r[2], estadoFisico:EST[r[3]], fechaIngreso:r[4], observaciones:"", zona:"", createdAt:1700000000000 + n * 1000 };
+      if(DOC.indexOf(n) >= 0) o.requiereDocente = true;
+      return o;
+    });
+    function item(n){ var i = inv[n - 1], o = { id:i.id, codigo:i.codigo, nombre:i.nombre, carrera:i.carrera }; if(i.requiereDocente) o.requiereDocente = true; return o; }
+    function sol(o){ return Object.assign({ profesor:"", responsable:o.solicitanteNombre, requiereDocente:false, respaldo:null, prorroga:"" }, o); }
+    var DIEGO = { solicitanteNombre:"Diego Castillo", solicitanteRol:"alumno", requesterId:"u_al1" };
+    return {
+      inventario: inv,
+      solicitudes: [
+        sol(Object.assign({ id:"s5", codigo:"CFT-51190", items:[item(8)], carrera:item(8).carrera, asignatura:"Taller práctico", requiereDocente:true, respaldo:{ docenteId:"u_doc1", docenteNombre:"Patricia Muñoz", estado:"Pendiente" }, fechaRetiro:d(2), fechaDevolucion:d(9), estado:"Pendiente", createdAt:now - H }, DIEGO)),
+        sol(Object.assign({ id:"s1", codigo:"CFT-41207", items:[item(7), item(37)], carrera:item(7).carrera, asignatura:"Taller de instalaciones I", profesor:"Docente de taller", fechaRetiro:d(1), fechaDevolucion:d(8), estado:"Pendiente", createdAt:now - 3 * H }, DIEGO)),
+        sol(Object.assign({ id:"s2", codigo:"CFT-38812", items:[item(29)], carrera:item(29).carrera, asignatura:"Topografía aplicada", requiereDocente:true, respaldo:{ docenteId:"u_doc1", docenteNombre:"Patricia Muñoz", estado:"Confirmado", fechaRespuesta:d(-1) }, fechaRetiro:d(0), fechaDevolucion:d(5), estado:"Lista para retiro", createdAt:now - 2 * D }, DIEGO)),
+        sol({ id:"s3", codigo:"CFT-30455", items:[item(19)], carrera:item(19).carrera, asignatura:"Gestión de bodegas", solicitanteNombre:"Patricia Muñoz", solicitanteRol:"docente", requesterId:"u_doc1", fechaRetiro:d(-9), fechaDevolucion:d(1), fechaEntregaReal:d(-9), estado:"En préstamo", prorroga:"Solicitada", createdAt:now - 10 * D }),
+        sol(Object.assign({ id:"s4", codigo:"CFT-22018", items:[item(15)], carrera:item(15).carrera, asignatura:"Cocina internacional", profesor:"Docente de cocina", fechaRetiro:d(-25), fechaDevolucion:d(-18), fechaDevolucionReal:d(-19), estadoDevolucion:"Bueno", estado:"Devuelta", createdAt:now - 27 * D }, DIEGO))
+      ],
+      prestamos: [
+        { id:"7hk2mq4x9demo", instrumentoId:"seed-59", instrumentoCodigo:"INS-059", instrumentoNombre:item(59).nombre, carreraSolicitante:item(59).carrera, solicitadoPor:"Juan Díaz", requesterId:"u_me", fechaEntrega:d(-6), fechaDevolucionEstimada:d(-1), fechaDevolucionReal:null, estadoAlDevolver:null, observaciones:"Uso exclusivo de clase", createdAt:now - 6 * D }
+      ],
+      compras: [
+        { id:"c1", material:"Pinza amperométrica de 1000 A", carrera:"Electricidad y Electrónica Industrial", solicitanteNombre:"Patricia Muñoz", solicitanteRol:"docente", justificacion:"Mediciones en tableros del taller de instalaciones.", requesterId:"u_doc1", estado:"Pendiente", createdAt:now - D },
+        { id:"c2", material:"Nivel láser rotativo", carrera:"Topografía", solicitanteNombre:"Patricia Muñoz", solicitanteRol:"docente", justificacion:"Replanteos en terreno.", requesterId:"u_doc1", estado:"Aprobada", proveedorId:"pv1", cantidad:2, costoUnitario:189990, createdAt:now - 4 * D },
+        { id:"c3", material:"Juego de llaves combinadas", carrera:"Mantenimiento Mecánico Industrial", origen:"orden", estado:"Comprada", proveedorId:"pv1", cantidad:1, costoUnitario:54990, fechaCompra:d(-6), inventarioId:"seed-61", inventarioIds:["seed-61"], inventarioCodigos:["INS-061"], requesterId:"u_me", createdAt:now - 8 * D }
+      ],
+      proveedores: [
+        { id:"pv1", nombre:"Suministros Técnicos (ejemplo)", rut:"76.000.000-0", rubro:"Instrumentos y herramientas", contacto:"Contacto de ejemplo", telefono:"+56 9 0000 0000", email:"ventas@ejemplo.cl", createdAt:now - 60 * D }
+      ],
+      perfiles: [
+        { id:"u_me", nombre:"Juan Díaz", carrera:"", rolSolicitado:"encargado", createdAt:now - 90 * D },
+        { id:"u_doc1", nombre:"Patricia Muñoz", carrera:"Topografía", rolSolicitado:"docente", createdAt:now - 80 * D },
+        { id:"u_al1", nombre:"Diego Castillo", carrera:"Topografía", rolSolicitado:"alumno", createdAt:now - 70 * D },
+        { id:"u_doc2", nombre:"Rodrigo Pérez", carrera:"Electromecánica", rolSolicitado:"docente", createdAt:now - 2 * D }
+      ],
+      roles: [
+        { id:"u_doc1", rol:"docente", nombre:"Patricia Muñoz", carrera:"Topografía", revisado:true, createdAt:now - 79 * D }
+      ]
+    };
+  }
+  function demoClaude(){
+    var quien = demoAs(), me = DEMO_USERS[quien], admin = quien === "encargado";
+    var store = null, listeners = {}, docListeners = {}, seq = 0;
+    try{ store = JSON.parse(localStorage.getItem(DEMO_KEY) || "null"); }catch(e){ store = null; }
+    if(!store || !store.inventario) store = demoSeed();
+    function save(){ try{ localStorage.setItem(DEMO_KEY, JSON.stringify(store)); }catch(e){} }
+    function clone(o){ return o === undefined ? o : JSON.parse(JSON.stringify(o)); }
+    function merge(t, s){ Object.keys(s).forEach(function(k){ var v = s[k]; if(v && typeof v === "object" && !Array.isArray(v) && t[k] && typeof t[k] === "object" && !Array.isArray(t[k])) merge(t[k], v); else t[k] = clone(v); }); }
+    function rows(c){ return store[c] || (store[c] = []); }
+    function find(c, id){ return rows(c).find(function(x){ return x.id === id; }); }
+    function dsnap(c, id){ var x = find(c, id), v = x ? clone(x) : undefined; if(v) delete v.id; return { id:id, exists:!!x, data:function(){ return v; } }; }
+    function snap(c){ return { docs: rows(c).slice().sort(function(a, b){ return (b.createdAt || 0) - (a.createdAt || 0); }).map(function(x){ return dsnap(c, x.id); }) }; }
+    function changed(c){
+      save();
+      setTimeout(function(){
+        (listeners[c] || []).forEach(function(fn){ fn(snap(c)); });
+        Object.keys(docListeners).forEach(function(k){ var p = k.split("/"); if(p[0] === c) docListeners[k].forEach(function(fn){ fn(dsnap(c, p[1])); }); });
+      }, 30);
+    }
+    function docRef(c, id){
+      return {
+        id: id,
+        get: function(){ return Promise.resolve(dsnap(c, id)); },
+        set: function(data){ store[c] = rows(c).filter(function(x){ return x.id !== id; }); store[c].push(Object.assign({ id:id }, clone(data))); changed(c); return Promise.resolve(); },
+        update: function(data){ var x = find(c, id); if(!x) return Promise.reject({ code:"not_found", message:"No existe" }); merge(x, data); changed(c); return Promise.resolve(); },
+        delete: function(){ store[c] = rows(c).filter(function(x){ return x.id !== id; }); changed(c); return Promise.resolve(); },
+        onSnapshot: function(next){ var k = c + "/" + id; (docListeners[k] = docListeners[k] || []).push(next); setTimeout(function(){ next(dsnap(c, id)); }, 60); return function(){}; }
+      };
+    }
+    function collection(c){
+      var api = {
+        orderBy: function(){ return api; },
+        // same read rules as the real base: only the encargado lists perfiles and proveedores
+        onSnapshot: function(next){ if(!admin && (c === "perfiles" || c === "proveedores")){ setTimeout(function(){ next({ docs: [] }); }, 60); return function(){}; } (listeners[c] = listeners[c] || []).push(next); setTimeout(function(){ next(snap(c)); }, 60); return function(){}; },
+        add: function(data){ var id = "demo-" + Date.now().toString(36) + (++seq); rows(c).push(Object.assign({ id:id }, clone(data))); changed(c); return Promise.resolve({ id:id }); },
+        doc: function(id){ return docRef(c, id); }
+      };
+      return api;
+    }
+    function nameOf(id){ var p = find("perfiles", id); return p ? p.nombre : ""; }
+    var db = { collection: collection, doc: function(p){ var s = p.split("/"); return docRef(s[0], s[1]); } };
+    var user = {
+      id: function(){ return Promise.resolve(me.id); },
+      canEdit: function(){ return Promise.resolve(admin); },
+      can: function(){ return Promise.resolve(true); },
+      me: function(){ return Promise.resolve({ id:me.id, name:me.nombre, avatarUrl:"", color:"#0c3462", email:null, isOwner:admin, canEdit:admin }); },
+      profiles: function(ids){ var o = {}; [].concat(ids).forEach(function(i){ o[i] = { id:i, name:nameOf(i), avatarUrl:"", color:"#0c3462", email:null, isMe:i === me.id, guest:false }; }); return Promise.resolve(o); }
+    };
+    renderDemoBanner(quien);
+    return { use: function(name){ return Promise.resolve(name === "db" ? db : name === "user" ? user : null); } };
+  }
+  function renderDemoBanner(quien){
+    $("demo-banner").classList.remove("hidden");
+    $("demo-real").href = ARTIFACT_URL;
+    document.querySelectorAll("[data-demo-as]").forEach(function(b){
+      var on = b.getAttribute("data-demo-as") === quien;
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+      b.className = "h-7 px-3 rounded-full text-xs font-bold transition " + (on ? "bg-cft-deep text-white shadow-sm" : "text-cft-ink hover:bg-white");
+    });
+  }
+
   /* ---------- boot ---------- */
   loadPreview();
+  if(DEMO) state.preview = null;
   go(routeFromHash(location.hash.slice(1)) || "inicio");
   renderAll();
 
@@ -2051,7 +2200,7 @@
   }
 
   (async function boot(){
-    var c = window.claude, db = null, user = null;
+    var c = DEMO ? demoClaude() : window.claude, db = null, user = null;
     try{ db = c && c.use ? await c.use("db") : null; }catch(e){ db = null; }
     state.db = db; state.dbTried = true;
     if(!db){ state.roleKnown = true; renderAll(); return; }
@@ -2095,3 +2244,4 @@
   })();
 })();
 </script>
+</body></html>

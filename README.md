@@ -24,6 +24,7 @@ Cada solicitud aprobada genera un pase QR que enlaza directamente a esa solicitu
 ## Enlaces al prototipo
 
 - Propuesta completa (contexto, gobernanza, flujo de préstamo, layout de bodega, plan de implementación): documento compartido aparte.
+- Demo pública: https://hmacuada.github.io/bodega-central-juan-bohon/ — fuera de Claude la página entra en **modo demo**, con datos de ejemplo guardados solo en el navegador. La barra superior permite verla como encargado, docente o alumno (o con `?como=docente` / `?como=alumno` en la URL) y "Reiniciar" vuelve a los datos iniciales.
 - Plataforma web en vivo (prototipo): enlace de Claude Artifacts compartido aparte.
 
 ## Próximos pasos
