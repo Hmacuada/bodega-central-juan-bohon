@@ -1,7 +1,7 @@
 // Generador de horarios sin choques.
 // Variables por sección: plan de módulos (compartido por las secciones de una misma carrera-semestre)
 // y orientación por día (qué carril va en el bloque 1). Se busca con min-conflicts + ruido + reinicios.
-import { activeSemesters, cohortDays, blocksFor, toMinutes, DAY_NAMES, DAYS, roman } from './calendar.js';
+import { activeSemesters, cohortDays, blocksFor, toMinutes, DAY_NAMES, DAYS, roman, DAYS_PER_LEVEL } from './calendar.js';
 import { candidatePlans } from './modules.js';
 
 export function makeRng(seed) {
@@ -28,6 +28,9 @@ export function buildProblem(state) {
       if (!n) continue;
       const semObj = c.semestres[sem - 1];
       const days = cohortDays(state.jornadas, c.jornada, sem);
+      if (days.length !== DAYS_PER_LEVEL) {
+        throw new Error(`La jornada ${c.jornada} tiene ${days.length} días para ${sem <= 2 ? '1º' : '2º'} año; deben ser ${DAYS_PER_LEVEL}. Corrígelo en Reglas.`);
+      }
       const blocks = days.map((d) => blocksFor(state.jornadas, c.jornada, d).map((b) => ({ ...b, s: toMinutes(b.inicio), e: toMinutes(b.fin) })));
       const subjects = semObj.asignaturas;
       const g = {

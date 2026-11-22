@@ -53,3 +53,28 @@ test('detecta choques imposibles: un solo docente para 3 secciones', () => {
   const res = solve(state, { seed: 1, maxIter: 200, restarts: 1 });
   assert.ok(res.resumen.choquesDocente > 0);
 });
+
+test('cualquier periodo puede abrir los 4 semestres (I y II a la vez)', () => {
+  const state = buildInitialState(seed, demo);
+  state.oferta.TLI[2] = { estudiantes: 30, secciones: 1 };
+  state.oferta.TLI[4] = { estudiantes: 25, secciones: 1 };
+  const res = solve(state, { seed: 5 });
+  const ids = res.secciones.map((s) => s.id);
+  assert.ok(ids.includes('TLI-2-A') && ids.includes('TLI-4-A'), ids.join(','));
+  const dias2 = new Set(res.sesiones.filter((x) => x.seccionId === 'TLI-2-A').map((x) => x.dia));
+  assert.deepEqual([...dias2].sort(), ['Ju', 'Ma', 'Sa']);
+});
+
+test('la práctica (V semestre) es configurable y no ocupa bloques', () => {
+  const state = buildInitialState(seed, demo);
+  assert.equal(state.carreras.find((c) => c.codigo === 'TLI').practica.horas, 400);
+  state.oferta.TLI.practica = { estudiantes: 12, supervisorId: 'd1' };
+  const res = solve(state, { seed: 7 });
+  assert.ok(!res.sesiones.some((x) => x.seccionId.startsWith('TLI-5')));
+});
+
+test('días mal configurados se informan con un mensaje claro', () => {
+  const state = buildInitialState(seed, demo);
+  state.jornadas.Vespertino.dias[1] = ['Ma', 'Ju'];
+  assert.throws(() => solve(state, { seed: 1 }), /deben ser 3/);
+});

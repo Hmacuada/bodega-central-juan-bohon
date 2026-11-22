@@ -34,8 +34,20 @@ export const TURNOS = [
   { id: 'N2', nombre: 'Noche, bloque 2' }
 ];
 
-export function activeSemesters(paridad) {
-  return paridad === 'par' ? [2, 4] : [1, 3];
+// Semestres lectivos que se pueden planificar en cualquier periodo. Cuáles se dictan lo decide la
+// oferta (secciones > 0), no la paridad del periodo: puede haber ingreso en marzo y en agosto.
+export const LECTIVE_SEMESTERS = [1, 2, 3, 4];
+// V semestre: práctica laboral y examen de competencias (sin sala ni bloques).
+export const PRACTICE_SEM = 5;
+export const DAYS_PER_LEVEL = 3; // un módulo usa 3 sesiones semanales: 3 días × 2 bloques
+
+export function activeSemesters() {
+  return LECTIVE_SEMESTERS;
+}
+
+// Semestres con secciones abiertas en la oferta de una carrera.
+export function openSemesters(state, code) {
+  return LECTIVE_SEMESTERS.filter((s) => state.oferta?.[code]?.[s]?.secciones);
 }
 
 export function levelOf(sem) {

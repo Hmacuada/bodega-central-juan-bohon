@@ -14,6 +14,7 @@ export function buildInitialState(seed, demo, { withDemo = true } = {}) {
     reglas: { cupo: 30, tope: 12 },
     carreras: seed.carreras.map((c) => ({
       codigo: c.codigo, nombre: c.nombre, jornada: c.jornada, fuente: c.fuente,
+      practica: { horas: c.practica_laboral_horas || 400, examen: c.examen_competencias !== false },
       semestres: c.semestres.map((s) => ({ n: s.n, horas: s.horas, semanas_impresas: s.semanas_impresas, asignaturas: s.asignaturas }))
     })),
     oferta: {},
@@ -34,6 +35,18 @@ export function buildInitialState(seed, demo, { withDemo = true } = {}) {
     state.asignaciones = suggestAssignments(state).asignaciones;
     state.datosDeEjemplo = true;
   }
+  return state;
+}
+
+// Completa estados guardados con versiones anteriores (sin práctica configurable, por ejemplo).
+export function migrateState(state, seed = null) {
+  for (const c of state.carreras || []) {
+    if (!c.practica) {
+      const src = seed?.carreras?.find((x) => x.codigo === c.codigo);
+      c.practica = { horas: src?.practica_laboral_horas || 400, examen: true };
+    }
+  }
+  state.oferta = state.oferta || {};
   return state;
 }
 
