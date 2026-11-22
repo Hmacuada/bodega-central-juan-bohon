@@ -2,7 +2,8 @@
 import { DEFAULT_JORNADAS, DAYS, TURNOS } from './calendar.js';
 import { suggestAssignments } from './assign.js';
 
-export const ALL_SLOTS = DAYS.flatMap((d) => TURNOS.map((t) => `${d}-${t.id}`));
+// El sábado no hay turnos de noche: solo mañana.
+export const ALL_SLOTS = DAYS.flatMap((d) => TURNOS.filter((t) => d !== 'Sa' || t.id.startsWith('M')).map((t) => `${d}-${t.id}`));
 
 export function buildInitialState(seed, demo, { withDemo = true } = {}) {
   const state = {
@@ -46,6 +47,7 @@ export function migrateState(state, seed = null) {
       c.practica = { horas: src?.practica_laboral_horas || 400, examen: true };
     }
   }
+  for (const d of state.docentes || []) if (Array.isArray(d.disponibilidad)) d.disponibilidad = d.disponibilidad.filter((s) => ALL_SLOTS.includes(s));
   state.oferta = state.oferta || {};
   return state;
 }

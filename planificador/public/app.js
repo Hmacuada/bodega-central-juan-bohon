@@ -1,7 +1,7 @@
 // Interfaz del planificador. Vistas: Horario, Carreras (con asistente de 5 pasos), Docentes, Salas, Respaldo.
 import { solve } from '/src/core/solver.js';
 import { suggestAssignments, qualifiedTeachers, canTeach, teacherNeeds, availableForLevel, estimatedLoad, neededSubjects } from '/src/core/assign.js';
-import { activeSemesters, openSemesters, DAYS, DAY_NAMES, DAYS_PER_LEVEL, TURNOS, roman, cohortDays, toMinutes, levelOf } from '/src/core/calendar.js';
+import { activeSemesters, openSemesters, DAYS, DAY_NAMES, DAYS_PER_LEVEL, TURNOS, roman, cohortDays, toMinutes, levelOf, isSaturdayOk, SATURDAY_LAST_START, DEFAULT_JORNADAS } from '/src/core/calendar.js';
 import { candidatePlans, moduleWeeks } from '/src/core/modules.js';
 import { ALL_SLOTS, periodName, migrateState } from '/src/core/initial.js';
 
@@ -20,7 +20,11 @@ function buildColors() {
 const colorOf = (codigo) => colorMap[codigo] || SERIES[0];
 const cvar = (codigo) => `--c:${colorOf(codigo)}`;
 const initials = (name) => String(name || '?').replace(/^(Sr|Sra|Dr|Dra)\.?\s+/i, '').split(/[\s.]+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
-const avatar = (name, cls = '') => `<span class="avatar ${cls}" aria-hidden="true">${esc(initials(name))}</span>`;
+// Avatares divertidos: animal y color de fondo; el docente puede cambiarlo cuando quiera.
+const FUN = [['🦉', '#E8EEF8'], ['🦊', '#FCE9DD'], ['🐼', '#EEF1F5'], ['🐨', '#E6EEF2'], ['🦁', '#FBF0D6'], ['🐯', '#FDE8D7'], ['🐸', '#E3F4EA'], ['🐧', '#E5EDFA'],
+  ['🐙', '#FBE4EE'], ['🦄', '#EFE8FB'], ['🐝', '#FBF3D3'], ['🐢', '#E4F2E6'], ['🐬', '#E1F0F8'], ['🦜', '#E6F5EC'], ['🐻', '#F3EAE2'], ['🐱', '#FBEEDF']];
+const avatarOf = (d, cls = '') => (d?.fun != null && FUN[d.fun] ? `<span class="avatar fun ${cls}" style="background:${FUN[d.fun][1]}" aria-hidden="true">${FUN[d.fun][0]}</span>` : avatar(d?.nombre, cls, d?.foto));
+const avatar = (name, cls = '', foto = '') => `<span class="avatar ${cls}" aria-hidden="true">${foto ? `<img src="${esc(foto)}" alt="">` : esc(initials(name))}</span>`;
 
 // Iconos de trazo (24×24).
 const ICONS = {
@@ -44,7 +48,8 @@ const ICONS = {
   printer: '<path d="M6.5 9V3.5h11V9M6.5 17.5h-2A1.5 1.5 0 0 1 3 16v-5.5A1.5 1.5 0 0 1 4.5 9h15a1.5 1.5 0 0 1 1.5 1.5V16a1.5 1.5 0 0 1-1.5 1.5h-2"/><rect x="6.5" y="14" width="11" height="7" rx="1"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
   arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
-  back: '<path d="M19 12H5M11 6l-6 6 6 6"/>'
+  back: '<path d="M19 12H5M11 6l-6 6 6 6"/>',
+  camera: '<path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.5-2h6l1.5 2h2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="12.5" r="3.2"/>'
 };
 const icon = (name, cls = '') => `<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name] || ''}</svg>`;
 const docName = (id) => S.docentes.find((d) => d.id === id)?.nombre || 'Sin docente';
@@ -88,7 +93,10 @@ function route() {
 window.addEventListener('hashchange', () => { ui.modal = null; ui.editDoc = null; ui.rows = null; render(); });
 let resizeTimer = null;
 window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { ui.rows = null; render(); }, 150); });
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && ui.modal) closeModal(); });
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape' || !ui.modal) return;
+  if (ui.pickAv) { ui.pickAv = false; render(); } else closeModal();
+});
 
 // ---------- Una sola pantalla: pestañas, páginas y ventanas ----------
 const desktop = () => window.innerWidth > 900;
@@ -103,19 +111,18 @@ function subtabs(key, items) {
 }
 // Filas por página: en escritorio se calculan para que la página no haga scroll.
 const rowsPer = () => (desktop() ? ui.rows || 50 : 1000);
-function pageNo(key, total) {
-  const pages = Math.max(1, Math.ceil(total / rowsPer()));
+function pageNo(key, total, n = rowsPer()) {
+  const pages = Math.max(1, Math.ceil(total / n));
   ui.pages[key] = Math.min(Math.max(1, ui.pages[key] || 1), pages);
   return ui.pages[key];
 }
-function page(key, list) {
-  const p = pageNo(key, list.length);
-  return list.slice((p - 1) * rowsPer(), p * rowsPer());
+function page(key, list, n = rowsPer()) {
+  const p = pageNo(key, list.length, n);
+  return list.slice((p - 1) * n, p * n);
 }
-function pagerHtml(key, total) {
-  const n = rowsPer();
+function pagerHtml(key, total, n = rowsPer()) {
   if (total <= n) return '';
-  const p = pageNo(key, total);
+  const p = pageNo(key, total, n);
   const pages = Math.ceil(total / n);
   return `<div class="pager"><span class="faint small">${(p - 1) * n + 1}–${Math.min(total, p * n)} de ${total}</span>
     <button class="sq" data-act="page" data-k="${key}" data-v="${p - 1}" ${p === 1 ? 'disabled' : ''} aria-label="Página anterior">‹</button>
@@ -124,6 +131,7 @@ function pagerHtml(key, total) {
 }
 function closeModal() {
   ui.modal = null;
+  ui.pickAv = false;
   ui.editDoc = null;
   render();
 }
@@ -133,6 +141,9 @@ function modalHtml() {
   let title = '';
   let body = '';
   let wide = false;
+  let cls = '';
+  let headHtml = '';
+  let foot = '';
   const H = S.horario;
   if (m.v === 'issues' && H) {
     const mine = m.k ? new Set(H.secciones.filter((s) => s.carrera === m.k).map((s) => s.id)) : null;
@@ -148,12 +159,19 @@ function modalHtml() {
   } else if (m.v === 'doc') {
     const d = S.docentes.find((x) => x.id === ui.editDoc);
     if (!d) { ui.modal = null; return ''; }
-    title = 'Ficha del docente';
+    const h = estimatedLoad(S, S.asignaciones)[d.id] || 0;
+    title = d.nombre || 'Nuevo docente';
+    cls = 'doc';
+    headHtml = `<div class="who"><div class="av-wrap"><button class="avatar-up" data-act="pickAv" aria-expanded="${!!ui.pickAv}" title="Cambiar avatar">${avatarOf(d, 'lg')}<span class="cam">${icon('camera')}</span><span class="sr">Cambiar avatar</span></button>
+      ${ui.pickAv ? `<div class="av-pick" role="dialog" aria-label="Elegir avatar"><div class="av-grid">${FUN.map(([e, bg], i) => `<button data-act="setFun" data-v="${i}" style="background:${bg}" aria-pressed="${d.fun === i}" aria-label="Avatar ${i + 1}">${e}</button>`).join('')}</div>
+        <div class="av-opts"><label class="btn sm">${icon('upload')}Subir foto<input type="file" accept="image/*" class="sr" data-change="foto"></label><button class="btnq sm" data-act="rmFoto">Usar iniciales</button></div></div>` : ''}</div>
+      <div><h2>${esc(title)}</h2><span class="faint small">${esc(d.especialidad || 'Sin especialidad')} · ${h ? `${h} h en el periodo` : 'sin carga en el periodo'}</span></div></div>`;
     body = docForm(d);
+    foot = '<button class="btnq danger-q" data-act="delDoc">Eliminar docente</button><button class="btnp" data-act="closeModal">Listo</button>';
   } else { ui.modal = null; return ''; }
-  return `<div class="modal-back"><div class="modal ${wide ? 'wide' : ''}" role="dialog" aria-modal="true" aria-label="${esc(title)}">
-    <div class="modal-head"><h2>${esc(title)}</h2><button class="sq" data-act="closeModal" aria-label="Cerrar">×</button></div>
-    <div class="modal-body">${body}</div></div></div>`;
+  return `<div class="modal-back"><div class="modal ${wide ? 'wide' : ''} ${cls}" role="dialog" aria-modal="true" aria-label="${esc(title)}">
+    <div class="modal-head">${headHtml || `<h2>${esc(title)}</h2>`}<button class="sq" data-act="closeModal" aria-label="Cerrar">×</button></div>
+    <div class="modal-body">${body}</div>${foot ? `<div class="modal-foot">${foot}</div>` : ''}</div></div>`;
 }
 // Si la página no cabe, reduce las filas por página y vuelve a dibujar (solo escritorio).
 function fitScreen() {
@@ -505,8 +523,13 @@ function wizReglas(c) {
   const blockRow = (key, label) => {
     const own = key === 'default' || !!j.bloques[key];
     const list = j.bloques[key] || j.bloques.default;
-    return `<div class="rule-row"><div class="rule-label"><b>${label}</b>${key === 'Sa' ? `<button class="linkbtn" data-act="${own ? 'satSame' : 'satOwn'}">${own ? 'Usar el de la semana' : 'Usar otro horario'}</button>` : '<span>Bloques de clase</span>'}</div>
-      ${own ? `<div class="blocks">${list.map((b, i) => `<span class="blk"><span class="faint small">${i + 1}</span><input type="time" value="${b.inicio}" data-change="blockTime" data-k="${key}" data-i="${i}" data-f="inicio" aria-label="${label}, bloque ${i + 1}, inicio"><span class="faint">–</span><input type="time" value="${b.fin}" data-change="blockTime" data-k="${key}" data-i="${i}" data-f="fin" aria-label="${label}, bloque ${i + 1}, fin">${toMinutes(b.fin) <= toMinutes(b.inicio) ? '<span class="badge bad">Revisa</span>' : ''}</span>`).join('')}</div>`
+    const sat = key === 'Sa';
+    // El sábado solo hay clases en la mañana: «igual a la semana» solo sirve si la semana también es de mañana.
+    const weekAm = j.bloques.default.every(isSaturdayOk);
+    const satLink = !sat ? '<span>Bloques de clase</span>' : `<span>Solo en la mañana</span>${own && weekAm ? '<button class="linkbtn" data-act="satSame">Usar el de la semana</button>' : !own ? '<button class="linkbtn" data-act="satOwn">Usar otro horario</button>' : ''}`;
+    const lateBadge = (b) => (sat && !isSaturdayOk(b) ? `<span class="badge bad">Antes de las ${SATURDAY_LAST_START}</span>` : '');
+    return `<div class="rule-row"><div class="rule-label"><b>${label}</b>${satLink}</div>
+      ${own ? `<div class="blocks">${list.map((b, i) => `<span class="blk"><span class="faint small">${i + 1}</span><input type="time" value="${b.inicio}" data-change="blockTime" data-k="${key}" data-i="${i}" data-f="inicio" ${sat ? 'max="12:59"' : ''} aria-label="${label}, bloque ${i + 1}, inicio"><span class="faint">–</span><input type="time" value="${b.fin}" data-change="blockTime" data-k="${key}" data-i="${i}" data-f="fin" aria-label="${label}, bloque ${i + 1}, fin">${toMinutes(b.fin) <= toMinutes(b.inicio) ? '<span class="badge bad">Revisa</span>' : lateBadge(b)}</span>`).join('')}</div>`
         : '<span class="faint small">Mismo horario que de lunes a viernes</span>'}</div>`;
   };
   return head + `<p class="faint small">Afecta a las ${same} carreras de jornada ${esc(jn.toLowerCase())}.</p>
@@ -552,7 +575,7 @@ function viewDocentes() {
     <div class="card" style="padding:4px 8px">
       <div class="tablewrap"><table class="dtable" data-pager><thead><tr><th>Docente</th><th>Carga</th><th></th></tr></thead><tbody>
         ${page('docentes-' + f, list).map((d) => `<tr class="click ${d.id === ui.editDoc ? 'selected' : ''}" data-act="editDoc" data-v="${d.id}">
-          <td><span class="who">${avatar(d.nombre, 'sm')}<span><span class="l1">${esc(d.nombre)}</span><span class="l2">${esc(d.especialidad || '')}</span></span></span></td>
+          <td><span class="who">${avatarOf(d, 'sm')}<span><span class="l1">${esc(d.nombre)}</span><span class="l2">${esc(d.especialidad || '')}</span></span></span></td>
           <td class="num">${load[d.id] ? `${load[d.id]} h` : '<span class="faint">—</span>'}</td>
           <td>${limited(d) ? '<span class="badge warn">Disponibilidad limitada</span>' : ''}</td></tr>`).join('') || '<tr><td colspan="3" class="muted" style="padding:24px">Sin resultados.</td></tr>'}
       </tbody></table></div>${pagerHtml('docentes-' + f, list.length)}</div>`;
@@ -562,25 +585,57 @@ function allSubjectNames() {
   return [...new Set(S.carreras.flatMap((c) => c.semestres.flatMap((s) => s.asignaturas.map((a) => a.nombre))))].sort((a, b) => a.localeCompare(b));
 }
 
+// Asignaturas del docente: las que puede dictar y las que tiene asignadas este periodo.
+function docHistory(d) {
+  const careersOf = {};
+  for (const c of S.carreras) for (const sm of c.semestres) for (const a of sm.asignaturas) (careersOf[a.nombre] = careersOf[a.nombre] || new Set()).add(c.codigo);
+  const now = {};
+  for (const n of neededSubjects(S)) if (S.asignaciones[n.asignatura.codigo] === d.id) (now[n.asignatura.nombre] = now[n.asignatura.nombre] || []).push(`${n.carrera.codigo} ${roman(n.sem)}`);
+  const rows = d.materias.map((m, i) => ({ nombre: m, i, now: now[m] || null, carreras: [...(careersOf[m] || [])] }));
+  for (const m of Object.keys(now)) if (!d.materias.includes(m)) rows.push({ nombre: m, i: -1, now: now[m], carreras: [...(careersOf[m] || [])] });
+  return rows.sort((x, y) => (!!y.now - !!x.now) || x.nombre.localeCompare(y.nombre));
+}
+
+const HIST_ROWS = 7;
 function docForm(d) {
-  const avail = Array.isArray(d.disponibilidad) ? d.disponibilidad : ALL_SLOTS;
-  return `<div class="doc-head">${avatar(d.nombre, 'lg')}<div><b>${esc(d.nombre || 'Nuevo docente')}</b><br><span class="faint small">${esc(d.especialidad || 'Sin especialidad')}</span></div></div>
-    <label class="field">Nombre<input type="text" value="${esc(d.nombre)}" data-change="docField" data-f="nombre"></label>
-    <label class="field">Especialidad<input type="text" value="${esc(d.especialidad)}" data-change="docField" data-f="especialidad"></label>
-    <div class="row"><label class="field">Tope semanal (sesiones)<input type="number" min="1" max="12" placeholder="${S.reglas.tope}" value="${d.tope ?? ''}" data-change="docField" data-f="tope"></label>
-      <label class="field">Sesiones en otros cursos<input type="number" min="0" max="12" value="${d.otraCarga || 0}" data-change="docField" data-f="otraCarga"></label></div>
-    <div class="field">Asignaturas que puede dictar
-      <div class="chips">${d.materias.map((m, i) => `<span class="chip">${esc(m)}<button data-act="rmMat" data-v="${i}" aria-label="Quitar ${esc(m)}">×</button></span>`).join('') || '<span class="muted">Ninguna todavía.</span>'}</div>
-      <div class="row"><input type="text" list="subjects" placeholder="Escribe una asignatura" id="newMat" class="grow" aria-label="Agregar asignatura"><button class="btn" data-act="addMat">Agregar</button></div>
+  const hist = docHistory(d);
+  const nowCount = hist.filter((r) => r.now).length;
+  const tab = curTab('docTab', ['ficha', 'hist']);
+  const tabs = `<div class="seg sm" role="tablist">${[['ficha', 'Ficha'], ['hist', `Historial docente <span class="count">${hist.length}</span>`]].map(([v, l]) => `<button role="tab" data-act="tab" data-k="docTab" data-v="${v}" aria-selected="${tab === v}" aria-pressed="${tab === v}">${l}</button>`).join('')}</div>`;
+  if (tab === 'hist') {
+    const pk = 'hist-' + d.id;
+    return tabs + `<div class="hist-top"><div class="add-mat"><input type="text" list="subjects" placeholder="Agregar asignatura que puede dictar" id="newMat" aria-label="Agregar asignatura"><button class="btn" data-act="addMat">${icon('plus')}Agregar</button></div>
+      <span class="faint small">${nowCount} asignada${nowCount === 1 ? '' : 's'} en ${esc(S.periodo.nombre)}</span></div>
       <datalist id="subjects">${allSubjectNames().map((n) => `<option value="${esc(n)}">`).join('')}</datalist>
-    </div>
-    <div class="field">Disponibilidad
-      <div class="avail"><div></div>${DAYS.map((x) => `<span class="dh">${x}</span>`).join('')}
-        ${TURNOS.map((t) => `<span class="lbl">${t.nombre}</span>${DAYS.map((x) => `<input type="checkbox" ${avail.includes(`${x}-${t.id}`) ? 'checked' : ''} data-change="avail" data-v="${x}-${t.id}" aria-label="${DAY_NAMES[x]}, ${t.nombre}">`).join('')}`).join('')}
+      ${hist.length ? `<table class="dtable hist"><thead><tr><th>Asignatura</th><th>Carreras</th><th>${esc(S.periodo.nombre)}</th><th></th></tr></thead><tbody>
+        ${page(pk, hist, HIST_ROWS).map((r) => `<tr><td><span class="l1">${esc(r.nombre)}</span></td><td class="faint small">${r.carreras.join(', ') || '—'}</td>
+          <td>${r.now ? `<span class="badge ok">${esc(r.now.join(' · '))}</span>` : '<span class="faint small">—</span>'}${r.i < 0 ? ' <span class="badge warn">No está en su lista</span>' : ''}</td>
+          <td>${r.i >= 0 ? `<button class="sq xs" data-act="rmMat" data-v="${r.i}" aria-label="Quitar ${esc(r.nombre)}" title="Quitar de su lista">×</button>` : ''}</td></tr>`).join('')}
+      </tbody></table>${pagerHtml(pk, hist.length, HIST_ROWS)}` : '<p class="faint">Aún no tiene asignaturas. Agrega las que puede dictar.</p>'}`;
+  }
+  const avail = Array.isArray(d.disponibilidad) ? d.disponibilidad : ALL_SLOTS;
+  return tabs + `<div class="doc-grid">
+    <section class="doc-col">
+      <h3 class="sub">Datos</h3>
+      <div class="form2">
+        <label class="field">Nombre<input type="text" value="${esc(d.nombre)}" data-change="docField" data-f="nombre"></label>
+        <label class="field">Especialidad<input type="text" value="${esc(d.especialidad)}" data-change="docField" data-f="especialidad"></label>
+        <label class="field">Correo<input type="email" value="${esc(d.correo)}" placeholder="nombre@ejemplo.cl" autocomplete="off" data-change="docField" data-f="correo"></label>
+        <label class="field">Teléfono<input type="tel" value="${esc(d.telefono)}" placeholder="+56 9 1234 5678" autocomplete="off" data-change="docField" data-f="telefono"></label>
+        <label class="field">Tope semanal (sesiones)<input type="number" min="1" max="12" placeholder="${S.reglas.tope} (general)" value="${d.tope ?? ''}" data-change="docField" data-f="tope"></label>
       </div>
-      <span class="muted small">Mañana: jornada diurna y sábado. Noche: jornada vespertina. Un módulo usa los 3 días del nivel: si falta un día, el docente no puede tomar asignaturas de ese nivel.</span>
-    </div>
-    <div class="row" style="justify-content:space-between"><button class="btn danger" data-act="delDoc">Eliminar docente</button><button class="btnp" data-act="closeModal">Listo</button></div>`;
+      <h3 class="sub">Asignaturas</h3>
+      <div class="hist-sum"><div><b>${d.materias.length}</b><span>puede dictar</span></div><div><b>${nowCount}</b><span>asignadas en ${esc(S.periodo.nombre)}</span></div>
+        <button class="linkbtn" data-act="tab" data-k="docTab" data-v="hist">Ver historial ${icon('arrow')}</button></div>
+    </section>
+    <section class="doc-col">
+      <h3 class="sub">Disponibilidad <span class="count">${avail.length} de ${ALL_SLOTS.length}</span></h3>
+      <div class="avail"><div></div>${DAYS.map((x) => `<span class="dh">${x}</span>`).join('')}
+        ${TURNOS.map((t, i) => `${i === 2 ? '<span class="avail-sep"></span>' : ''}<span class="lbl">${i % 2 ? '' : `<b>${t.id[0] === 'M' ? 'Mañana' : 'Noche'}</b>`}Bloque ${t.id[1]}</span>${DAYS.map((x) => x === 'Sa' && t.id[0] === 'N' ? '<span class="na" title="El sábado solo hay clases en la mañana"></span>' : `<input type="checkbox" ${avail.includes(`${x}-${t.id}`) ? 'checked' : ''} data-change="avail" data-v="${x}-${t.id}" aria-label="${DAY_NAMES[x]}, ${t.nombre}">`).join('')}`).join('')}
+      </div>
+      <p class="faint small">Mañana: jornada diurna y sábado. Noche: vespertina; el sábado no tiene noche. Si falta uno de los 3 días de un nivel, no puede tomar asignaturas de ese nivel.</p>
+    </section>
+  </div>`;
 }
 
 // ---------- Vista: Salas ----------
@@ -623,6 +678,8 @@ function viewRespaldo() {
 
 // Bloques que empiezan antes de las 17:00 se cruzan con la disponibilidad de mañana (M); el resto, con la de noche (N).
 const turnoOf = (inicio, id) => (toMinutes(inicio) < 17 * 60 ? 'M' : 'N') + (id || 'B1').slice(1);
+// Bloques de sábado (siempre de mañana): los de la semana si ya son de mañana; si no, los del patrón vespertino actual de TLI.
+const satBlocks = (j) => structuredClone(j.bloques.default.every(isSaturdayOk) ? j.bloques.default : DEFAULT_JORNADAS.Vespertino.bloques.Sa).map((b) => ({ ...b, turno: 'M' + b.id.slice(1) }));
 
 // ---------- Acciones ----------
 const actions = {
@@ -653,11 +710,12 @@ const actions = {
       const set = new Set(j.dias[el.dataset.lv]);
       if (set.has(el.dataset.v)) set.delete(el.dataset.v); else set.add(el.dataset.v);
       j.dias[el.dataset.lv] = DAYS.filter((d) => set.has(d));
+      if (set.has('Sa') && !j.bloques.Sa && !j.bloques.default.every(isSaturdayOk)) j.bloques.Sa = satBlocks(j);
     });
   },
   satOwn() {
     const j = S.jornadas[career(route().arg).jornada];
-    mutate(() => { j.bloques.Sa = j.bloques.default.map((b) => ({ ...b, turno: turnoOf(b.inicio, b.id) })); });
+    mutate(() => { j.bloques.Sa = satBlocks(j); });
   },
   satSame() { const j = S.jornadas[career(route().arg).jornada]; mutate(() => { delete j.bloques.Sa; }); },
   mode(el) { ui.mode = el.dataset.v; ui.sel = null; render(); },
@@ -685,7 +743,7 @@ const actions = {
   },
   addDoc() {
     const id = 'd' + Date.now().toString(36);
-    mutate(() => S.docentes.push({ id, nombre: 'Nuevo docente', especialidad: '', materias: [], disponibilidad: ALL_SLOTS.slice(), tope: null, otraCarga: 0 }));
+    mutate(() => S.docentes.push({ id, nombre: 'Nuevo docente', especialidad: '', materias: [], disponibilidad: ALL_SLOTS.slice(), tope: null, otraCarga: 0, correo: '', telefono: '' }));
     ui.editDoc = id;
     ui.modal = { v: 'doc' };
     render();
@@ -693,6 +751,7 @@ const actions = {
   editDoc(el) {
     ui.editDoc = el.dataset.v || null;
     ui.modal = ui.editDoc ? { v: 'doc' } : null;
+    ui.tabs.docTab = 'ficha';
     render();
   },
   delDoc() {
@@ -712,6 +771,9 @@ const actions = {
     if (!v) return;
     mutate(() => { const d = S.docentes.find((x) => x.id === ui.editDoc); if (!d.materias.includes(v)) d.materias.push(v); });
   },
+  pickAv() { ui.pickAv = !ui.pickAv; render(); },
+  setFun(el) { ui.pickAv = false; mutate(() => { const d = S.docentes.find((x) => x.id === ui.editDoc); d.fun = Number(el.dataset.v); delete d.foto; }, { stale: false }); },
+  rmFoto() { ui.pickAv = false; mutate(() => { const d = S.docentes.find((x) => x.id === ui.editDoc); delete d.foto; delete d.fun; }, { stale: false }); },
   rmMat(el) { mutate(() => { const d = S.docentes.find((x) => x.id === ui.editDoc); d.materias.splice(Number(el.dataset.v), 1); }); },
   addSala() { const id = 's' + Date.now().toString(36); ui.editSala = id; ui.pages.salas = 9999; mutate(() => S.salas.push({ id, nombre: `Sala ${S.salas.length + 1}`, capacidad: 30, tipo: 'Sala' })); },
   editSala(el) { ui.editSala = el.dataset.v || null; render(); const f = app.querySelector('.room.editing input'); if (f) f.focus(); },
@@ -758,7 +820,7 @@ const changes = {
     mutate(() => {
       const b = j.bloques[el.dataset.k][Number(el.dataset.i)];
       b[el.dataset.f] = el.value;
-      b.turno = turnoOf(b.inicio, b.id);
+      b.turno = el.dataset.k === 'Sa' ? 'M' + b.id.slice(1) : turnoOf(b.inicio, b.id);
     });
   },
   confirmado(el) { mutate(() => { S.jornadas[career(route().arg).jornada].confirmado = el.checked; }, { stale: false }); },
@@ -766,13 +828,31 @@ const changes = {
   cupo(el) { mutate(() => { S.reglas.cupo = Math.max(5, Number(el.value) || 30); }); },
   tope(el) { mutate(() => { S.reglas.tope = Math.max(1, Math.min(12, Number(el.value) || 12)); }); },
   docField(el) {
+    const f = el.dataset.f;
+    // Los datos de contacto no cambian el horario: no lo marcan como desactualizado.
+    const contact = f === 'correo' || f === 'telefono';
     mutate(() => {
       const d = S.docentes.find((x) => x.id === ui.editDoc);
-      const f = el.dataset.f;
       if (f === 'tope') d.tope = el.value === '' ? null : Math.max(1, Math.min(12, Number(el.value)));
       else if (f === 'otraCarga') d.otraCarga = Math.max(0, Number(el.value) || 0);
-      else d[f] = el.value;
-    });
+      else d[f] = el.value.trim();
+    }, { stale: !contact });
+  },
+  // Foto de perfil: se recorta al centro y se reduce a 192 px (JPEG) para que el respaldo siga liviano.
+  async foto(el) {
+    const file = el.files?.[0];
+    if (!file) return;
+    try {
+      if (!file.type.startsWith('image/')) throw new Error('Elige un archivo de imagen.');
+      const img = await createImageBitmap(file);
+      const side = Math.min(img.width, img.height);
+      const cv = document.createElement('canvas');
+      cv.width = cv.height = 192;
+      cv.getContext('2d').drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, 192, 192);
+      const url = cv.toDataURL('image/jpeg', 0.85);
+      ui.pickAv = false;
+      mutate(() => { const d = S.docentes.find((x) => x.id === ui.editDoc); d.foto = url; delete d.fun; }, { stale: false });
+    } catch (e) { alert('No se pudo cargar la foto: ' + e.message); }
   },
   avail(el) {
     mutate(() => {

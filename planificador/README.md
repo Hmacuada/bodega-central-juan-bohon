@@ -45,7 +45,7 @@ El estado se guarda en `data/state.json`, que no se versiona.
 - Cada semestre suma 18 h semanales: 6 sesiones de 3 h, en 3 días con 2 bloques.
 - Cada asignatura es un módulo de 3 sesiones por semana que dura `ceil(horas / 9)` semanas.
 - Las asignaturas corren en 2 carriles paralelos, uno por bloque. El semestre dura lo que el carril más largo.
-- Un docente puede tomar como máximo 6 sesiones por nivel. Entre años o carreras distintos puede llegar a 12 por semana; el tope se cambia en cada ficha y se suma la carga externa (`otraCarga`).
+- Un docente puede tomar como máximo 6 sesiones por nivel. Entre años o carreras distintos puede llegar a 12 por semana; el tope se cambia en cada ficha.
 - Un docente que no está disponible en alguno de los 3 días del nivel no puede tomar asignaturas de ese nivel.
 - Cada sección tiene una sala fija, asignada por capacidad. El tipo de sala (laboratorio, taller) es solo informativo por ahora.
 

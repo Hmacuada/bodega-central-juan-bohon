@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { candidatePlans, moduleWeeks } from '../src/core/modules.js';
-import { buildInitialState } from '../src/core/initial.js';
+import { buildInitialState, ALL_SLOTS } from '../src/core/initial.js';
 import { solve } from '../src/core/solver.js';
 import { suggestAssignments } from '../src/core/assign.js';
 
@@ -77,4 +77,17 @@ test('días mal configurados se informan con un mensaje claro', () => {
   const state = buildInitialState(seed, demo);
   state.jornadas.Vespertino.dias[1] = ['Ma', 'Ju'];
   assert.throws(() => solve(state, { seed: 1 }), /deben ser 3/);
+});
+
+test('el sábado solo admite bloques de mañana', () => {
+  const state = buildInitialState(seed, demo);
+  state.jornadas.Vespertino.bloques.Sa[1].inicio = '15:00';
+  assert.throws(() => solve(state, { seed: 1 }), /solo hay clases en la mañana/);
+  delete state.jornadas.Vespertino.bloques.Sa; // usaría los bloques de la noche
+  assert.throws(() => solve(state, { seed: 1 }), /solo hay clases en la mañana/);
+});
+
+test('la disponibilidad no tiene sábado en la noche', () => {
+  assert.ok(ALL_SLOTS.includes('Sa-M1'));
+  assert.ok(!ALL_SLOTS.some((s) => s.startsWith('Sa-N')));
 });

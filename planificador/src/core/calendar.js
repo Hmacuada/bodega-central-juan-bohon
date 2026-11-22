@@ -65,6 +65,18 @@ export function blocksFor(jornadas, jornada, day) {
   return j.bloques[day] || j.bloques.default;
 }
 
+// El sábado solo hay clases en la mañana: cada bloque del sábado debe empezar antes de esta hora.
+export const SATURDAY_LAST_START = '13:00';
+export const isSaturdayOk = (b) => toMinutes(b.inicio) < toMinutes(SATURDAY_LAST_START);
+
+// Devuelve un mensaje si la jornada usa el sábado con bloques que no son de mañana.
+export function saturdayIssue(jornadas, jornada) {
+  const j = jornadas[jornada];
+  if (!j || ![1, 2].some((lv) => j.dias[lv]?.includes('Sa'))) return null;
+  return blocksFor(jornadas, jornada, 'Sa').every(isSaturdayOk) ? null
+    : `El sábado solo hay clases en la mañana: los bloques del sábado de la jornada ${jornada.toLowerCase()} deben empezar antes de las ${SATURDAY_LAST_START}.`;
+}
+
 export function toMinutes(hhmm) {
   const [h, m] = hhmm.split(':').map(Number);
   return h * 60 + m;
