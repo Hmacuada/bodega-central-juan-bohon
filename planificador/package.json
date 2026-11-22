@@ -1,0 +1,15 @@
+{
+  "name": "planificador-cft",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Planificador académico del CFT Juan Bohon: horarios sin choques a partir de las mallas.",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test \"test/*.test.js\"",
+    "seed": "node data/seed/build_seed.cjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

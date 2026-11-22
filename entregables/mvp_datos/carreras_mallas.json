@@ -1,0 +1,3573 @@
+{
+  "institucion": "CFT Juan Bohon",
+  "fuente": "https://juanbohon.cl/carreras/ (mallas de admisión publicadas; revisado 2026-11-21)",
+  "supuestos": {
+    "horas_por_sesion": 3,
+    "sesiones_por_semana": 6,
+    "nota": "Todas las mallas dan 18 h/semana = 6 sesiones de 3 h = 3 días × 2 bloques."
+  },
+  "jornadas": {
+    "Vespertino": {
+      "fuente": "Usuario (patrón actual de TLI)",
+      "bloques_lu_vi": [
+        {
+          "id": "V1",
+          "inicio": "18:30",
+          "fin": "20:30",
+          "estado": "supuesto: corte exacto entre bloques"
+        },
+        {
+          "id": "V2",
+          "inicio": "20:50",
+          "fin": "22:50",
+          "estado": "supuesto: corte exacto entre bloques"
+        }
+      ],
+      "bloques_sabado": [
+        {
+          "id": "S1",
+          "inicio": "09:00",
+          "fin": "11:40"
+        },
+        {
+          "id": "S2",
+          "inicio": "12:00",
+          "fin": "14:50"
+        }
+      ],
+      "dias_por_nivel": {
+        "1º año (semestres I y II)": [
+          "Ma",
+          "Ju",
+          "Sá"
+        ],
+        "2º año (semestres III y IV)": [
+          "Lu",
+          "Mi",
+          "Vi"
+        ]
+      }
+    },
+    "Diurno": {
+      "fuente": "Usuario: 6 horas en total desde las 9:00",
+      "bloques": [
+        {
+          "id": "D1",
+          "inicio": "09:00",
+          "fin": "11:50",
+          "estado": "supuesto: corte con recreo de 20 min"
+        },
+        {
+          "id": "D2",
+          "inicio": "12:10",
+          "fin": "15:00",
+          "estado": "supuesto: corte con recreo de 20 min"
+        }
+      ],
+      "dias_por_nivel": {
+        "estado": "por confirmar",
+        "supuesto": "Igual que vespertino: 3 días por nivel × 2 bloques; repartidos entre lunes y viernes"
+      }
+    }
+  },
+  "carreras": [
+    {
+      "codigo": "TLI",
+      "nombre": "Logística Industrial",
+      "jornada": "Vespertino",
+      "semestres_lectivos": 4,
+      "practica_laboral_horas": 400,
+      "examen_competencias": true,
+      "titulacion": "1 semestre (V semestre: práctica laboral y examen de competencias)",
+      "horas_lectivas": 1602,
+      "horas_impresas": 1602,
+      "fuente": {
+        "pagina": "https://juanbohon.cl/carreras/logistica-industrial",
+        "malla_pdf": "https://juanbohon.cl/wp-content/uploads/2025/10/tli_malla_admision_10022025-scaled-1.pdf"
+      },
+      "semestres": [
+        {
+          "n": 1,
+          "horas": 396,
+          "semanas_impresas": 22,
+          "asignaturas": [
+            {
+              "codigo": "TLI-101",
+              "nombre": "Herramientas para Análisis Contable Básico",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TLI-102",
+              "nombre": "Administración de Personal en el Área Logística",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TLI-103",
+              "nombre": "Introducción a la Cadena de Suministros Logísticos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TLI-104",
+              "nombre": "Inglés Técnico",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "TLI-105",
+              "nombre": "Matemática Básica",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TLI-106",
+              "nombre": "Tecnologías de la Información",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "horas": 396,
+          "semanas_impresas": 22,
+          "asignaturas": [
+            {
+              "codigo": "TLI-201",
+              "nombre": "Herramientas Básicas de Costos y Presupuestos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TLI-202",
+              "nombre": "Gestión de Adquisiciones y Abastecimiento",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "TLI-203",
+              "nombre": "Taller de Procesos Industriales",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TLI-204",
+              "nombre": "Herramientas de Estadísticas Aplicada a la Logística",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "TLI-205",
+              "nombre": "Herramientas de Excel Intermedio",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "TLI-206",
+              "nombre": "Comunicación Efectiva",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 3,
+          "horas": 396,
+          "semanas_impresas": 22,
+          "asignaturas": [
+            {
+              "codigo": "TLI-301",
+              "nombre": "Gestión de Inventario",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TLI-302",
+              "nombre": "Medio Ambiente y Seguridad Industrial",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "TLI-303",
+              "nombre": "Operación de Transporte y Distribución I",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TLI-304",
+              "nombre": "Operaciones de Almacenamiento",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "TLI-305",
+              "nombre": "Liderazgo en Logística",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "TLI-306",
+              "nombre": "Taller de Habilidades Sociales",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 4,
+          "horas": 414,
+          "semanas_impresas": 23,
+          "asignaturas": [
+            {
+              "codigo": "TLI-401",
+              "nombre": "Control de Pérdidas",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "TLI-402",
+              "nombre": "Sistemas de Gestión de Calidad",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "TLI-403",
+              "nombre": "Operación de Transporte y Distribución II",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TLI-404",
+              "nombre": "Logística Internacional",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "TLI-405",
+              "nombre": "Sistema de Gestión Logística",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "TLI-406",
+              "nombre": "Innovación y Creatividad",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "codigo": "APM",
+      "nombre": "Administración de Procesos Mineros",
+      "jornada": "Vespertino",
+      "semestres_lectivos": 4,
+      "practica_laboral_horas": 400,
+      "examen_competencias": true,
+      "titulacion": "1 semestre (V semestre: práctica laboral y examen de competencias)",
+      "horas_lectivas": 1620,
+      "horas_impresas": 1620,
+      "fuente": {
+        "pagina": "https://juanbohon.cl/carreras/administracion-de-procesos-mineros",
+        "malla_pdf": "https://juanbohon.cl/wp-content/uploads/2025/10/pmi_malla_admision.pdf"
+      },
+      "semestres": [
+        {
+          "n": 1,
+          "horas": 396,
+          "semanas_impresas": null,
+          "asignaturas": [
+            {
+              "codigo": "APM-101",
+              "nombre": "Introducción a los Procesos Mineros",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "APM-102",
+              "nombre": "Seguridad, Salud y Medio Ambiente en Minería",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "APM-103",
+              "nombre": "Administración General",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "APM-104",
+              "nombre": "Herramientas Digitales para la Gestión Administrativa",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "APM-105",
+              "nombre": "Matemática Básica",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "APM-106",
+              "nombre": "Comunicación Efectiva",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "horas": 414,
+          "semanas_impresas": null,
+          "asignaturas": [
+            {
+              "codigo": "APM-201",
+              "nombre": "Administración de Bodegas e Inventarios",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "APM-202",
+              "nombre": "Gestión de Operaciones Mineras",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "APM-203",
+              "nombre": "Portafolio Certificación de Competencias",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "APM-204",
+              "nombre": "Logística y Cadena de Suministro en Minería",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "APM-205",
+              "nombre": "Sistemas ERP en la Gestión Minera",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "APM-206",
+              "nombre": "Tecnologías de la Información",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 3,
+          "horas": 414,
+          "semanas_impresas": null,
+          "asignaturas": [
+            {
+              "codigo": "APM-301",
+              "nombre": "Liderazgo e Inclusión en Contextos Mineros",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "APM-302",
+              "nombre": "Gestión de Proyectos en Minería",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "APM-303",
+              "nombre": "Sistema de Gestión de Calidad en Minería",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "APM-304",
+              "nombre": "Gestión de Recursos Humanos y Remuneraciones",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "APM-305",
+              "nombre": "Sustentabilidad y Sostenibilidad en Minería",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "APM-306",
+              "nombre": "Taller de Habilidades Sociales",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 4,
+          "horas": 396,
+          "semanas_impresas": null,
+          "asignaturas": [
+            {
+              "codigo": "APM-401",
+              "nombre": "Sistemas de Control y Monitoreo de Procesos Mineros",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "APM-402",
+              "nombre": "Legislación Laboral y Seguridad Social",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "APM-403",
+              "nombre": "Formulación y Evaluación de Proyectos Mineros",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "APM-404",
+              "nombre": "Ética Profesional y Responsabilidad Social en Minería",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "APM-405",
+              "nombre": "Inglés Técnico",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "APM-406",
+              "nombre": "Innovación y Creatividad",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "codigo": "AED",
+      "nombre": "Asistente de Educación Diferencial",
+      "jornada": "Diurno",
+      "semestres_lectivos": 4,
+      "practica_laboral_horas": 400,
+      "examen_competencias": true,
+      "titulacion": "1 semestre (V semestre: práctica laboral y examen de competencias)",
+      "horas_lectivas": 1602,
+      "horas_impresas": 1602,
+      "fuente": {
+        "pagina": "https://juanbohon.cl/carreras/asistente-de-educacion-diferencial",
+        "malla_pdf": "https://juanbohon.cl/wp-content/uploads/2025/10/aed_malla_admision.pdf"
+      },
+      "semestres": [
+        {
+          "n": 1,
+          "horas": 396,
+          "semanas_impresas": null,
+          "asignaturas": [
+            {
+              "codigo": "AED-101",
+              "nombre": "Introducción a la Educación Especial",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "AED-102",
+              "nombre": "Desarrollo Humano y Ciclos Vitales",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "AED-103",
+              "nombre": "Políticas y Legislación de Inclusión y Diversidad",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "AED-104",
+              "nombre": "Curriculum Educativo",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "AED-105",
+              "nombre": "Diversidad e Inclusión Social",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "AED-106",
+              "nombre": "Comunicación Efectiva",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "horas": 414,
+          "semanas_impresas": null,
+          "asignaturas": [
+            {
+              "codigo": "AED-201",
+              "nombre": "Adaptaciones Curriculares y Acceso al Aprendizaje",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "AED-202",
+              "nombre": "Inglés Técnico",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "AED-203",
+              "nombre": "Autonomía y Habilidades para la Vida",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "AED-204",
+              "nombre": "Manejo de Conducta y Habilidades Socioemocionales",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "AED-205",
+              "nombre": "Materiales Didácticos y Tecnologías de Apoyo",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "AED-206",
+              "nombre": "Tecnologías de la Información",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 3,
+          "horas": 396,
+          "semanas_impresas": null,
+          "asignaturas": [
+            {
+              "codigo": "AED-301",
+              "nombre": "Taller de Psicomotricidad y Sensorialidad",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "AED-302",
+              "nombre": "Ética y Rol Profesional",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "AED-303",
+              "nombre": "Planificación Didáctica y Estrategias Evaluativas",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "AED-304",
+              "nombre": "Neurodiversidad y Neurodivergencia",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "AED-305",
+              "nombre": "Familia y Comunidad",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "AED-306",
+              "nombre": "Taller de Habilidades Sociales",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 4,
+          "horas": 396,
+          "semanas_impresas": null,
+          "asignaturas": [
+            {
+              "codigo": "AED-401",
+              "nombre": "Técnicas de Manejo de Grupo",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "AED-402",
+              "nombre": "Evaluación Psicopedagógica y Funcional",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "AED-403",
+              "nombre": "Gestión y Planificación de Proyectos de Inclusión",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "AED-404",
+              "nombre": "Aprendizaje Visible y Diversidad en el Aula",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "AED-405",
+              "nombre": "Pasantía de Trabajo Multidisciplinar",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "AED-406",
+              "nombre": "Innovación y Creatividad",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "codigo": "COS",
+      "nombre": "Cosmetología",
+      "jornada": "Diurno",
+      "semestres_lectivos": 4,
+      "practica_laboral_horas": 400,
+      "examen_competencias": true,
+      "titulacion": "1 semestre (V semestre: práctica laboral y examen de competencias)",
+      "horas_lectivas": 1620,
+      "horas_impresas": 1620,
+      "fuente": {
+        "pagina": "https://juanbohon.cl/carreras/cosmetologia",
+        "malla_pdf": "https://juanbohon.cl/wp-content/uploads/2025/10/cos_malla_admision_10022025-scaled-1.pdf"
+      },
+      "semestres": [
+        {
+          "n": 1,
+          "horas": 378,
+          "semanas_impresas": 21,
+          "asignaturas": [
+            {
+              "codigo": "COS-101",
+              "nombre": "Cosmetología Básica",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "COS-102",
+              "nombre": "Química Cosmética",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "COS-103",
+              "nombre": "Teoría del Color y Visagismo",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "COS-104",
+              "nombre": "Anatomofisiología General",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "COS-105",
+              "nombre": "Asepsia y Bioseguridad",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "COS-106",
+              "nombre": "Tecnologías de la Información",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "horas": 414,
+          "semanas_impresas": 23,
+          "asignaturas": [
+            {
+              "codigo": "COS-201",
+              "nombre": "Taller de Cosmetología",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "COS-202",
+              "nombre": "Primeros Auxilios",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "COS-203",
+              "nombre": "Taller de Maquillaje",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "COS-204",
+              "nombre": "Anatomofisiología Aplicada a la Cosmetología",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "COS-205",
+              "nombre": "Técnicas de Cuidado de Manos y Uñas",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "COS-206",
+              "nombre": "Comunicación Efectiva",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 3,
+          "horas": 414,
+          "semanas_impresas": 23,
+          "asignaturas": [
+            {
+              "codigo": "COS-301",
+              "nombre": "Taller de Alteraciones Cutáneas",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "COS-302",
+              "nombre": "Taller de Cejas y Pestañas",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "COS-303",
+              "nombre": "Taller de Caracterización y Maquillaje Artístico",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "COS-304",
+              "nombre": "Electrocosmética",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "COS-305",
+              "nombre": "Taller de Manicura y Pedicura",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "COS-306",
+              "nombre": "Taller de Habilidades Sociales",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 4,
+          "horas": 414,
+          "semanas_impresas": 23,
+          "asignaturas": [
+            {
+              "codigo": "COS-401",
+              "nombre": "Taller Integrado de Cosmetología",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "COS-402",
+              "nombre": "Taller de Epilación",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "COS-403",
+              "nombre": "Asesoría de Imagen",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "COS-404",
+              "nombre": "Psicología General y Atención al Cliente",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "COS-405",
+              "nombre": "Taller de Manicura Acrílico y Gel",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "COS-406",
+              "nombre": "Innovación y Creatividad",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "codigo": "EEI",
+      "nombre": "Electricidad y Electrónica Industrial",
+      "jornada": "Vespertino",
+      "semestres_lectivos": 4,
+      "practica_laboral_horas": 400,
+      "examen_competencias": true,
+      "titulacion": "1 semestre (V semestre: práctica laboral y examen de competencias)",
+      "horas_lectivas": 1602,
+      "horas_impresas": 1602,
+      "fuente": {
+        "pagina": "https://juanbohon.cl/carreras/electricidad-y-electronica-industrial",
+        "malla_pdf": "https://juanbohon.cl/wp-content/uploads/2025/10/eei_malla_admision_10022025-scaled-1.pdf"
+      },
+      "semestres": [
+        {
+          "n": 1,
+          "horas": 378,
+          "semanas_impresas": 21,
+          "asignaturas": [
+            {
+              "codigo": "EEI-101",
+              "nombre": "Electricidad en Corriente Continua",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "EEI-102",
+              "nombre": "Matemática Básica",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "EEI-103",
+              "nombre": "Física Aplicada a la Electricidad",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "EEI-104",
+              "nombre": "Diseño e Interpretación de Planos Eléctricos y Electrónicos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EEI-105",
+              "nombre": "Prevención de Riesgos Eléctricos",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "EEI-106",
+              "nombre": "Comunicación Efectiva",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "horas": 396,
+          "semanas_impresas": 22,
+          "asignaturas": [
+            {
+              "codigo": "EEI-201",
+              "nombre": "Electricidad en Corriente Alterna",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "EEI-202",
+              "nombre": "Instalaciones Eléctricas Domiciliaria y Comerciales",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EEI-203",
+              "nombre": "Electrónica Básica",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EEI-204",
+              "nombre": "Fundamentos de Electromecánica",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "EEI-205",
+              "nombre": "Inglés Técnico",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "EEI-206",
+              "nombre": "Tecnologías de la Información",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 3,
+          "horas": 432,
+          "semanas_impresas": 24,
+          "asignaturas": [
+            {
+              "codigo": "EEI-301",
+              "nombre": "Máquinas y Comandos Eléctricos I",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EEI-302",
+              "nombre": "Instalaciones Eléctricas Industriales",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EEI-303",
+              "nombre": "Electrónica Digital",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EEI-304",
+              "nombre": "Controladores Lógicos Programables (PLC)",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "EEI-305",
+              "nombre": "Microprocesadores",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EEI-306",
+              "nombre": "Taller de Habilidades Sociales",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 4,
+          "horas": 396,
+          "semanas_impresas": 22,
+          "asignaturas": [
+            {
+              "codigo": "EEI-401",
+              "nombre": "Máquinas y Comandos Eléctricos II",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EEI-402",
+              "nombre": "Protecciones y Sistemas Eléctricos",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "EEI-403",
+              "nombre": "Electrónica de Potencia",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EEI-404",
+              "nombre": "Redes Industriales",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EEI-405",
+              "nombre": "Automatismo Industrial",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EEI-406",
+              "nombre": "Innovación y Creatividad",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "codigo": "EER",
+      "nombre": "Electricidad y Energías Renovables",
+      "jornada": "Vespertino",
+      "semestres_lectivos": 4,
+      "practica_laboral_horas": 400,
+      "examen_competencias": true,
+      "titulacion": "1 semestre (V semestre: práctica laboral y examen de competencias)",
+      "horas_lectivas": 1620,
+      "horas_impresas": 1620,
+      "fuente": {
+        "pagina": "https://juanbohon.cl/carreras/electricidad-y-energias-renovables",
+        "malla_pdf": "https://juanbohon.cl/wp-content/uploads/2025/10/eer_malla_admision.pdf"
+      },
+      "semestres": [
+        {
+          "n": 1,
+          "horas": 396,
+          "semanas_impresas": null,
+          "asignaturas": [
+            {
+              "codigo": "EER-101",
+              "nombre": "Introducción a las Energías Renovables y Eficiencia Energética",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "EER-102",
+              "nombre": "Electrónica Básica",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "EER-103",
+              "nombre": "Diseño e Interpretación de Planos Eléctricos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EER-104",
+              "nombre": "Prevención de Riesgos Eléctricos",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "EER-105",
+              "nombre": "Física Aplicada a la Electricidad",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EER-106",
+              "nombre": "Tecnologías de la Información",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "horas": 432,
+          "semanas_impresas": null,
+          "asignaturas": [
+            {
+              "codigo": "EER-201",
+              "nombre": "Normativa de Energías Renovables y Electricidad",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EER-202",
+              "nombre": "Electricidad en Corriente Continua",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EER-203",
+              "nombre": "Instalaciones Eléctricas Domiciliarias e Industriales",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "EER-204",
+              "nombre": "Termodinámica",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EER-205",
+              "nombre": "Sistemas de Iluminación Eficiente",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EER-206",
+              "nombre": "Comunicación Efectiva",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 3,
+          "horas": 414,
+          "semanas_impresas": null,
+          "asignaturas": [
+            {
+              "codigo": "EER-301",
+              "nombre": "Protecciones Eléctricas y Puesta a Tierra",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "EER-302",
+              "nombre": "Electricidad en Corriente Alterna",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EER-303",
+              "nombre": "Montaje y Mantención de Instalaciones de Energía Fotovoltáica",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "EER-304",
+              "nombre": "Máquinas Eléctricas y Comandos",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "EER-305",
+              "nombre": "Montaje y Mantención de Instalaciones de Energía Solar Térmica",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "EER-306",
+              "nombre": "Taller de Habilidades Sociales",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 4,
+          "horas": 378,
+          "semanas_impresas": null,
+          "asignaturas": [
+            {
+              "codigo": "EER-401",
+              "nombre": "Taller de Proyectos de Sistemas Eléctricos y Energías Renovables",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "EER-402",
+              "nombre": "Sistemas de Evaluación de Impacto Ambiental",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "EER-403",
+              "nombre": "Mantención de Instalaciones Eólicas",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EER-404",
+              "nombre": "Inglés Técnico",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "EER-405",
+              "nombre": "Sistemas de Automatización",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "EER-406",
+              "nombre": "Innovación y Creatividad",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "codigo": "EME",
+      "nombre": "Electromecánica",
+      "jornada": "Vespertino",
+      "semestres_lectivos": 4,
+      "practica_laboral_horas": 400,
+      "examen_competencias": true,
+      "titulacion": "1 semestre (V semestre: práctica laboral y examen de competencias)",
+      "horas_lectivas": 1602,
+      "horas_impresas": 1602,
+      "fuente": {
+        "pagina": "https://juanbohon.cl/carreras/electromecanica",
+        "malla_pdf": "https://juanbohon.cl/wp-content/uploads/2025/10/eme_malla-1-scaled-1.pdf"
+      },
+      "semestres": [
+        {
+          "n": 1,
+          "horas": 414,
+          "semanas_impresas": 23,
+          "asignaturas": [
+            {
+              "codigo": "EME-101",
+              "nombre": "Sistemas Electromecánicos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EME-102",
+              "nombre": "Neumática e Hidráulica",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EME-103",
+              "nombre": "Sistemas Eléctricos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EME-104",
+              "nombre": "Matemática Básica",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EME-105",
+              "nombre": "Metrología Aplicada",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EME-106",
+              "nombre": "Comunicación Efectiva",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "horas": 396,
+          "semanas_impresas": 22,
+          "asignaturas": [
+            {
+              "codigo": "EME-201",
+              "nombre": "Técnicas de Diagnóstico en Sistemas Electromecánicos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EME-202",
+              "nombre": "Sistemas Electroneumáticos y Electrohidráulicos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EME-203",
+              "nombre": "Protección de Sistemas Eléctricos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EME-204",
+              "nombre": "Sistemas Electrónicos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EME-205",
+              "nombre": "Interpretación de Planos",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "EME-206",
+              "nombre": "Tecnologías de la Información",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 3,
+          "horas": 414,
+          "semanas_impresas": 23,
+          "asignaturas": [
+            {
+              "codigo": "EME-301",
+              "nombre": "Mantenimiento Preventivo de Máquinas y Equipos Electromecánicos",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "EME-302",
+              "nombre": "Montaje de Elementos y Sistemas Electromecánicos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EME-303",
+              "nombre": "Circuitos de Control en Sistemas Electromecánicos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EME-304",
+              "nombre": "Interpretación de Manuales Técnicos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EME-305",
+              "nombre": "Prevención de Riesgos y Medioambiente",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "EME-306",
+              "nombre": "Taller de Habilidades Sociales",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 4,
+          "horas": 378,
+          "semanas_impresas": 21,
+          "asignaturas": [
+            {
+              "codigo": "EME-401",
+              "nombre": "Mantenimiento Correctivo de Sistemas Electromecánicos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EME-402",
+              "nombre": "Taller Integrado de Puesta en Marcha y Eficiencia Operativa",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "EME-403",
+              "nombre": "Automatización de Sistemas Electromecánicos",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "EME-404",
+              "nombre": "Gestión de Control y Monitoreo",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "EME-405",
+              "nombre": "Innovación y Creatividad",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "codigo": "ESI",
+      "nombre": "Estética Integral",
+      "jornada": "Diurno",
+      "semestres_lectivos": 4,
+      "practica_laboral_horas": 400,
+      "examen_competencias": true,
+      "titulacion": "1 semestre (V semestre: práctica laboral y examen de competencias)",
+      "horas_lectivas": 1620,
+      "horas_impresas": 1620,
+      "fuente": {
+        "pagina": "https://juanbohon.cl/carreras/estetica-integral",
+        "malla_pdf": "https://juanbohon.cl/wp-content/uploads/2025/10/esi_malla_admision_10022025-scaled-1.pdf"
+      },
+      "semestres": [
+        {
+          "n": 1,
+          "horas": 378,
+          "semanas_impresas": 21,
+          "asignaturas": [
+            {
+              "codigo": "ESI-101",
+              "nombre": "Taller de Corte I",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "ESI-102",
+              "nombre": "Tricología Capilar",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "ESI-103",
+              "nombre": "Primeros Auxilios",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "ESI-104",
+              "nombre": "Anatomía y Fisiología Aplicada",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "ESI-105",
+              "nombre": "Taller de Cejas y Pestañas",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "ESI-106",
+              "nombre": "Tecnologías de la Información",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "horas": 414,
+          "semanas_impresas": 23,
+          "asignaturas": [
+            {
+              "codigo": "ESI-201",
+              "nombre": "Taller de Corte II",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "ESI-202",
+              "nombre": "Taller de Peinado",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "ESI-203",
+              "nombre": "Asepsia y Bioseguridad",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "ESI-204",
+              "nombre": "Taller de Masaje de Relajación y Descontracturante",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "ESI-205",
+              "nombre": "Inglés Técnico",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "ESI-206",
+              "nombre": "Comunicación Efectiva",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 3,
+          "horas": 396,
+          "semanas_impresas": 22,
+          "asignaturas": [
+            {
+              "codigo": "ESI-301",
+              "nombre": "Colorimetría Capilar I",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "ESI-302",
+              "nombre": "Taller de Maquillaje",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "ESI-303",
+              "nombre": "Taller de Manicura",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "ESI-304",
+              "nombre": "Nutrición y Vida Saludable",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "ESI-305",
+              "nombre": "Psicología General y Atención al Cliente",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "ESI-306",
+              "nombre": "Taller de Habilidades Sociales",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 4,
+          "horas": 432,
+          "semanas_impresas": 24,
+          "asignaturas": [
+            {
+              "codigo": "ESI-401",
+              "nombre": "Colorimetría Capilar II",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "ESI-402",
+              "nombre": "Taller de Epilación",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "ESI-403",
+              "nombre": "Taller de Pedicura",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "ESI-404",
+              "nombre": "Taller de Masoterapia Reductiva",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "ESI-405",
+              "nombre": "Asesoría de Imagen",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "ESI-406",
+              "nombre": "Innovación y Creatividad",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "codigo": "GCI",
+      "nombre": "Gastronomía y Cocina Internacional",
+      "jornada": "Diurno",
+      "semestres_lectivos": 4,
+      "practica_laboral_horas": 400,
+      "examen_competencias": true,
+      "titulacion": "1 semestre (V semestre: práctica laboral y examen de competencias)",
+      "horas_lectivas": 1620,
+      "horas_impresas": 1620,
+      "fuente": {
+        "pagina": "https://juanbohon.cl/carreras/gastronomia-y-cocina-internacional",
+        "malla_pdf": "https://juanbohon.cl/wp-content/uploads/2025/10/gci_malla_admision_10022025-scaled-1.pdf"
+      },
+      "semestres": [
+        {
+          "n": 1,
+          "horas": 414,
+          "semanas_impresas": 23,
+          "asignaturas": [
+            {
+              "codigo": "GCI-101",
+              "nombre": "Técnicas de Cocina",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "GCI-102",
+              "nombre": "Técnicas de Pastelería",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "GCI-103",
+              "nombre": "Seguridad Alimentaria y HACCP",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "GCI-104",
+              "nombre": "Prevención de Riesgos y Primeros Auxilios en la Industria Gastronómica",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "GCI-105",
+              "nombre": "Matemática Básica",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "GCI-106",
+              "nombre": "Tecnologías de la Información",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "horas": 378,
+          "semanas_impresas": 21,
+          "asignaturas": [
+            {
+              "codigo": "GCI-201",
+              "nombre": "Taller de Cocina Industrial",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "GCI-202",
+              "nombre": "Taller de Panadería",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "GCI-203",
+              "nombre": "Análisis y Tecnología de los Alimentos",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "GCI-204",
+              "nombre": "Taller de Servicios de Comedor y Protocolo",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "GCI-205",
+              "nombre": "Inglés Técnico I",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "GCI-206",
+              "nombre": "Comunicación Efectiva",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 3,
+          "horas": 396,
+          "semanas_impresas": 22,
+          "asignaturas": [
+            {
+              "codigo": "GCI-301",
+              "nombre": "Taller de Cocina Chilena y Regional",
+              "horas": 108,
+              "sesiones": 36,
+              "transversal": false
+            },
+            {
+              "codigo": "GCI-302",
+              "nombre": "Taller de Repostería",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "GCI-303",
+              "nombre": "Nutrición y Dietética",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "GCI-304",
+              "nombre": "Administración de Restaurant",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "GCI-305",
+              "nombre": "Inglés Técnico II",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "GCI-306",
+              "nombre": "Taller de Habilidades Sociales",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 4,
+          "horas": 432,
+          "semanas_impresas": 24,
+          "asignaturas": [
+            {
+              "codigo": "GCI-401",
+              "nombre": "Taller de Cocina Contemporánea y de Vanguardia",
+              "horas": 108,
+              "sesiones": 36,
+              "transversal": false
+            },
+            {
+              "codigo": "GCI-402",
+              "nombre": "Taller de Pastelería Avanzada y Chocolatería",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "GCI-403",
+              "nombre": "Taller de Servicio de Bar, Vinos y Coctelería",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "GCI-404",
+              "nombre": "Diseño y Planificación de Eventos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "GCI-405",
+              "nombre": "Técnicas de Vanguardia Gastronómica",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "GCI-406",
+              "nombre": "Innovación y Creatividad",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "codigo": "IAC",
+      "nombre": "Instrumentación, Automatización y Control Industrial",
+      "jornada": "Vespertino",
+      "semestres_lectivos": 4,
+      "practica_laboral_horas": 400,
+      "examen_competencias": true,
+      "titulacion": "1 semestre (V semestre: práctica laboral y examen de competencias)",
+      "horas_lectivas": 1638,
+      "horas_impresas": 1638,
+      "fuente": {
+        "pagina": "https://juanbohon.cl/carreras/instrumentacion-automatizacion-y-control-industrial",
+        "malla_pdf": "https://juanbohon.cl/wp-content/uploads/2025/10/iac_malla_admision_10022025-scaled-1.pdf"
+      },
+      "semestres": [
+        {
+          "n": 1,
+          "horas": 378,
+          "semanas_impresas": 21,
+          "asignaturas": [
+            {
+              "codigo": "IAC-101",
+              "nombre": "Taller de Instrumentación",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "IAC-102",
+              "nombre": "Sensores y Acondicionamiento de Señales",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "IAC-103",
+              "nombre": "Electricidad en Corriente Continua",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "IAC-104",
+              "nombre": "Matemática Básica",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "IAC-105",
+              "nombre": "Física Aplicada a la Electricidad",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "IAC-106",
+              "nombre": "Comunicación Efectiva",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "horas": 414,
+          "semanas_impresas": 23,
+          "asignaturas": [
+            {
+              "codigo": "IAC-201",
+              "nombre": "Control de Procesos e Instrumentos",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "IAC-202",
+              "nombre": "Programación de Microcontroladores Lógicos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "IAC-203",
+              "nombre": "Electrónica Básica",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "IAC-204",
+              "nombre": "Transmisión y Recepción de Datos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "IAC-205",
+              "nombre": "Prevención de Riesgos Industriales",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "IAC-206",
+              "nombre": "Tecnologías de la Información",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 3,
+          "horas": 432,
+          "semanas_impresas": 24,
+          "asignaturas": [
+            {
+              "codigo": "IAC-301",
+              "nombre": "Control de Procesos y Calibración",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "IAC-302",
+              "nombre": "Electrónica Aplicada a la Automatización",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "IAC-303",
+              "nombre": "Electricidad en Corriente Alterna",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "IAC-304",
+              "nombre": "Aplicaciones PLC y HMI I",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "IAC-305",
+              "nombre": "Interpretación de Planos Eléctricos P&ID",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "IAC-306",
+              "nombre": "Taller de Habilidades Sociales",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 4,
+          "horas": 414,
+          "semanas_impresas": 23,
+          "asignaturas": [
+            {
+              "codigo": "IAC-401",
+              "nombre": "Taller de Automatización y Control Industrial",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "IAC-402",
+              "nombre": "Proyecto de Titulación",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "IAC-403",
+              "nombre": "Máquinas y Comandos Eléctricos",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "IAC-404",
+              "nombre": "Aplicaciones PLC y HMI II",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "IAC-405",
+              "nombre": "Automatización Hidráulica y Neumática",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "IAC-406",
+              "nombre": "Innovación y Creatividad",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "codigo": "MMI",
+      "nombre": "Mantenimiento Mecánico Industrial",
+      "jornada": "Vespertino",
+      "semestres_lectivos": 4,
+      "practica_laboral_horas": 400,
+      "examen_competencias": true,
+      "titulacion": "1 semestre (V semestre: práctica laboral y examen de competencias)",
+      "horas_lectivas": 1620,
+      "horas_impresas": 1620,
+      "fuente": {
+        "pagina": "https://juanbohon.cl/carreras/mantenimiento-mecanico-industrial",
+        "malla_pdf": "https://juanbohon.cl/wp-content/uploads/2025/10/mmi_malla_admision_10022025.pdf"
+      },
+      "semestres": [
+        {
+          "n": 1,
+          "horas": 432,
+          "semanas_impresas": 24,
+          "asignaturas": [
+            {
+              "codigo": "MMI-101",
+              "nombre": "Electricidad Aplicada",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMI-102",
+              "nombre": "Procesos Industriales",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMI-103",
+              "nombre": "Metrología e Interpretación de Planos",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "MMI-104",
+              "nombre": "Dibujo Técnico Industrial",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMI-105",
+              "nombre": "Matemática Básica",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMI-106",
+              "nombre": "Tecnologías de la Información",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "horas": 378,
+          "semanas_impresas": 21,
+          "asignaturas": [
+            {
+              "codigo": "MMI-201",
+              "nombre": "Sistemas Mecánicos, Neumáticos e Hidráulicos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMI-202",
+              "nombre": "Soldaduras y Técnicas de Unión",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMI-203",
+              "nombre": "Máquinas y Herramientas",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMI-204",
+              "nombre": "Inglés Técnico",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "MMI-205",
+              "nombre": "Física Aplicada",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "MMI-206",
+              "nombre": "Comunicación Efectiva",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 3,
+          "horas": 414,
+          "semanas_impresas": 23,
+          "asignaturas": [
+            {
+              "codigo": "MMI-301",
+              "nombre": "Mantención, Reparación y Manipulación de Equipos Fijos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMI-302",
+              "nombre": "Elementos de Máquinas",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "MMI-303",
+              "nombre": "Técnicas de Supervisión",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMI-304",
+              "nombre": "Automatización y Control Industrial",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMI-305",
+              "nombre": "Mantenimiento Industrial",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "MMI-306",
+              "nombre": "Taller de Habilidades Sociales",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 4,
+          "horas": 396,
+          "semanas_impresas": 22,
+          "asignaturas": [
+            {
+              "codigo": "MMI-401",
+              "nombre": "Mantenimiento, Reparación y Manipulación de Equipos Móviles",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMI-402",
+              "nombre": "Montaje y Mantenimiento Mecánico",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMI-403",
+              "nombre": "Alineación y Balanceo",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "MMI-404",
+              "nombre": "Prevención de Riesgos y Medio Ambiente",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "MMI-405",
+              "nombre": "Mantenimiento Preventivo",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "MMI-406",
+              "nombre": "Innovación y Creatividad",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "codigo": "MMP",
+      "nombre": "Mecánica en Maquinaria Pesada",
+      "jornada": "Vespertino",
+      "semestres_lectivos": 4,
+      "practica_laboral_horas": 400,
+      "examen_competencias": true,
+      "titulacion": "1 semestre (V semestre: práctica laboral y examen de competencias)",
+      "horas_lectivas": 1602,
+      "horas_impresas": 1602,
+      "fuente": {
+        "pagina": "https://juanbohon.cl/carreras/mecanica-en-maquinaria-pesada",
+        "malla_pdf": "https://juanbohon.cl/wp-content/uploads/2025/10/mmp_malla_admision_10022025-scaled-1.pdf"
+      },
+      "semestres": [
+        {
+          "n": 1,
+          "horas": 414,
+          "semanas_impresas": 23,
+          "asignaturas": [
+            {
+              "codigo": "MMP-101",
+              "nombre": "Introducción a la Oleohidráulica y Neumática",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMP-102",
+              "nombre": "Metrología",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMP-103",
+              "nombre": "Interpretación de Planos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMP-104",
+              "nombre": "Electricidad Básica",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMP-105",
+              "nombre": "Matemática Básica",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMP-106",
+              "nombre": "Tecnologías de la Información",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "horas": 396,
+          "semanas_impresas": 22,
+          "asignaturas": [
+            {
+              "codigo": "MMP-201",
+              "nombre": "Sistema Oleohidráulico de Levante e Implementos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMP-202",
+              "nombre": "Motores de Combustión Interna",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMP-203",
+              "nombre": "Tribología",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMP-204",
+              "nombre": "Taller de Electricidad Aplicada",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMP-205",
+              "nombre": "Física Mecánica",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "MMP-206",
+              "nombre": "Comunicación Efectiva",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 3,
+          "horas": 378,
+          "semanas_impresas": 21,
+          "asignaturas": [
+            {
+              "codigo": "MMP-301",
+              "nombre": "Sistema Oleohidráulico de Dirección y Frenos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMP-302",
+              "nombre": "Control Electrónico de Motores Diesel",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMP-303",
+              "nombre": "Inglés Técnico",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "MMP-304",
+              "nombre": "Taller de Electrónica",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMP-305",
+              "nombre": "Prevención de Riesgos y Medio Ambiente",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "MMP-306",
+              "nombre": "Taller de Habilidades Sociales",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 4,
+          "horas": 414,
+          "semanas_impresas": 23,
+          "asignaturas": [
+            {
+              "codigo": "MMP-401",
+              "nombre": "Taller Integrado de Oleohidráulica y Neumática",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMP-402",
+              "nombre": "Sistema de Tren de Fuerza",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMP-403",
+              "nombre": "Taller Integrado de Mantenimiento de Equipo Pesado",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMP-404",
+              "nombre": "Operación de Maquinaria Pesada Básica",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMP-405",
+              "nombre": "Interpretación de Manuales Técnicos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MMP-406",
+              "nombre": "Innovación y Creatividad",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "codigo": "OMP",
+      "nombre": "Operación y Mantención de Maquinaria Pesada",
+      "jornada": "Diurno",
+      "semestres_lectivos": 4,
+      "practica_laboral_horas": 400,
+      "examen_competencias": true,
+      "titulacion": "1 semestre (V semestre: práctica laboral y examen de competencias)",
+      "horas_lectivas": 1620,
+      "horas_impresas": 1620,
+      "fuente": {
+        "pagina": "https://juanbohon.cl/carreras/operacion-y-mantencion-de-maquinaria-pesada",
+        "malla_pdf": "https://juanbohon.cl/wp-content/uploads/2025/10/omp_malla_admision_10022025-scaled-1.pdf"
+      },
+      "semestres": [
+        {
+          "n": 1,
+          "horas": 396,
+          "semanas_impresas": 22,
+          "asignaturas": [
+            {
+              "codigo": "OMP-101",
+              "nombre": "Operación de Maquinaria Pesada Inicial",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "OMP-102",
+              "nombre": "Sistemas Eléctricos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "OMP-103",
+              "nombre": "Metrología",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "OMP-104",
+              "nombre": "Inglés Técnico",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "OMP-105",
+              "nombre": "Matemática Básica",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "OMP-106",
+              "nombre": "Tecnologías de la Información",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "horas": 414,
+          "semanas_impresas": 23,
+          "asignaturas": [
+            {
+              "codigo": "OMP-201",
+              "nombre": "Operación de Maquinaria Pesada Básica",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "OMP-202",
+              "nombre": "Introducción a la Oleohidráulica y Neumática",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "OMP-203",
+              "nombre": "Tribología",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "OMP-204",
+              "nombre": "Sistema de Tren de Fuerza",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "OMP-205",
+              "nombre": "Motores de Combustión Interna",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "OMP-206",
+              "nombre": "Comunicación Efectiva",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 3,
+          "horas": 396,
+          "semanas_impresas": 22,
+          "asignaturas": [
+            {
+              "codigo": "OMP-301",
+              "nombre": "Operación de Maquinaria Pesada Intermedia",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "OMP-302",
+              "nombre": "Sistema Oleohidráulica y Neumática",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "OMP-303",
+              "nombre": "Mantención de Equipos Estacionarios",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "OMP-304",
+              "nombre": "Prevención de Riesgos y Medio Ambiente",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "OMP-305",
+              "nombre": "Sistemas Electrónicos",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "OMP-306",
+              "nombre": "Taller de Habilidades Sociales",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 4,
+          "horas": 414,
+          "semanas_impresas": 23,
+          "asignaturas": [
+            {
+              "codigo": "OMP-401",
+              "nombre": "Operación de Maquinaria Pesada Avanzada",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "OMP-402",
+              "nombre": "Taller de Oleohidráulica y Neumática",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "OMP-403",
+              "nombre": "Mantención de Equipos Móviles",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "OMP-404",
+              "nombre": "Taller Integrado de Mecánica",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "OMP-405",
+              "nombre": "Interpretación de Manuales Técnicos",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "OMP-406",
+              "nombre": "Innovación y Creatividad",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "codigo": "MME",
+      "nombre": "Minería y Metalurgia",
+      "jornada": "Vespertino",
+      "semestres_lectivos": 4,
+      "practica_laboral_horas": 400,
+      "examen_competencias": true,
+      "titulacion": "1 semestre (V semestre: práctica laboral y examen de competencias)",
+      "horas_lectivas": 1602,
+      "horas_impresas": 1602,
+      "fuente": {
+        "pagina": "https://juanbohon.cl/carreras/tecnico-en-mineria-y-metalurgia",
+        "malla_pdf": "https://juanbohon.cl/wp-content/uploads/2025/10/mme_malla_admision.pdf"
+      },
+      "semestres": [
+        {
+          "n": 1,
+          "horas": 396,
+          "semanas_impresas": null,
+          "asignaturas": [
+            {
+              "codigo": "MME-101",
+              "nombre": "Introducción a la Minería y Metalurgia",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MME-102",
+              "nombre": "Seguridad Industrial",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MME-103",
+              "nombre": "Máquinas y Equipos Industriales",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MME-104",
+              "nombre": "Física",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "MME-105",
+              "nombre": "Legislación y Medioambiente",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MME-106",
+              "nombre": "Comunicación Efectiva",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "horas": 396,
+          "semanas_impresas": null,
+          "asignaturas": [
+            {
+              "codigo": "MME-201",
+              "nombre": "Fundamentos de Perforación y Tronadura",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MME-202",
+              "nombre": "Geomecánica Básica",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MME-203",
+              "nombre": "Topografía aplicada a la Minería",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MME-204",
+              "nombre": "Dibujo Técnico e Interpretación de Planos",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MME-205",
+              "nombre": "Matemática Básica",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "MME-206",
+              "nombre": "Tecnologías de la Información",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 3,
+          "horas": 396,
+          "semanas_impresas": null,
+          "asignaturas": [
+            {
+              "codigo": "MME-301",
+              "nombre": "Proceso de Conminución y Concentración de Minerales",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "MME-302",
+              "nombre": "Equipos de Carguío y Transporte",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MME-303",
+              "nombre": "Sistemas de Control y Monitoreo de Procesos Mineros",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MME-304",
+              "nombre": "Ética Profesional y Responsabilidad Social en Minería",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "MME-305",
+              "nombre": "Herramientas Digitales para Procesos Minero-Metalúrgicos",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "MME-306",
+              "nombre": "Taller de Habilidades Sociales",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 4,
+          "horas": 414,
+          "semanas_impresas": null,
+          "asignaturas": [
+            {
+              "codigo": "MME-401",
+              "nombre": "Operación y Control de Procesos de Tratamiento de Minerales",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "MME-402",
+              "nombre": "Gestión de Procesos Mineros",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "MME-403",
+              "nombre": "Liderazgo e Inclusión en Contextos Mineros",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "MME-404",
+              "nombre": "Supervisión de Operaciones Mineras",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "MME-405",
+              "nombre": "Inglés Técnico",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "MME-406",
+              "nombre": "Innovación y Creatividad",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "codigo": "TOP",
+      "nombre": "Topografía",
+      "jornada": "Vespertino",
+      "semestres_lectivos": 4,
+      "practica_laboral_horas": 400,
+      "examen_competencias": true,
+      "titulacion": "1 semestre (V semestre: práctica laboral y examen de competencias)",
+      "horas_lectivas": 1602,
+      "horas_impresas": 1602,
+      "fuente": {
+        "pagina": "https://juanbohon.cl/carreras/topografia",
+        "malla_pdf": "https://juanbohon.cl/wp-content/uploads/2025/10/top_malla_admision_10022025-scaled-1.pdf"
+      },
+      "semestres": [
+        {
+          "n": 1,
+          "horas": 396,
+          "semanas_impresas": 22,
+          "asignaturas": [
+            {
+              "codigo": "TOP-101",
+              "nombre": "Topografía Básica",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TOP-102",
+              "nombre": "Taller de Dibujo Topográfico Digital",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TOP-103",
+              "nombre": "Matemática Básica",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TOP-104",
+              "nombre": "Trigonometría Aplicada a la Topografía",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TOP-105",
+              "nombre": "Prevención de Riesgos y Medioambiente",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "TOP-106",
+              "nombre": "Comunicación Efectiva",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "horas": 396,
+          "semanas_impresas": 22,
+          "asignaturas": [
+            {
+              "codigo": "TOP-201",
+              "nombre": "Altimetría y Nivelación",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TOP-202",
+              "nombre": "Sistema de Información Geográfica (SIG)",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TOP-203",
+              "nombre": "Matemática Aplicada a la Topografía",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TOP-204",
+              "nombre": "Herramientas de Geología",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "TOP-205",
+              "nombre": "Excel Aplicado a la Topografía",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TOP-206",
+              "nombre": "Tecnologías de la Información",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 3,
+          "horas": 396,
+          "semanas_impresas": 22,
+          "asignaturas": [
+            {
+              "codigo": "TOP-301",
+              "nombre": "Levantamiento Planimétrico",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TOP-302",
+              "nombre": "Taller de Fotogrametría",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TOP-303",
+              "nombre": "Catastro y Planificación",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TOP-304",
+              "nombre": "Taller de Cartografía y Geodesia Satelital",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "TOP-305",
+              "nombre": "Herramientas Digitales Topográficas",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TOP-306",
+              "nombre": "Taller de Habilidades Sociales",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        },
+        {
+          "n": 4,
+          "horas": 414,
+          "semanas_impresas": 23,
+          "asignaturas": [
+            {
+              "codigo": "TOP-401",
+              "nombre": "Taller de Topografía para Obras Viales",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TOP-402",
+              "nombre": "Taller de Topografía de Minas",
+              "horas": 90,
+              "sesiones": 30,
+              "transversal": false
+            },
+            {
+              "codigo": "TOP-403",
+              "nombre": "Taller de Topografía para Construcción",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TOP-404",
+              "nombre": "Taller de Topografía Agrícola",
+              "horas": 72,
+              "sesiones": 24,
+              "transversal": false
+            },
+            {
+              "codigo": "TOP-405",
+              "nombre": "Inglés Técnico",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": false
+            },
+            {
+              "codigo": "TOP-406",
+              "nombre": "Innovación y Creatividad",
+              "horas": 54,
+              "sesiones": 18,
+              "transversal": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "asignaturas_compartidas": [
+    {
+      "nombre": "Tecnologías de la Información",
+      "en": [
+        "TLI-S1 (54 h)",
+        "APM-S2 (54 h)",
+        "AED-S2 (54 h)",
+        "COS-S1 (54 h)",
+        "EEI-S2 (54 h)",
+        "EER-S1 (54 h)",
+        "EME-S2 (54 h)",
+        "ESI-S1 (54 h)",
+        "GCI-S1 (54 h)",
+        "IAC-S2 (54 h)",
+        "MMI-S1 (54 h)",
+        "MMP-S1 (54 h)",
+        "OMP-S1 (54 h)",
+        "MME-S2 (54 h)",
+        "TOP-S2 (54 h)"
+      ]
+    },
+    {
+      "nombre": "Comunicación Efectiva",
+      "en": [
+        "TLI-S2 (54 h)",
+        "APM-S1 (54 h)",
+        "AED-S1 (54 h)",
+        "COS-S2 (54 h)",
+        "EEI-S1 (54 h)",
+        "EER-S2 (54 h)",
+        "EME-S1 (54 h)",
+        "ESI-S2 (54 h)",
+        "GCI-S2 (54 h)",
+        "IAC-S1 (54 h)",
+        "MMI-S2 (54 h)",
+        "MMP-S2 (54 h)",
+        "OMP-S2 (54 h)",
+        "MME-S1 (54 h)",
+        "TOP-S1 (54 h)"
+      ]
+    },
+    {
+      "nombre": "Taller de Habilidades Sociales",
+      "en": [
+        "TLI-S3 (54 h)",
+        "APM-S3 (54 h)",
+        "AED-S3 (54 h)",
+        "COS-S3 (54 h)",
+        "EEI-S3 (54 h)",
+        "EER-S3 (54 h)",
+        "EME-S3 (54 h)",
+        "ESI-S3 (54 h)",
+        "GCI-S3 (54 h)",
+        "IAC-S3 (54 h)",
+        "MMI-S3 (54 h)",
+        "MMP-S3 (54 h)",
+        "OMP-S3 (54 h)",
+        "MME-S3 (54 h)",
+        "TOP-S3 (54 h)"
+      ]
+    },
+    {
+      "nombre": "Innovación y Creatividad",
+      "en": [
+        "TLI-S4 (54 h)",
+        "APM-S4 (54 h)",
+        "AED-S4 (54 h)",
+        "COS-S4 (54 h)",
+        "EEI-S4 (54 h)",
+        "EER-S4 (54 h)",
+        "EME-S4 (54 h)",
+        "ESI-S4 (54 h)",
+        "GCI-S4 (54 h)",
+        "IAC-S4 (54 h)",
+        "MMI-S4 (54 h)",
+        "MMP-S4 (54 h)",
+        "OMP-S4 (54 h)",
+        "MME-S4 (54 h)",
+        "TOP-S4 (54 h)"
+      ]
+    },
+    {
+      "nombre": "Inglés Técnico",
+      "en": [
+        "TLI-S1 (54 h)",
+        "APM-S4 (54 h)",
+        "AED-S2 (54 h)",
+        "EEI-S2 (54 h)",
+        "EER-S4 (54 h)",
+        "ESI-S2 (54 h)",
+        "MMI-S2 (54 h)",
+        "MMP-S3 (54 h)",
+        "OMP-S1 (54 h)",
+        "MME-S4 (54 h)",
+        "TOP-S4 (54 h)"
+      ]
+    },
+    {
+      "nombre": "Matemática Básica",
+      "en": [
+        "TLI-S1 (72 h)",
+        "APM-S1 (54 h)",
+        "EEI-S1 (54 h)",
+        "EME-S1 (72 h)",
+        "GCI-S1 (72 h)",
+        "IAC-S1 (54 h)",
+        "MMI-S1 (72 h)",
+        "MMP-S1 (72 h)",
+        "OMP-S1 (54 h)",
+        "MME-S2 (54 h)",
+        "TOP-S1 (72 h)"
+      ]
+    },
+    {
+      "nombre": "Electricidad en Corriente Continua",
+      "en": [
+        "EEI-S1 (90 h)",
+        "EER-S2 (72 h)",
+        "IAC-S1 (72 h)"
+      ]
+    },
+    {
+      "nombre": "Física Aplicada a la Electricidad",
+      "en": [
+        "EEI-S1 (54 h)",
+        "EER-S1 (72 h)",
+        "IAC-S1 (54 h)"
+      ]
+    },
+    {
+      "nombre": "Electricidad en Corriente Alterna",
+      "en": [
+        "EEI-S2 (90 h)",
+        "EER-S3 (72 h)",
+        "IAC-S3 (72 h)"
+      ]
+    },
+    {
+      "nombre": "Electrónica Básica",
+      "en": [
+        "EEI-S2 (72 h)",
+        "EER-S1 (54 h)",
+        "IAC-S2 (72 h)"
+      ]
+    },
+    {
+      "nombre": "Interpretación de Manuales Técnicos",
+      "en": [
+        "EME-S3 (72 h)",
+        "MMP-S4 (72 h)",
+        "OMP-S4 (54 h)"
+      ]
+    },
+    {
+      "nombre": "Prevención de Riesgos y Medio Ambiente",
+      "en": [
+        "MMI-S4 (54 h)",
+        "MMP-S3 (54 h)",
+        "OMP-S3 (54 h)"
+      ]
+    },
+    {
+      "nombre": "Liderazgo e Inclusión en Contextos Mineros",
+      "en": [
+        "APM-S3 (54 h)",
+        "MME-S4 (54 h)"
+      ]
+    },
+    {
+      "nombre": "Sistemas de Control y Monitoreo de Procesos Mineros",
+      "en": [
+        "APM-S4 (90 h)",
+        "MME-S3 (72 h)"
+      ]
+    },
+    {
+      "nombre": "Ética Profesional y Responsabilidad Social en Minería",
+      "en": [
+        "APM-S4 (54 h)",
+        "MME-S3 (54 h)"
+      ]
+    },
+    {
+      "nombre": "Asepsia y Bioseguridad",
+      "en": [
+        "COS-S1 (54 h)",
+        "ESI-S2 (72 h)"
+      ]
+    },
+    {
+      "nombre": "Primeros Auxilios",
+      "en": [
+        "COS-S2 (54 h)",
+        "ESI-S1 (54 h)"
+      ]
+    },
+    {
+      "nombre": "Taller de Maquillaje",
+      "en": [
+        "COS-S2 (72 h)",
+        "ESI-S3 (72 h)"
+      ]
+    },
+    {
+      "nombre": "Taller de Cejas y Pestañas",
+      "en": [
+        "COS-S3 (72 h)",
+        "ESI-S1 (72 h)"
+      ]
+    },
+    {
+      "nombre": "Taller de Epilación",
+      "en": [
+        "COS-S4 (72 h)",
+        "ESI-S4 (72 h)"
+      ]
+    },
+    {
+      "nombre": "Asesoría de Imagen",
+      "en": [
+        "COS-S4 (72 h)",
+        "ESI-S4 (72 h)"
+      ]
+    },
+    {
+      "nombre": "Psicología General y Atención al Cliente",
+      "en": [
+        "COS-S4 (54 h)",
+        "ESI-S3 (54 h)"
+      ]
+    },
+    {
+      "nombre": "Prevención de Riesgos Eléctricos",
+      "en": [
+        "EEI-S1 (54 h)",
+        "EER-S1 (54 h)"
+      ]
+    },
+    {
+      "nombre": "Sistemas Eléctricos",
+      "en": [
+        "EME-S1 (72 h)",
+        "OMP-S1 (72 h)"
+      ]
+    },
+    {
+      "nombre": "Sistemas Electrónicos",
+      "en": [
+        "EME-S2 (72 h)",
+        "OMP-S3 (54 h)"
+      ]
+    },
+    {
+      "nombre": "Interpretación de Planos",
+      "en": [
+        "EME-S2 (54 h)",
+        "MMP-S1 (72 h)"
+      ]
+    },
+    {
+      "nombre": "Prevención de Riesgos y Medioambiente",
+      "en": [
+        "EME-S3 (54 h)",
+        "TOP-S1 (54 h)"
+      ]
+    },
+    {
+      "nombre": "Introducción a la Oleohidráulica y Neumática",
+      "en": [
+        "MMP-S1 (72 h)",
+        "OMP-S2 (54 h)"
+      ]
+    },
+    {
+      "nombre": "Metrología",
+      "en": [
+        "MMP-S1 (72 h)",
+        "OMP-S1 (72 h)"
+      ]
+    },
+    {
+      "nombre": "Motores de Combustión Interna",
+      "en": [
+        "MMP-S2 (72 h)",
+        "OMP-S2 (90 h)"
+      ]
+    },
+    {
+      "nombre": "Tribología",
+      "en": [
+        "MMP-S2 (72 h)",
+        "OMP-S2 (54 h)"
+      ]
+    },
+    {
+      "nombre": "Sistema de Tren de Fuerza",
+      "en": [
+        "MMP-S4 (72 h)",
+        "OMP-S2 (72 h)"
+      ]
+    },
+    {
+      "nombre": "Operación de Maquinaria Pesada Básica",
+      "en": [
+        "MMP-S4 (72 h)",
+        "OMP-S2 (90 h)"
+      ]
+    }
+  ],
+  "diferencias_detectadas": []
+}
