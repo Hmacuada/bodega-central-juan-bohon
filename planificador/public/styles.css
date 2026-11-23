@@ -1055,3 +1055,10 @@ div.mx-busy { display: flex; align-items: center; }
 .plp-head b { font-size: 14px; }
 .plp-tab td, .plp-tab th { padding-top: 6px; padding-bottom: 6px; }
 .plp-miss td { color: var(--bad); }
+
+.plp-wait { display: flex; gap: 14px; align-items: center; padding: 18px; border: 1px dashed var(--line-2); border-radius: 10px; }
+.plp-wait p { margin: 2px 0 0; }
+.spin { width: 22px; height: 22px; border-radius: 50%; border: 3px solid var(--line-2); border-top-color: var(--navy); animation: spin .9s linear infinite; flex: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spin { animation-duration: 3s; } }
+.stepper { grid-template-columns: repeat(6, minmax(0, 1fr)); }

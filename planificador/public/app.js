@@ -756,7 +756,10 @@ function malla(c) {
 }
 
 // ---------- Vista: Asistente por carrera ----------
-const STEP_LABELS = ['Oferta', 'Asignaturas', 'Docentes', 'Generar'];
+const STEP_LABELS = ['Oferta', 'Asignaturas', 'Docentes', 'Salas', 'Vista previa', 'Confirmar'];
+const wizBody = (c, step, sems) => [wizOferta, wizAsignaturas, wizDocentes, wizSalas, wizPrevia, wizConfirmar][step - 1](c, sems);
+// Último paso: confirmar (si hay vista previa).
+const wizLast = (c) => `<button class="btnp" data-act="confirmPlan" ${ui.preview?.code === c.codigo && !ui.generating ? '' : 'disabled'}>Confirmar y asignar</button>`;
 
 // Carrera del asistente: la de la ventana abierta desde Horario, o la de la página Carreras.
 function wizCode() { return ui.modal?.v === 'wizard' ? ui.modal.k : route().arg; }
@@ -766,8 +769,8 @@ function wizardParts(code, enModal) {
   const step = Math.min(ui.steps[code] || 1, STEP_LABELS.length);
   const sems = activeSemesters(S.periodo.paridad);
   const stepper = `<div class="stepper">${STEP_LABELS.map((l, i) => `<button data-act="step" data-v="${i + 1}" class="${i + 1 < step ? 'done' : ''}" ${i + 1 === step ? 'aria-current="step"' : ''}><span class="n">${i + 1 < step ? '✓' : i + 1}</span>${l}</button>`).join('')}</div>`;
-  const body = [wizOferta(c, sems), wizAsignaturas(c), wizDocentes(c), wizGenerar(c)][step - 1];
-  const last = enModal ? '<button class="btnp" data-act="closeModal">Listo</button>' : `<a class="btnp" href="#/horario">Ver horario de la sede ${icon('arrow')}</a>`;
+  const body = wizBody(c, step, sems);
+  const last = wizLast(c);
   const foot = `<button class="btn" data-act="step" data-v="${step - 1}" ${step === 1 ? 'disabled' : ''}>${icon('back')}Atrás</button>${step < STEP_LABELS.length ? `<button class="btnp" data-act="step" data-v="${step + 1}">Siguiente: ${STEP_LABELS[step].toLowerCase()} ${icon('arrow')}</button>` : last}`;
   return { c, step, stepper, body, foot };
 }
@@ -778,14 +781,10 @@ function viewWizard(code) {
   const step = Math.min(ui.steps[code] || 1, STEP_LABELS.length);
   const sems = activeSemesters(S.periodo.paridad);
   const stepper = `<div class="stepper">${STEP_LABELS.map((l, i) => `<button data-act="step" data-v="${i + 1}" class="${i + 1 < step ? 'done' : ''}" ${i + 1 === step ? 'aria-current="step"' : ''}><span class="n">${i + 1 < step ? '✓' : i + 1}</span>${l}</button>`).join('')}</div>`;
-  let body = '';
-  if (step === 1) body = wizOferta(c, sems);
-  if (step === 2) body = wizAsignaturas(c);
-  if (step === 3) body = wizDocentes(c);
-  if (step === 4) body = wizGenerar(c);
+  const body = wizBody(c, step, sems);
   return `<div class="pagehead"><div><span class="kicker"><a href="#/carreras">Carreras</a> · ${c.codigo} · ${esc(c.jornada)} · ${esc(S.periodo.nombre)}</span><h1>${esc(c.nombre)}</h1></div></div>
     <nav aria-label="Pasos">${stepper}</nav><div class="card">${body}</div>
-    <div class="wiz-foot"><button class="btn" data-act="step" data-v="${step - 1}" ${step === 1 ? 'disabled' : ''}>${icon('back')}Atrás</button>${step < STEP_LABELS.length ? `<button class="btnp" data-act="step" data-v="${step + 1}">Siguiente: ${STEP_LABELS[step].toLowerCase()} ${icon('arrow')}</button>` : `<a class="btnp" href="#/horario">Ver horario de la sede ${icon('arrow')}</a>`}</div>`;
+    <div class="wiz-foot"><button class="btn" data-act="step" data-v="${step - 1}" ${step === 1 ? 'disabled' : ''}>${icon('back')}Atrás</button>${step < STEP_LABELS.length ? `<button class="btnp" data-act="step" data-v="${step + 1}">Siguiente: ${STEP_LABELS[step].toLowerCase()} ${icon('arrow')}</button>` : wizLast(c)}</div>`;
 }
 
 function ofertaOf(code, sem) {
@@ -1011,33 +1010,54 @@ function jornadaLine(c) {
 }
 
 
-// Paso 4: sala de cada sección, planificar y vista previa antes de confirmar.
-function wizGenerar(c) {
+// Paso 4: sala de cada sección (o automática).
+function wizSalas(c) {
   const H = S.horario;
   const mine = H ? H.secciones.filter((s) => s.carrera === c.codigo) : [];
-  const ids = new Set(mine.map((s) => s.id));
-  const conf = H ? H.conflictos.filter((x) => x.secciones.some((id) => ids.has(id)) || (x.tipo === 'tope' && mine.some((s) => s.plan.some((p) => p.docenteId === x.docenteId)))) : [];
-  const pv = ui.preview?.code === c.codigo ? ui.preview : null;
-  const btn = pv ? '' : `<button class="btnp" data-act="planCareer" data-k="${c.codigo}" ${ui.generating ? 'disabled' : ''}>${ui.generating ? 'Calculando…' : (mine.some((x) => x.plan.length) ? 'Volver a planificar' : 'Planificar esta carrera')}</button>`;
-  const head = `<div class="section-title"><div><h2>Generar</h2><p class="faint small">${jornadaLine(c)}</p></div>${btn}</div>`;
+  const head = `<div class="section-title"><div><h2>Salas</h2><p class="faint small">${jornadaLine(c)}</p></div></div>`;
   if (!H) return head + '<p class="muted">Todavía no hay horario para este periodo.</p>';
-  if (pv) return head + previewHtml(c, pv);
-  // Qué otras carreras usan cada sala y en qué jornada (para elegir la sala de cada sección).
+  if (!mine.length) return head + noOpen;
+  // Qué otras carreras usan cada sala y en qué jornada.
   const usoDe = {};
   for (const x of H.sesiones) { const s2 = secById(H, x.seccionId); if (x.salaId && s2 && s2.carrera !== c.codigo) (usoDe[x.salaId] ||= new Set()).add(`${s2.carrera} ${s2.jornada === 'Diurno' ? 'diurno' : 'vesp.'}`); }
   const salaSel = (s) => {
     const el = S.salaSeccion?.[s.id] || '';
     return `<select class="sala-sec" data-change="salaSeccion" data-k="${s.id}" aria-label="Sala de ${secLabel(s)}">
       <option value="">Automática${!el && s.salaId ? ` (hoy ${esc(salaName(s.salaId))})` : ''}</option>
-      ${S.salas.map((r) => `<option value="${r.id}" ${r.id === el ? 'selected' : ''}>${esc(r.nombre)}${usoDe[r.id] ? ` · usa ${[...usoDe[r.id]].join(', ')}` : ' · libre'}</option>`).join('')}
+      ${S.salas.map((r) => `<option value="${r.id}" ${r.id === el ? 'selected' : ''}>${esc(r.nombre)} · ${r.capacidad} puestos${usoDe[r.id] ? ` · usa ${[...usoDe[r.id]].join(', ')}` : ' · libre'}</option>`).join('')}
     </select>`;
   };
-  const status = conf.length ? `<p class="status bad">${icon('alert')}${conf.length} por revisar · <button class="linkbtn" data-act="modal" data-v="issues" data-k="${c.codigo}">Ver</button></p>`
-    : `<p class="status ok">${icon('check')}${mine.length ? `${mine.length} secciones sin choques` : 'Sin secciones en el periodo'}</p>`;
-  return head + status + (mine.length ? `<p class="faint small">Elige la sala de cada sección o deja «Automática». Al planificar verás una vista previa antes de confirmar.</p>
-    <div class="tablewrap"><table class="dtable" data-pager><thead><tr><th>Sección</th><th>Días</th><th>Sala</th><th></th></tr></thead><tbody>
-    ${page('gen-' + c.codigo, mine).map((s) => `<tr><td><span class="l1">${secLabel(s)}</span><span class="l2">${s.estudiantes} estudiantes · ${s.semanas} semanas</span></td><td>${s.diasUso?.length ? s.diasUso.join(' ') : `<span class="faint" title="Días configurados; se fijan al planificar">${s.dias.join(' ')}</span>`}</td><td>${salaSel(s)}</td><td><button class="linkbtn" data-act="modal" data-v="plan" data-k="${s.id}">Ver plan</button></td></tr>`).join('')}
-    </tbody></table></div>${pagerHtml('gen-' + c.codigo, mine.length)}` : '');
+  return head + `<p class="faint small">Elige la sala de cada sección o deja «Automática» para que la elija el planificador. Cada sección puede usar una sala distinta.</p>
+    <div class="tablewrap"><table class="dtable"><thead><tr><th>Sección</th><th>Días</th><th>Sala</th></tr></thead><tbody>
+    ${mine.map((s) => `<tr><td><span class="l1">${secLabel(s)}</span><span class="l2">${s.estudiantes} estudiantes</span></td><td>${s.diasUso?.length ? s.diasUso.join(' ') : `<span class="faint" title="Días preferidos; se fijan al planificar">${s.dias.join(' ')}</span>`}</td><td>${salaSel(s)}</td></tr>`).join('')}
+    </tbody></table></div>`;
+}
+
+// Paso 5: vista previa (se calcula al entrar; no guarda nada).
+function wizPrevia(c) {
+  const pv = ui.preview?.code === c.codigo ? ui.preview : null;
+  const head = `<div class="section-title"><div><h2>Vista previa</h2><p class="faint small">Así quedarían las secciones. Aún no se guarda nada.</p></div>
+    ${pv && !ui.generating ? `<button class="btnq" data-act="planCareer" data-k="${c.codigo}">Recalcular</button>` : ''}</div>`;
+  if (ui.generating) return head + `<div class="plp-wait"><span class="spin" aria-hidden="true"></span><div><b>Calculando la propuesta…</b><p class="faint small">Puede tardar hasta un minuto. Se respeta lo ya asignado a las otras carreras.</p></div></div>`;
+  if (ui.previewErr?.code === c.codigo) return head + `<p class="status bad">${icon('alert')}${esc(ui.previewErr.msg)}</p><button class="btnp" data-act="planCareer" data-k="${c.codigo}">Reintentar</button>`;
+  if (!pv) return head + `<button class="btnp" data-act="planCareer" data-k="${c.codigo}">Calcular vista previa</button>`;
+  return head + previewHtml(c, pv);
+}
+
+// Paso 6: confirmar (resumen de lo que se va a guardar).
+function wizConfirmar(c) {
+  const pv = ui.preview?.code === c.codigo ? ui.preview : null;
+  const head = `<div class="section-title"><div><h2>Confirmar</h2></div></div>`;
+  if (!pv) return head + `<p class="muted">Primero revisa la vista previa.</p><button class="btn" data-act="step" data-v="5">${icon('back')}Ir a la vista previa</button>`;
+  const secs = pv.H.secciones.filter((s) => s.carrera === c.codigo);
+  const tiene = Object.keys(S.manual || {}).some((id) => id.startsWith(c.codigo + '-') && Object.keys(S.manual[id]).length);
+  const salasDe = (s) => [...new Set(s.plan.map((p) => p.salaId).filter(Boolean))].map((id) => esc(salaName(id))).join(', ') || 'Sin sala';
+  return head + `<p>Se guardarán <b>${pv.items.length}</b> clases de <b>${esc(c.nombre)}</b> y se sumarán a la ocupación de salas.${pv.unplaced.length ? ` <span class="bad-t">${pv.unplaced.length} asignaturas quedan sin lugar.</span>` : ''}</p>
+    ${tiene ? `<p class="status warn">${icon('alert')}La carrera ya tenía clases asignadas: se reemplazan por esta propuesta.</p>` : ''}
+    <div class="tablewrap"><table class="dtable"><thead><tr><th>Sección</th><th>Días</th><th>Sala</th><th>Termina</th></tr></thead><tbody>
+    ${secs.map((s) => `<tr><td><span class="l1">${secLabel(s)}</span></td><td>${(s.diasUso || []).join(' ')}</td><td>${salasDe(s)}</td><td class="${s.pasaCierre ? 'bad-t' : ''}">${s.fechaFin ? fmtFecha(s.fechaFin) : '—'}</td></tr>`).join('')}
+    </tbody></table></div>
+    <div class="row" style="margin-top:14px"><button class="btnq" data-act="discardPlan">Descartar</button><button class="btnp" data-act="confirmPlan">Confirmar y asignar</button></div>`;
 }
 
 // Pone las clases propuestas en un objeto manual ({ secId: { codigo: clase } }).
@@ -1049,7 +1069,7 @@ function putItems(manual, items) {
   }
 }
 
-// Vista previa: cómo quedan las secciones (días, sala, cada asignatura con sus fechas), antes de guardar.
+// Detalle de la vista previa: cada sección con sus días, sala y asignaturas con fechas.
 function previewHtml(c, pv) {
   const PH = pv.H;
   const secs = PH.secciones.filter((s) => s.carrera === c.codigo);
@@ -1068,9 +1088,7 @@ function previewHtml(c, pv) {
       </tbody></table></div>`;
   };
   return `<div class="plp">
-    <div class="plp-bar"><div><b>Vista previa</b> <span class="faint small">· aún no se guarda nada</span>
-      ${choques.length ? `<p class="status bad">${icon('alert')}${choques.length} choques: ${esc(choques[0].mensaje)}</p>` : `<p class="status ok">${icon('check')}Sin choques con lo ya asignado${pv.unplaced.length ? ` · ${pv.unplaced.length} asignaturas sin lugar` : ''}</p>`}</div>
-      <div class="row"><button class="btnq" data-act="discardPlan">Descartar</button><button class="btnp" data-act="confirmPlan">Confirmar y asignar</button></div></div>
+    ${choques.length ? `<p class="status bad">${icon('alert')}${choques.length} choques: ${esc(choques[0].mensaje)}</p>` : `<p class="status ok">${icon('check')}Sin choques con lo ya asignado${pv.unplaced.length ? ` · ${pv.unplaced.length} asignaturas sin lugar` : ''}</p>`}
     ${secs.map(bloque).join('')}
   </div>`;
 }
@@ -1253,7 +1271,7 @@ const actions = {
     const mias = (id) => id.startsWith(code + '-');
     const tiene = Object.keys(S.manual || {}).some((id) => mias(id) && Object.keys(S.manual[id]).length);
     void tiene;
-    ui.generating = true; ui.preview = null; render();
+    ui.generating = true; ui.preview = null; ui.previewErr = null; render();
     try {
       const copia = structuredClone(S);
       for (const id of Object.keys(copia.manual || {})) if (mias(id)) delete copia.manual[id];
@@ -1267,7 +1285,7 @@ const actions = {
       render();
     } catch (e) {
       ui.generating = false;
-      alert('No se pudo planificar ' + c.nombre + ': ' + e.message);
+      ui.previewErr = { code, msg: 'No se pudo calcular la propuesta: ' + e.message };
       render();
     }
   },
@@ -1283,7 +1301,7 @@ const actions = {
     applySugg(pv.items);
     location.hash = '#/ocupacion';
   },
-  discardPlan() { ui.preview = null; render(); },
+  discardPlan() { const k = ui.preview?.code; ui.preview = null; if (k) ui.steps[k] = 4; render(); },
   acceptSugg(el) {
     const it = ui.sugg?.items[Number(el.dataset.i)];
     if (!it) return;
@@ -1400,7 +1418,13 @@ const actions = {
     if (sec) { ui.hc = sec.carrera; ui.hs = sec.sem; ui.hy = sec.sem <= 2 ? 1 : 2; ui.hl = sec.letra; }
   },
   malla(el) { ui.malla = ui.malla === el.dataset.v ? null : el.dataset.v; render(); },
-  step(el) { const arg = wizCode(); ui.steps[arg] = Math.min(STEP_LABELS.length, Math.max(1, Number(el.dataset.v))); ui.rows = null; render(); },
+  step(el) {
+    const arg = wizCode();
+    ui.steps[arg] = Math.min(STEP_LABELS.length, Math.max(1, Number(el.dataset.v)));
+    ui.rows = null;
+    if (ui.steps[arg] === 5 && ui.preview?.code !== arg && !ui.generating) return actions.planCareer({ dataset: { k: arg } });
+    render();
+  },
   secs(el) {
     const arg = wizCode();
     mutate(() => {

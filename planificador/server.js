@@ -32,7 +32,8 @@ async function loadSeed() {
 async function readState() {
   if (existsSync(STATE)) return JSON.parse(await readFile(STATE, 'utf8'));
   const { seed, demo } = await loadSeed();
-  const state = buildInitialState(seed, demo);
+  // DEMO=0: el servidor parte vacío (solo las mallas), sin los datos de ejemplo.
+  const state = buildInitialState(seed, demo, { withDemo: process.env.DEMO !== '0' });
   await saveState(state);
   return state;
 }
