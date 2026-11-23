@@ -1,12 +1,15 @@
 // Interfaz del planificador. Vistas: Horario, Carreras (con asistente de 5 pasos), Docentes, Salas, Respaldo.
 import { solve } from '/src/core/solver.js';
 import { suggestAssignments, qualifiedTeachers, canTeach, teacherNeeds, availableForLevel, estimatedLoad, neededSubjects } from '/src/core/assign.js';
-import { activeSemesters, openSemesters, DAYS, DAY_NAMES, DAYS_PER_LEVEL, TURNOS, roman, cohortDays, toMinutes, levelOf, isSaturdayOk, SATURDAY_LAST_START, DEFAULT_JORNADAS } from '/src/core/calendar.js';
+import { activeSemesters, openSemesters, DAYS, DAY_NAMES, DAYS_PER_LEVEL, TURNOS, roman, cohortDays, blocksFor, toMinutes, levelOf, isSaturdayOk, saturdayIssue, SATURDAY_LAST_START, SATURDAY_DEFAULT_BLOCKS } from '/src/core/calendar.js';
 import { candidatePlans, moduleWeeks } from '/src/core/modules.js';
 import { ALL_SLOTS, periodName, migrateState } from '/src/core/initial.js';
+import { buildManual, manualFromSolved, previewWeeks, slotAllowed } from '/src/core/manual.js';
+import { suggest } from '/src/core/suggest.js';
+import { calendarOf, calendarKey, defaultCalendar, weekMonday, addDays, fmtFecha, sinClases, dayCode } from '/src/core/fechas.js';
 
 let S = null; // estado persistido
-const ui = { steps: {}, mode: 'seccion', sel: null, week: 1, editDoc: null, docQuery: '', malla: null, generating: false, saveMsg: '', tabs: {}, pages: {}, rows: null, modal: null };
+const ui = { sugg: null, hmode: 'salas', hc: '', hy: 1, hs: 1, hl: 'A', steps: {}, mode: 'seccion', sel: null, week: 1, editDoc: null, docQuery: '', malla: null, generating: false, saveMsg: '', tabs: {}, pages: {}, rows: null, modal: null };
 const app = document.getElementById('app');
 
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -31,7 +34,9 @@ const ICONS = {
   calendar: '<rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4M7.5 13.5h3M13.5 13.5h3M7.5 17h3"/>',
   cap: '<path d="M2.5 9 12 4.5 21.5 9 12 13.5z"/><path d="M6.5 11v5c0 1.4 2.5 3 5.5 3s5.5-1.6 5.5-3v-5M21.5 9v5"/>',
   users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.4 3.2-5.5 6.5-5.5s5.9 2.1 6.5 5.5"/><path d="M16 4.8a3.3 3.3 0 0 1 0 6.4M18 14.8c2 .6 3.2 2.4 3.5 5.2"/>',
+  grid: '<rect x="3" y="3.5" width="18" height="17" rx="2"/><path d="M3 9h18M3 14.5h18M9 3.5v17M15 3.5v17"/>',
   door: '<path d="M5 21V4.5A1.5 1.5 0 0 1 6.5 3h9A1.5 1.5 0 0 1 17 4.5V21M3 21h18"/><circle cx="13.5" cy="12" r=".9" fill="currentColor"/>',
+  settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
   archive: '<rect x="3" y="3.5" width="18" height="5" rx="1.5"/><path d="M4.5 8.5V19a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5V8.5M10 12.5h4"/>',
   star: '<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z" fill="currentColor" stroke="none"/>',
   check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
@@ -78,6 +83,7 @@ function save() {
 function paintSave() { const el = document.getElementById('savemsg'); if (el) el.textContent = ui.saveMsg; }
 // Cambia datos: guarda y marca el horario como desactualizado.
 function mutate(fn, { stale = true } = {}) {
+  ui.sugg = null;
   fn(S);
   if (stale && S.horario) S.horario.desactualizado = true;
   save();
@@ -94,6 +100,7 @@ window.addEventListener('hashchange', () => { ui.modal = null; ui.editDoc = null
 let resizeTimer = null;
 window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { ui.rows = null; render(); }, 150); });
 document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && ui.pick && !ui.modal) { ui.pick = null; render(); return; }
   if (e.key !== 'Escape' || !ui.modal) return;
   if (ui.pickAv) { ui.pickAv = false; render(); } else closeModal();
 });
@@ -155,7 +162,7 @@ function modalHtml() {
     if (!sec) { ui.modal = null; return ''; }
     title = `Plan del semestre · ${secLabel(sec)}`;
     wide = true;
-    body = `<p class="faint small">${sec.semanas} semanas · ${esc(salaName(sec.salaId))} · ${sec.dias.map((d) => DAY_NAMES[d]).join(', ')}</p><div class="tablewrap">${gantt(sec.plan, sec.semanas, (it) => docName(it.docenteId), route().view === 'horario' ? ui.week : null)}</div>`;
+    body = `<p class="faint small">${sec.semanas} semanas · ${esc(salaName(sec.salaId))} · ${(sec.diasUso?.length ? sec.diasUso : sec.dias).map((d) => DAY_NAMES[d]).join(', ')}${sec.diasUso?.length ? '' : ' (preferidos)'}</p><div class="tablewrap">${gantt(sec.plan, sec.semanas, (it) => docName(it.docenteId), route().view === 'horario' ? ui.week : null)}</div>`;
   } else if (m.v === 'doc') {
     const d = S.docentes.find((x) => x.id === ui.editDoc);
     if (!d) { ui.modal = null; return ''; }
@@ -168,6 +175,14 @@ function modalHtml() {
       <div><h2>${esc(title)}</h2><span class="faint small">${esc(d.especialidad || 'Sin especialidad')} · ${h ? `${h} h en el periodo` : 'sin carga en el periodo'}</span></div></div>`;
     body = docForm(d);
     foot = '<button class="btnq danger-q" data-act="delDoc">Eliminar docente</button><button class="btnp" data-act="closeModal">Listo</button>';
+  } else if (m.v === 'wizard' && career(m.k)) {
+    const w = wizardParts(m.k, true);
+    title = 'Planificar ' + w.c.nombre;
+    wide = true;
+    cls = 'wiz-modal';
+    headHtml = `<div><span class="kicker">${w.c.codigo} · ${esc(w.c.jornada)} · ${esc(S.periodo.nombre)}</span><h2>${esc(w.c.nombre)}</h2></div>`;
+    body = `<nav aria-label="Pasos">${w.stepper}</nav><div class="wiz-body">${w.body}</div>`;
+    foot = `<div class="wiz-foot">${w.foot}</div>`;
   } else { ui.modal = null; return ''; }
   return `<div class="modal-back"><div class="modal ${wide ? 'wide' : ''} ${cls}" role="dialog" aria-modal="true" aria-label="${esc(title)}">
     <div class="modal-head">${headHtml || `<h2>${esc(title)}</h2>`}<button class="sq" data-act="closeModal" aria-label="Cerrar">×</button></div>
@@ -181,13 +196,34 @@ function fitScreen() {
   const over = main.scrollHeight - main.clientHeight;
   const rowH = tb.children[0].getBoundingClientRect().height + (tb.tagName === 'UL' ? 8 : 0) || 48;
   const shown = tb.children.length;
-  if (over > 1 && shown > 3) { ui.rows = Math.max(3, shown - Math.ceil(over / rowH)); return true; }
+  if (over > 0 && shown > 2) { ui.rows = Math.max(2, shown - Math.ceil(over / rowH)); return true; }
   if (!ui.rows) ui.rows = Math.max(3, shown + Math.floor(-over / rowH));
   return false;
 }
 
+// Aplica sugerencias aceptadas. Las que quedan siguen propuestas (son compatibles entre sí).
+function applySugg(list) {
+  for (const it of list) {
+    const m = (S.manual[it.secId] = S.manual[it.secId] || {});
+    const o = Number.isFinite(it.desde) ? it.desde : Math.max(0, ...Object.values(m).map((x) => x.o || 0)) + 1;
+    m[it.codigo] = { slots: it.slots.map((x) => ({ d: x.d, inicio: x.inicio, fin: x.fin })), o, salaId: it.salaId, desde: it.desde };
+  }
+  const aceptados = new Set(list);
+  if (ui.sugg) ui.sugg = { items: ui.sugg.items.filter((x) => !aceptados.has(x)), unplaced: ui.sugg.unplaced };
+  if (ui.sugg && !ui.sugg.items.length) ui.sugg = null;
+  save();
+  render();
+}
+
+// El horario se arma en vivo desde las clases asignadas: cada cambio se ve al instante.
+function syncHorario() {
+  if (!S.manual) S.manual = {};
+  try { S.horario = buildManual(S); ui.planError = ''; } catch (e) { S.horario = null; ui.planError = e.message; }
+}
+
 function render() {
   if (!S) return;
+  syncHorario();
   buildColors();
   const { view, arg } = route();
   const body = rebuild(view, arg);
@@ -207,11 +243,13 @@ function rebuild(view, arg) {
   if (view === 'docentes') return viewDocentes();
   if (view === 'salas') return viewSalas();
   if (view === 'respaldo') return viewRespaldo();
+  if (view === 'configuracion') return viewConfig();
+  if (view === 'ocupacion') return viewOcupacion();
   return viewHorario();
 }
 
 function sidebar(active) {
-  const isHome = !['carreras', 'docentes', 'salas', 'respaldo'].includes(active);
+  const isHome = !['carreras', 'docentes', 'salas', 'configuracion', 'respaldo', 'ocupacion'].includes(active);
   const link = (v, label, ic) => `<a href="#/${v}" ${active === v || (v === 'horario' && isHome) ? 'aria-current="page"' : ''}>${icon(ic)}${label}</a>`;
   const top = `<header class="topbar">
     <a class="brand" href="#/horario" aria-label="Planificador CFT Juan Bohon, inicio"><span class="logo"><img src="/public/logo.png" alt="CFT Juan Bohon"></span><b class="brand-name">Planificador</b></a>
@@ -223,8 +261,8 @@ function sidebar(active) {
       </select>
     </div></header>`;
   return top + `<nav class="side-nav" aria-label="Menú principal">
-    ${link('horario', 'Horario', 'calendar')}${link('carreras', 'Carreras', 'cap')}${link('docentes', 'Docentes', 'person')}${link('salas', 'Salas', 'door')}
-    <span class="side-sep"></span>${link('respaldo', 'Respaldo', 'archive')}
+    ${link('horario', 'Horario', 'calendar')}${link('ocupacion', 'Ocupación de salas', 'grid')}${link('carreras', 'Carreras', 'cap')}${link('docentes', 'Docentes', 'person')}${link('salas', 'Salas', 'door')}
+    <span class="side-sep"></span>${link('configuracion', 'Configuración', 'settings')}${link('respaldo', 'Respaldo', 'archive')}
   </nav>`;
 }
 
@@ -237,8 +275,8 @@ function needsChecklist() {
   const offered = S.carreras.filter((c) => sems.some((s) => S.oferta?.[c.codigo]?.[s]?.secciones));
   const missing = neededSubjects(S).filter((n) => !S.asignaciones[n.asignatura.codigo]);
   return [
-    ['Oferta de secciones', offered.length ? `${offered.length} de 15 carreras abren secciones` : 'Ninguna carrera tiene secciones', offered.length ? 'ok' : 'bad', '#/carreras'],
-    ['Asignaturas y horas', '15 mallas cargadas · 359 asignaturas', 'ok', '#/carreras'],
+    ['Oferta de secciones', offered.length ? `${offered.length} de ${S.carreras.length} carreras abren secciones` : 'Ninguna carrera tiene secciones', offered.length ? 'ok' : 'bad', '#/carreras'],
+    ['Asignaturas y horas', `${S.carreras.length} mallas cargadas · ${S.carreras.reduce((t, c) => t + c.semestres.reduce((u, s) => u + s.asignaturas.length, 0), 0)} asignaturas`, 'ok', '#/carreras'],
     ['Docentes', missing.length ? `${missing.length} asignaturas sin docente` : `${S.docentes.length} docentes · todas las asignaturas cubiertas`, missing.length ? 'warn' : 'ok', '#/docentes'],
     ['Salas', S.salas.length ? `${S.salas.length} salas registradas` : 'No hay salas', S.salas.length ? 'ok' : 'bad', '#/salas']
   ];
@@ -249,94 +287,429 @@ function viewHorario() {
   const open = [...new Set(S.carreras.flatMap((c) => openSemesters(S, c.codigo)))].sort();
   const enPractica = S.carreras.reduce((t, c) => t + (S.oferta?.[c.codigo]?.practica?.estudiantes || 0), 0);
   const semTxt = open.length ? `semestres ${open.map(roman).join(', ').replace(/, ([^,]*)$/, ' y $1')}` : 'sin secciones abiertas';
+  const body = courseViewer(H);
   const head = `<div class="pagehead">
-      <div><h1>Horario</h1><p class="muted">${esc(S.periodo.nombre)} · ${semTxt}${enPractica ? ` · ${enPractica} en práctica` : ''}</p></div>
+      <div><h1>Horario</h1><p class="muted">${ui.hsub || `${esc(S.periodo.nombre)} · ${semTxt}${enPractica ? ` · ${enPractica} en práctica` : ''}`}</p></div>
       <div class="row">
         ${H ? `<button class="btnq" data-act="print" title="Imprimir la semana">${icon('printer')}<span class="sr">Imprimir</span></button><button class="btnq" data-act="csv" title="Descargar CSV">${icon('download')}<span class="sr">CSV</span></button>` : ''}
-        <button class="btnp" data-act="generate" ${ui.generating ? 'disabled' : ''}>${ui.generating ? 'Generando…' : H ? 'Volver a generar' : 'Generar horario'}</button>
+        <a class="btnq" href="#/ocupacion">${icon('grid')}Ocupación de salas</a>
+        <button class="btnp" data-act="modal" data-v="wizard" data-k="${ui.hc}" ${ui.hc ? '' : 'disabled title="Elige una carrera"'}>${icon('sparkle')}Planificar carrera</button>
       </div></div>`;
-  if (!H) {
-    const checklist = needsChecklist();
-    return head + `<div class="card" style="max-width:560px">
-        <h2>Aún no hay horario</h2>
-        <ol class="steps">${checklist.map(([t, d, k, href], i) => `<li><a href="${href}"><span class="n ${k === 'ok' ? 'ok' : ''}">${k === 'ok' ? icon('check') : i + 1}</span>
-          <span><b>${t}</b><span class="muted small">${esc(d)}</span></span></a></li>`).join('')}</ol>
-      </div>`;
+  if (!H) return head + notice(`err-${ui.planError}`, 'alert', 'No se puede armar el horario', `${esc(ui.planError)} <a href="#/configuracion">Ir a Configuración</a>`) + body;
+  if (!H.resumen.asignadas) {
+    const missing = needsChecklist().find(([, , k]) => k !== 'ok');
+    return head + notice(`empty-${S.periodo.nombre}-${missing?.[1] || ''}`, 'info', 'Aún no hay clases asignadas',
+      `Elige una carrera y usa <b>Planificar carrera</b>; sus clases se suman a Ocupación de salas.${missing ? ` Falta: <a href="${missing[3]}">${esc(missing[1])}</a>.` : ''}`) + body;
   }
-  const r = H.resumen;
-  const conf = H.conflictos;
-  const status = conf.length
-    ? `<p class="status bad">${icon('alert')}${conf.length} por revisar · <button class="linkbtn" data-act="modal" data-v="issues">Ver detalle</button></p>`
-    : `<p class="status ok">${icon('check')}Sin choques · ${r.secciones} secciones · ${r.sesionesSemana} sesiones por semana</p>`;
-  return head + `
-    ${H.desactualizado ? `<p class="status warn">${icon('alert')}Hay cambios sin incluir. Vuelve a generar.</p>` : status}
-    ${viewer(H)}`;
+  return head + body;
+}
+
+// ---------- Vista: Ocupación de salas ----------
+// Matriz de salas por día y hora, con la sugerencia automática y la asignación sala por sala.
+function viewOcupacion() {
+  const H = S.horario;
+  const head = `<div class="pagehead">
+      <div><h1>Ocupación de salas</h1><p class="muted">${esc(S.periodo.nombre)} · una columna por sala; debajo del nombre, la carrera que la usa${H?.avisos?.length ? ` · <span class="bad-t" title="${esc(H.avisos.map((x) => x.mensaje).join(" "))}">${H.avisos.length} ${H.avisos.length === 1 ? "curso termina" : "cursos terminan"} después del cierre</span>` : ""}</p></div>
+      <div class="row"><button class="btnp" data-act="generate" ${ui.generating ? 'disabled' : ''}>${ui.generating ? 'Calculando… (unos minutos)' : 'Sugerir distribución'}</button></div></div>`;
+  if (!H) return head + notice(`err-${ui.planError}`, 'alert', 'No se puede armar el horario', `${esc(ui.planError)} <a href="#/configuracion">Ir a Configuración</a>`);
+  return head + matrixViewer(H);
+}
+
+// Aviso flotante que se puede cerrar. Vuelve a aparecer si cambia su contenido (otra clave).
+function notice(key, ic, title, text) {
+  if (ui.notesOff?.[key]) return '';
+  return `<div class="toast" role="status"><span class="toast-i">${icon(ic)}</span>
+    <div class="toast-b"><b>${title}</b><span>${text}</span></div>
+    <button class="toast-x" data-act="closeNotice" data-v="${esc(key)}" aria-label="Cerrar aviso">×</button></div>`;
+}
+
+function courseViewer(H) {
+  const c = ui.hc ? career(ui.hc) : null;
+  if (!c) ui.hc = '';
+  const activos = activeSemesters(S.periodo.paridad);
+  const yrSems = (ui.hy === 2 ? [3, 4] : [1, 2]).filter((n) => activos.includes(n));
+  if (!yrSems.includes(ui.hs)) ui.hs = yrSems[0];
+  const sem = ui.hs;
+  const secs = H && c ? H.secciones.filter((x) => x.carrera === c.codigo && x.sem === sem) : [];
+  if (!secs.some((x) => x.letra === ui.hl)) ui.hl = secs[0]?.letra || 'A';
+  const sec = secs.find((x) => x.letra === ui.hl) || null;
+  ui.curSec = sec?.id || null;
+  if (ui.pick && (ui.pick.roomMode || ui.pick.secId !== ui.curSec)) ui.pick = null;
+  const maxW = H?.semanasMax || 22;
+  ui.week = Math.min(Math.max(1, ui.week), maxW);
+  const ses = sec ? H.sesiones.filter((x) => x.seccionId === sec.id && x.desde <= ui.week && x.hasta >= ui.week) : [];
+  const seg = (act, items, cur) => `<div class="seg sm" role="group">${items.map(([v, l]) => `<button data-act="${act}" data-v="${v}" aria-pressed="${String(cur) === String(v)}">${l}</button>`).join('')}</div>`;
+  const filters = `<div class="hfilters">
+      <label class="hf"><span>Carrera</span><select data-change="hc" aria-label="Carrera"><option value="">Elige una carrera</option>${S.carreras.map((x) => `<option value="${x.codigo}" ${x.codigo === ui.hc ? 'selected' : ''}>${esc(x.nombre)}</option>`).join('')}</select></label>
+      <div class="hf"><span>Año</span>${seg('hy', [[1, '1º año'], [2, '2º año']], ui.hy)}</div>
+      ${yrSems.length > 1 ? `<div class="hf"><span>Semestre</span>${seg('hs', yrSems.map((n) => [n, roman(n)]), sem)}</div>` : `<div class="hf"><span>Semestre</span><b class="hf-val">${roman(sem)}</b></div>`}
+      ${secs.length > 1 ? `<div class="hf"><span>Sección</span>${seg('hl', secs.map((x) => [x.letra, x.letra]), ui.hl)}</div>` : ''}
+      <div class="hf hf-end">${H ? weekNav(maxW) : ''}</div>
+    </div>`;
+  ui.hsub = c ? `${esc(S.periodo.nombre)} · ` : '';
+  const total = sec ? sec.plan.length + sec.pendientes.length : 0;
+  const sub = !c ? 'Elige una carrera y un semestre para ver su horario.'
+    : !H ? `${esc(c.nombre)} · semestre ${roman(sem)}`
+    : !sec ? `${esc(c.nombre)} · el semestre ${roman(sem)} no tiene secciones en ${esc(S.periodo.nombre)}.`
+    : `${secLabel(sec)} · ${sec.estudiantes} estudiantes · <b>${sec.plan.length} de ${total}</b> asignaturas asignadas${sec.fechaFin ? ` · <span class="${sec.pasaCierre ? "bad-t" : ""}" title="${sec.pasaCierre ? "Pasa del cierre del periodo (Configuración → Calendario)" : ""}">termina el ${fmtFecha(sec.fechaFin)}${sec.pasaCierre ? " (después del cierre)" : ""}</span>` : ""} · <button class="linkbtn" data-act="modal" data-v="plan" data-k="${sec.id}">Plan del semestre</button>`;
+  if (c) ui.hsub += sub;
+  return `<section class="viewer" aria-label="Horario semanal">${filters}
+    ${c ? '' : `<p class="muted small">${sub}</p>`}
+    <div class="plan-wrap"><div class="tablewrap week-scroll">${courseGrid(c, sem, ses, sec)}</div>${H && ui.pick && sec ? pickPanel(H, sec, ui.pick) : ""}</div>
+    ${sec ? agenda(ses, H) : ''}
+  </section>`;
+}
+
+// Grilla de un semestre: columnas lunes a sábado; una fila por cada hora de inicio de los bloques.
+// Sin carrera elegida se dibuja en blanco con los bloques de la jornada más usada.
+// Con una sección elegida, cualquier bloque libre tiene «+» para asignar una clase (el sábado, solo en la mañana).
+function courseGrid(c, sem, ses, sec) {
+  let jn = c?.jornada;
+  if (!jn) {
+    const count = {};
+    for (const x of S.carreras) count[x.jornada] = (count[x.jornada] || 0) + 1;
+    jn = Object.keys(S.jornadas).sort((p, q) => (count[q] || 0) - (count[p] || 0))[0];
+  }
+  let days = [];
+  try { days = cohortDays(S.jornadas, jn, sem); } catch { days = []; }
+  // Cada fila es una hora de inicio; si todos sus bloques terminan a la misma hora, también se muestra el término
+  const ends = {};
+  const add = (i, f) => (ends[i] = ends[i] || new Set()).add(f);
+  ses.forEach((x) => add(x.inicio, x.fin));
+  // Filas: los horarios de la jornada en todos sus semestres, para poder poner una clase a cualquier hora de la jornada
+  for (const n of [1, 2, 3, 4]) {
+    let ds = [];
+    try { ds = cohortDays(S.jornadas, jn, n); } catch { ds = []; }
+    for (const d of ds) blocksFor(S.jornadas, jn, d, n).forEach((bl) => add(bl.inicio, bl.fin));
+  }
+  for (const sl of ui.pick?.slots || []) add(sl.inicio, sl.fin);
+  const rows = Object.keys(ends).sort((p, q) => toMinutes(p) - toMinutes(q));
+  const pick = ui.pick;
+  const inPick = (d, t) => pick?.slots?.some((x) => x.d === d && x.inicio === t);
+  let html = `<div class="week course" style="grid-template-columns:52px repeat(6,minmax(0,1fr));grid-template-rows:auto repeat(${rows.length},minmax(68px,max-content))"><div></div>${DAYS.map((d) => { const iso = dateOfDay(d); const off = sinClases(calendarOf(S), iso); return `<div class="dh${off ? ' dh-off' : ''}" title="${off ? esc(off) + ': sin clases' : ''}">${DAY_NAMES[d]} <span class="dh-date">${fmtFecha(iso)}</span>${off ? `<small class="dh-fer">${esc(off)}</small>` : ''}</div>`; }).join('')}`;
+  for (const t of rows) {
+    const fin = [...ends[t]][0];
+    html += `<div class="th2"><b>${t}</b>${ends[t].size === 1 ? `<span>${fin}</span>` : ''}</div>`;
+    for (const d of DAYS) {
+      const x = ses.find((y) => y.dia === d && y.inicio === t);
+      if (!x) {
+        html += `<div class="cell empty${sec && slotAllowed(d, t) ? ' free' : ''}"></div>`;
+        continue;
+      }
+      const on = pick && pick.codigo === x.codigo;
+      const warn = x.choque ? 'Choque de horario, sala o docente' : x.noDisp ? 'El docente no está disponible a esta hora' : '';
+      html += `<div class="cell ${x.choque ? 'clash' : ''} ${on ? 'on' : ''}" style="${cvar(x.codigo)}" title="${esc(x.nombre)} · ${x.inicio}–${x.fin} · semanas ${x.desde}–${x.hasta}${warn ? ' · ' + warn : ''}">
+        <span class="s">${esc(x.nombre)}</span>
+        <span class="m">${esc(salaName(x.salaId))} · ${esc(docName(x.docenteId))}</span>
+        ${ends[t].size > 1 ? `<span class="m">${x.inicio}–${x.fin}</span>` : ''}
+        ${warn ? `<span class="cell-warn">${icon('alert')}${x.choque ? 'Choque' : 'No disponible'}</span>` : ''}</div>`;
+    }
+  }
+  return html + '</div>';
+}
+
+// Asignaturas de la sección (de su malla), con las semanas que dura cada una.
+function secSubjects(sec) {
+  return career(sec.carrera)?.semestres?.[sec.sem - 1]?.asignaturas || [];
+}
+
+// Horarios de clase de cada día que usan las secciones del periodo (para el panel de salas).
+function roomSlots(H) {
+  const by = {};
+  for (const sec of H.secciones) {
+    for (const d of sec.dias) {
+      for (const bl of blocksFor(S.jornadas, sec.jornada, d, sec.sem)) {
+        const list = (by[d] = by[d] || []);
+        if (!list.some((x) => x.inicio === bl.inicio)) list.push({ inicio: bl.inicio, fin: bl.fin, s: toMinutes(bl.inicio), e: toMinutes(bl.fin) });
+      }
+    }
+  }
+  for (const d of Object.keys(by)) by[d].sort((p, q) => p.s - q.s);
+  return by;
+}
+
+// Datos de la sección como los usa el núcleo (asignaturas, días y bloques configurados).
+function secCore(sec) {
+  return { id: sec.id, g: { subjects: secSubjects(sec), days: sec.dias, blocks: sec.dias.map((d) => blocksFor(S.jornadas, sec.jornada, d, sec.sem)) } };
+}
+
+// Clase candidata (sección, asignatura, bloques elegidos): semanas que dura y qué otras clases caen a la misma hora.
+function candidate(H, sec, codigo, slots) {
+  const subj = secSubjects(sec).find((x) => x.codigo === codigo);
+  const { w0, w1 } = slots.length ? previewWeeks(S, secCore(sec), codigo, slots) : { w0: 1, w1: 1 };
+  const tm = slots.map((x) => ({ d: x.d, s: toMinutes(x.inicio), e: toMinutes(x.fin) }));
+  const others = H.sesiones.filter((x) => !(x.seccionId === sec.id && x.codigo === codigo) && x.desde <= w1 && x.hasta >= w0
+    && tm.some((sl) => sl.d === x.dia && toMinutes(x.inicio) < sl.e && sl.s < toMinutes(x.fin)));
+  return { subj, w0, w1, others };
+}
+
+const secById = (H, id) => H.secciones.find((x) => x.id === id);
+const shortDays = (days) => days.map((d) => DAY_NAMES[d].slice(0, 2)).join(', ');
+
+// Panel lateral: ocupación de todas las salas en la semana, o elegir sala para la clase que se está asignando.
+function roomPanel(H, sec) {
+  const pick = ui.pick;
+  if (pick && sec) return pickPanel(H, sec, pick);
+  const slots = roomSlots(H);
+  const days = DAYS.filter((d) => slots[d]?.length);
+  const wk = ui.week;
+  const cells = (r) => days.map((d) => `<span class="rp-day">${slots[d].map((sl) => {
+    const x = H.sesiones.find((y) => y.salaId === r.id && y.dia === d && y.desde <= wk && y.hasta >= wk && toMinutes(y.inicio) < sl.e && sl.s < toMinutes(y.fin));
+    if (!x) return `<i class="rp-s" title="${esc(r.nombre)} · ${DAY_NAMES[d]} ${sl.inicio} · libre"></i>`;
+    const owner = secById(H, x.seccionId);
+    return `<i class="rp-s full ${sec && x.seccionId === sec.id ? 'mine' : ''} ${x.choque ? 'bad' : ''}" style="${cvar(x.codigo)}" title="${esc(r.nombre)} · ${DAY_NAMES[d]} ${sl.inicio} · ${owner ? secLabel(owner) : ''} ${esc(x.nombre)}"></i>`;
+  }).join('')}</span>`).join('');
+  const pct = (r) => {
+    let used = 0, all = 0;
+    for (const d of days) for (const sl of slots[d]) { all++; if (H.sesiones.some((y) => y.salaId === r.id && y.dia === d && y.desde <= wk && y.hasta >= wk && toMinutes(y.inicio) < sl.e && sl.s < toMinutes(y.fin))) used++; }
+    return all ? Math.round((used / all) * 100) : 0;
+  };
+  const rows = S.salas.map((r) => { const p = pct(r); return `<div class="rp-row"><span class="rp-name" title="${esc(r.nombre)} · ${r.capacidad} puestos">${esc(r.nombre)}<small>${r.capacidad}</small></span>${cells(r)}<span class="rp-pct ${p ? '' : 'zero'}">${p}%</span></div>`; }).join('');
+  return `<aside class="rooms" aria-label="Ocupación de salas" style="--rp-days:${days.length || 6}">
+    <div class="rooms-head"><b>Ocupación de salas</b><span class="faint small">Semana ${wk}</span></div>
+    ${days.length && S.salas.length ? `<div class="rp-row rp-head"><span></span>${days.map((d) => `<span class="rp-day">${DAY_NAMES[d].slice(0, 2)}</span>`).join('')}<span></span></div><div class="rp-rows">${rows}</div>
+    <p class="rp-legend"><i class="rp-s full"></i>ocupada <i class="rp-s full mine"></i>esta sección <i class="rp-s"></i>libre</p>`
+      : `<p class="faint small">${S.salas.length ? 'Abre secciones en Carreras para ver la ocupación.' : 'No hay salas registradas.'}</p>`}
+    ${sec ? '' : '<p class="faint small">Elige carrera y semestre para asignar clases.</p>'}
+  </aside>`;
+}
+
+function pickPanel(H, sec, pick) {
+  const subjects = secSubjects(sec);
+  const pend = subjects.filter((x) => sec.pendientes.includes(x.codigo));
+  if (!pick.edit && !pick.codigo) pick.codigo = pend[0]?.codigo || null;
+  const head = (t) => `<div class="rooms-head"><b>${t}</b><button class="toast-x" data-act="cancelPick" aria-label="Cerrar">×</button></div>`;
+  if (!pick.codigo) {
+    return `<aside class="rooms picking">${head('Asignar clase')}<p class="small">Todas las asignaturas de ${secLabel(sec)} ya están asignadas.</p>
+      <button class="btnq" data-act="cancelPick">Volver</button></aside>`;
+  }
+  const cand = candidate(H, sec, pick.codigo, pick.slots);
+  const placed = sec.plan.find((x) => x.codigo === pick.codigo);
+  const teacher = S.asignaciones?.[pick.codigo] || null;
+  const busy = teacher ? cand.others.find((x) => x.docenteId === teacher) : null;
+  const own = cand.others.find((x) => x.seccionId === sec.id);
+  // Días de la clase: cualquiera, a la hora del bloque elegido (el sábado, solo en la mañana)
+  const dayBtns = DAYS.map((d) => {
+    const sl = pick.slots.find((x) => x.d === d);
+    const ok = sl || slotAllowed(d, pick.row.inicio);
+    return `<button data-act="toggleDay" data-v="${d}" aria-pressed="${!!sl}" ${ok ? '' : 'disabled'} title="${DAY_NAMES[d]} ${sl ? sl.inicio : pick.row.inicio}${ok ? '' : ' · el sábado solo hay clases en la mañana'}">${DAY_NAMES[d].slice(0, 2)}<small>${sl ? sl.inicio : ''}</small></button>`;
+  }).join('');
+  const subjField = pick.edit
+    ? `<p class="pk-subj" title="${esc(cand.subj?.nombre || pick.codigo)}"><b>${esc(cand.subj?.nombre || pick.codigo)}</b></p>`
+    : `<label class="pk-field"><select data-change="pickSubject" aria-label="Asignatura">${pend.map((x) => `<option value="${x.codigo}" ${x.codigo === pick.codigo ? 'selected' : ''}>${esc(x.nombre)}</option>`).join('')}</select></label>`;
+  const rooms = S.salas.map((r) => {
+    const occ = cand.others.find((x) => x.salaId === r.id);
+    const small = r.capacidad < sec.estudiantes;
+    const current = placed && placed.salaId === r.id;
+    const [cls, st] = current ? ['cur', 'Actual']
+      : occ ? ['busy', `Ocupada · ${esc(secLabel(secById(H, occ.seccionId)))}`]
+      : small ? ['small', `Chica para ${sec.estudiantes}`] : ['free', 'Libre'];
+    return `<button class="pk-room ${cls}" data-act="placeIn" data-v="${r.id}" title="${esc(r.nombre)} · ${r.capacidad} puestos · ${st}" ${current ? 'aria-current="true"' : ''}><b>${esc(r.nombre)}</b><small>${cls === 'busy' ? esc(secLabel(secById(H, occ.seccionId))) : r.capacidad}</small></button>`;
+  }).join('');
+  const n = pick.slots.length;
+  return `<aside class="rooms picking" aria-label="Asignar clase">
+    ${head(pick.edit ? 'Editar clase' : 'Asignar clase')}
+    ${subjField}
+    <div class="pk-days" role="group" aria-label="Días de la clase">${dayBtns}</div>
+    <p class="pk-info"><span>Semanas ${cand.w0}–${cand.w1} · ${n} ${n === 1 ? 'sesión' : 'sesiones'} por semana · ${teacher ? esc(docName(teacher)) : '<span class="bad-t">Sin docente</span>'}</span>${pick.edit ? '<button class="linkbtn danger" data-act="removeClass">Quitar clase</button>' : ''}</p>
+    ${own ? `<p class="pk-warn">${icon('alert')}Este curso ya tiene ${esc(own.nombre)} el ${DAY_NAMES[own.dia]} a las ${own.inicio}.</p>` : busy ? `<p class="pk-warn">${icon('alert')}${esc(docName(teacher))} ya tiene clase a esa hora: ${esc(secLabel(secById(H, busy.seccionId)))} ${esc(busy.nombre)}.</p>` : ''}
+    <span class="pk-label">${pick.edit ? 'Sala' : 'Elige la sala'} <span class="pk-key"><i class="k-free"></i>libre <i class="k-busy"></i>ocupada <i class="k-small"></i>chica</span></span>
+    <div class="pk-rooms">${rooms}</div>
+  </aside>`;
+}
+
+// ---------- Vista de salas: todas las carreras; filas = día y hora, columnas = salas ----------
+function hmodeSeg() {
+  return `<div class="seg sm" role="group" aria-label="Vista">${[['salas', 'Salas'], ['curso', 'Por sección']].map(([v, l]) => `<button data-act="hmode" data-v="${v}" aria-pressed="${ui.hmode === v}">${l}</button>`).join('')}</div>`;
+}
+
+// Fecha de un día de la semana elegida (según el calendario del periodo).
+const DAY_OFFSET = { Lu: 0, Ma: 1, Mi: 2, Ju: 3, Vi: 4, Sa: 5 };
+function dateOfDay(d, w = ui.week) { return addDays(weekMonday(calendarOf(S), w), DAY_OFFSET[d] || 0); }
+function weekRange(w = ui.week) { const a = dateOfDay('Lu', w), b = dateOfDay('Sa', w); return `${fmtFecha(a).split(' ')[0]}${a.slice(5, 7) === b.slice(5, 7) ? '' : ' ' + fmtFecha(a).split(' ')[1]}–${fmtFecha(b)}`; }
+function weekNav(maxW) {
+  return `<div class="weeknav"><button class="sq" data-act="week" data-v="-1" aria-label="Semana anterior">‹</button><span class="wk-label">Semana ${ui.week} <span class="faint">/ ${maxW} · ${weekRange()}</span></span><button class="sq" data-act="week" data-v="1" aria-label="Semana siguiente">›</button></div>`;
+}
+
+// Horas de inicio de todos los bloques (todas las jornadas y semestres) más las de las clases: una fila por hora.
+function roomTimes(H) {
+  const map = new Map();
+  // Solo las jornadas que usan las carreras: así no aparecen filas de horarios que nadie usa.
+  const usadas = new Set(S.carreras.map((c) => c.jornada));
+  for (const jn of Object.keys(S.jornadas).filter((j) => usadas.has(j))) for (const n of [1, 2, 3, 4]) {
+    let ds = [];
+    try { ds = cohortDays(S.jornadas, jn, n); } catch { ds = []; }
+    for (const d of ds) for (const b of blocksFor(S.jornadas, jn, d, n)) if (!map.has(b.inicio)) map.set(b.inicio, b.fin);
+  }
+  for (const x of H.sesiones) if (!map.has(x.inicio)) map.set(x.inicio, x.fin);
+  return [...map].map(([inicio, fin]) => ({ inicio, fin })).sort((a, b) => toMinutes(a.inicio) - toMinutes(b.inicio));
+}
+
+// Horas de cada día: los días de semana no muestran las del sábado y viceversa.
+function roomTimesByDay(H, jor) {
+  const all = roomTimes(H);
+  const usadas = new Set(S.carreras.map((c) => c.jornada).filter((j) => !jor || j === jor));
+  const deJor = new Set(H.secciones.filter((x) => !jor || x.jornada === jor).map((x) => x.id));
+  const porDia = {};
+  for (const d of DAYS) {
+    const set = new Set();
+    for (const jn of Object.keys(S.jornadas).filter((j) => usadas.has(j))) for (const n of [1, 2, 3, 4]) {
+      const bl = d === 'Sa' ? (S.jornadas[jn]?.sems?.[n]?.bloques?.Sa || []) : blocksFor(S.jornadas, jn, d, n);
+      for (const b of bl) if (slotAllowed(d, b.inicio)) set.add(b.inicio);
+    }
+    for (const x of H.sesiones) if (x.dia === d && deJor.has(x.seccionId)) set.add(x.inicio);
+    porDia[d] = all.filter((t) => set.has(t.inicio));
+  }
+  return (d) => porDia[d] || [];
+}
+
+// Matriz: una fila por día y hora, una columna por sala. Muestra lo que ocupa cada sala en la semana elegida.
+function matrixViewer(H) {
+  // Pestañas por jornada: cada una muestra sus salas y solo sus horarios (no sobrecarga la página).
+  const jornadas = Object.keys(S.jornadas).filter((j) => S.carreras.some((c) => c.jornada === j)).sort((a, b) => (a === 'Diurno' ? -1 : b === 'Diurno' ? 1 : 0));
+  const jor = curTab('mxJor', jornadas);
+  const timesOf = roomTimesByDay(H, jor);
+  // Vista por día (una sola fila de días: menos confusa) o la semana completa en su propia pestaña.
+  const vista = curTab('mxVista', [...DAYS, 'sem']);
+  const dias = vista === 'sem' ? DAYS : [vista];
+  const porDia = vista !== 'sem';
+  const maxW = H.semanasMax || 22;
+  ui.week = Math.min(Math.max(1, ui.week), maxW);
+  const wk = ui.week;
+  const pick = ui.pick;
+  // Carrera que usa cada sala (la más frecuente en el periodo, contando también la sugerencia)
+  const usoSala = {};
+  const cuenta = (salaId, car) => { if (salaId && car) { const u = (usoSala[salaId] ||= {}); u[car] = (u[car] || 0) + 1; } };
+  for (const x of H.sesiones) cuenta(x.salaId, secById(H, x.seccionId)?.carrera);
+  for (const it of ui.sugg?.items || []) cuenta(it.salaId, secById(H, it.secId)?.carrera);
+  const carreraDe = (r) => Object.entries(usoSala[r.id] || {}).sort((a, b) => b[1] - a[1])[0]?.[0] || '';
+  // Orden: salas de carreras vespertinas, luego diurnas (cada grupo por carrera); las salas sin uso al final y ocultas
+  // salvo que se pidan, o que haya una asignación sala por sala en curso.
+  const jorDe = (code) => career(code)?.jornada || '';
+  const orden = (r) => { const c = carreraDe(r); return c ? (jorDe(c) === 'Vespertino' ? '0' : '1') + c : '2'; };
+  const usadas = S.salas.filter((r) => carreraDe(r) && jorDe(carreraDe(r)) === jor).sort((a, b) => orden(a).localeCompare(orden(b)));
+  const libres = S.salas.filter((r) => !carreraDe(r));
+  // Salas de la otra jornada que también se usan en esta (p. ej. una diurna con clases de noche): se muestran.
+  for (const r of S.salas) if (carreraDe(r) && !usadas.includes(r) && H.sesiones.some((x) => x.salaId === r.id && secById(H, x.seccionId)?.jornada === jor)) usadas.push(r);
+  const rooms = ui.mxLibres || !usadas.length ? [...usadas, ...libres] : usadas;
+  const short =(n) => n.replace(/^Sala /, 'S').replace(/^Laboratorio.*$/, 'Lab.');
+  const cell = (r, d, t) => {
+    const list = H.sesiones.filter((x) => x.salaId === r.id && x.dia === d && x.inicio === t.inicio && x.desde <= wk && x.hasta >= wk);
+    if (list.length) {
+      const x = list[0];
+      const sec = secById(H, x.seccionId);
+      const on = pick && !pick.roomMode && pick.codigo === x.codigo && pick.secId === x.seccionId;
+      return `<div class="mx-busy${list.length > 1 ? ' clash' : ''}${on ? ' on' : ''}" style="${cvar(x.codigo)}" title="${esc(sec ? secLabel(sec) : '')} · ${esc(x.nombre)} · ${x.inicio}–${x.fin} · semanas ${x.desde}–${x.hasta}${list.length > 1 ? ' · ¡choque!' : ''}"><b>${esc(sec ? secLabel(sec) : '')}</b>${porDia ? `<span class="mx-subj">${esc(x.nombre)}</span><span class="mx-hrs">${x.inicio}–${x.fin}</span>` : ''}</div>`;
+    }
+    const sg = ui.sugg ? ui.sugg.items.findIndex((it) => it.salaId === r.id && wk >= it.desde && wk <= it.hasta && it.slots.some((x) => x.d === d && x.inicio === t.inicio)) : -1;
+    if (sg >= 0) {
+      const it = ui.sugg.items[sg];
+      const sec = secById(H, it.secId);
+      return `<button class="mx-sugg" data-act="acceptSugg" data-i="${sg}" title="Sugerencia: ${esc(sec ? secLabel(sec) : '')} · ${esc(subjName(it.secId, it.codigo))} · semanas ${it.desde}–${it.hasta}. Pulsa para aceptar" aria-label="Aceptar sugerencia ${esc(sec ? secLabel(sec) : '')}"><b>${esc(sec ? secLabel(sec) : '')}</b></button>`;
+    }
+    if (!slotAllowed(d, t.inicio)) return '<span class="mx-na"></span>';
+    const on = pick?.roomMode && pick.salaId === r.id && pick.slots?.some((s) => s.d === d && s.inicio === t.inicio);
+    return `<span class="mx-free${on ? ' on' : ''}" title="${esc(r.nombre)} · ${DAY_NAMES[d]} ${t.inicio} · libre"></span>`;
+  };
+  const head =`<div class="mx-corner"></div>${rooms.map((r) => `<div class="mx-room" title="${esc(r.nombre)} · ${r.capacidad} puestos"><b>${esc(short(r.nombre))}</b><small>${carreraDe(r) ? `<span class="mx-car">${carreraDe(r)}</span>` : r.capacidad}</small></div>`).join('')}`;
+  const nRows = dias.reduce((t, d) => t + timesOf(d).length, 0);
+  const body = dias.map((d) => timesOf(d).map((t, i) => `<div class="mx-time${i === 0 ? ' mx-first' : ''}">${i === 0 ? `<b${sinClases(calendarOf(S), dateOfDay(d)) ? ` class="mx-off" title="${esc(sinClases(calendarOf(S), dateOfDay(d)))}: sin clases"` : ''}>${DAY_NAMES[d].slice(0, 3)} ${fmtFecha(dateOfDay(d)).split(' ')[0]}</b>` : ''}<span>${t.inicio}</span></div>${rooms.map((r) => cell(r, d, t)).join('')}`).join('')).join('');
+  const grid = `<div class="mx-grid${porDia ? ' mx-dia' : ''}" style="row-gap:0;column-gap:2px;grid-template-columns:84px repeat(${rooms.length},minmax(0,1fr));grid-template-rows:auto repeat(${nRows},${porDia ? 'minmax(64px,auto)' : 'minmax(0,1fr)'})">${head}${body}</div>`;
+  const fer = (d) => sinClases(calendarOf(S), dateOfDay(d));
+  const diaTabs = `<div class="seg sm mx-dias" role="tablist" aria-label="Día">${[...DAYS, 'sem'].map((d) => { const lbl = d === 'sem' ? 'Semana' : `${DAY_NAMES[d].slice(0, 3)} ${fmtFecha(dateOfDay(d)).split(' ')[0]}`; return `<button role="tab" data-act="tab" data-k="mxVista" data-v="${d}" aria-selected="${vista === d}" aria-pressed="${vista === d}"${d !== 'sem' && fer(d) ? ` class="mx-tab-off" title="${esc(fer(d))}: sin clases"` : ''}>${lbl}</button>`; }).join('')}</div>`;
+  const avisoDia = porDia && fer(vista) ? `<p class="status warn">${icon('alert')}${DAY_NAMES[vista]} ${fmtFecha(dateOfDay(vista))}: ${esc(fer(vista))}, sin clases.</p>` : '';
+  const pend = activeSemesters(S.periodo.paridad).map((n) => {
+    const v = H.secciones.filter((x) => x.sem === n && x.jornada === jor).reduce((t, x) => t + x.pendientes.length, 0);
+    return `<span class="mx-pend${v ? '' : ' done'}" title="Asignaciones de asignatura a sección del ${roman(n)} semestre que aún no tienen día, hora y sala (cada sección cuenta por separado)">${roman(n)} <b>${v}</b></span>`;
+  }).join('');
+  const sec = pick && !pick.roomMode ? secById(H, pick.secId) : null;
+  const side = pick?.roomMode ? roomPickPanel(H, pick) : sec ? pickPanel(H, sec, pick) : ui.sugg ? suggPanel(H) : '';
+  return `<section class="viewer" aria-label="Ocupación de salas por día y hora">
+    <div class="hfilters"><div class="hf">${subtabs('mxJor', jornadas.map((j) => [j, j === 'Diurno' ? 'Diurno' : j]))}</div><div class="hf mx-pendline"><span>Por ubicar</span>${pend}</div><div class="hf hf-end">${libres.length && usadas.length ? `<button class="btnq sm" data-act="mxLibres">${ui.mxLibres ? 'Ocultar' : 'Mostrar'} salas sin uso (${libres.length})</button>` : ''}${weekNav(maxW)}</div></div>
+    <div class="hfilters mx-diarow">${diaTabs}</div>${avisoDia}
+    <div class="plan-wrap${side ? ' has-side' : ''}"><div class="mx-scroll">${grid}</div>${side}</div>
+  </section>`;
+}
+
+// Nombre de una asignatura de una sección (de su malla).
+function subjName(secId, codigo) {
+  const sec = S.horario?.secciones.find((x) => x.id === secId);
+  return (sec ? secSubjects(sec).find((x) => x.codigo === codigo)?.nombre : null) || codigo;
+}
+
+// Panel de la sugerencia: cuántas clases propone, cuáles no tienen lugar y cómo aceptarlas.
+function suggPanel(H) {
+  const s = ui.sugg;
+  const rows = s.unplaced.slice(0, 8).map((u) => {
+    const sec = secById(H, u.secId);
+    return `<li><b>${esc(sec ? secLabel(sec) : '')}</b> ${esc(subjName(u.secId, u.codigo))}<span class="faint small"> · ${esc(u.motivo)}</span></li>`;
+  }).join('');
+  return `<aside class="rooms picking" aria-label="Sugerencia de distribución">
+    <div class="rooms-head"><b>Sugerencia</b><button class="toast-x" data-act="discardSugg" aria-label="Descartar">×</button></div>
+    <p class="small"><b>${s.items.length}</b> clases propuestas · <b>${s.unplaced.length}</b> sin lugar</p>
+    <p class="faint small">Las celdas punteadas son propuestas. Pulsa una para aceptarla, o acepta todas. Lo que ya asignaste a mano no se toca.</p>
+    <button class="btnp pk-go" data-act="acceptAllSugg" ${s.items.length ? '' : 'disabled'}>Aceptar ${s.items.length} ${s.items.length === 1 ? 'clase' : 'clases'}</button>
+    <button class="btnq pk-go" data-act="discardSugg">Descartar</button>
+    ${s.unplaced.length ? `<p class="pk-label">Sin lugar</p><ul class="sg-list">${rows}${s.unplaced.length > 8 ? `<li class="faint">y ${s.unplaced.length - 8} más</li>` : ''}</ul>` : ''}
+  </aside>`;
+}
+
+// Panel para asignar una clase en la sala y hora que se eligió en la matriz.
+function roomPickPanel(H, pick) {
+  const room = S.salas.find((r) => r.id === pick.salaId);
+  const head = `<div class="rooms-head"><b>Asignar en ${esc(room?.nombre || 'sala')}</b><button class="toast-x" data-act="cancelPick" aria-label="Cerrar">×</button></div>`;
+  const carreras = S.carreras.filter((c) => H.secciones.some((s) => s.carrera === c.codigo));
+  const cur = secById(H, pick.secId);
+  const car = pick.car && carreras.some((c) => c.codigo === pick.car) ? pick.car : (cur?.carrera || carreras[0]?.codigo);
+  const semsOf = [1, 2, 3, 4].filter((n) => H.secciones.some((s) => s.carrera === car && s.sem === n));
+  const sem = semsOf.includes(pick.sem) ? pick.sem : (cur && semsOf.includes(cur.sem) ? cur.sem : semsOf[0]);
+  pick.car = car; pick.sem = sem;
+  const secs = H.secciones.filter((s) => s.carrera === car && s.sem === sem);
+  if (!secs.some((s) => s.id === pick.secId)) pick.secId = secs[0]?.id || null;
+  const sec = secById(H, pick.secId);
+  if (sec && (!pick.codigo || !sec.pendientes.includes(pick.codigo))) pick.codigo = sec.pendientes[0] || null;
+  const seg = (inner) => `<div class="seg sm" role="group">${inner}</div>`;
+  const carSel = `<label class="pk-field"><select data-change="pickCar" aria-label="Carrera">${carreras.map((c) => `<option value="${c.codigo}" ${c.codigo === car ? 'selected' : ''}>${esc(c.nombre)}</option>`).join('')}</select></label>`;
+  const semBtns = seg(semsOf.map((n) => `<button data-act="pickSem" data-v="${n}" aria-pressed="${n === sem}">${roman(n)}</button>`).join(''));
+  if (!sec) return `<aside class="rooms picking" aria-label="Asignar en sala">${head}${carSel}${semBtns}<p class="small">No hay secciones abiertas para esta carrera.</p></aside>`;
+  const secBtns = secs.length > 1 ? seg(secs.map((s) => `<button data-act="pickSecBtn" data-v="${s.id}" aria-pressed="${s.id === sec.id}">${s.letra}</button>`).join('')) : '';
+  const subs = secSubjects(sec).filter((x) => sec.pendientes.includes(x.codigo));
+  if (!subs.length) return `<aside class="rooms picking" aria-label="Asignar en sala">${head}${carSel}${semBtns}${secBtns}<p class="small">${esc(secLabel(sec))} ya tiene todas sus asignaturas ubicadas.</p></aside>`;
+  const subField = `<label class="pk-field"><select data-change="pickSubject" aria-label="Asignatura">${subs.map((x) => `<option value="${x.codigo}" ${x.codigo === pick.codigo ? 'selected' : ''}>${esc(x.nombre)}</option>`).join('')}</select></label>`;
+  const days = DAYS.map((d) => {
+    const sl = pick.slots.find((x) => x.d === d);
+    const ok = !!sl || slotAllowed(d, pick.row.inicio);
+    return `<button data-act="toggleDay" data-v="${d}" aria-pressed="${!!sl}" ${ok ? '' : 'disabled'} title="${DAY_NAMES[d]}${ok ? '' : ' · el sábado solo hay clases en la mañana'}">${DAY_NAMES[d].slice(0, 2)}<small>${sl ? sl.inicio : ''}</small></button>`;
+  }).join('');
+  const cand = candidate(H, sec, pick.codigo, pick.slots);
+  const teacher = S.asignaciones?.[pick.codigo] || null;
+  const sameRoom = cand.others.find((x) => x.salaId === pick.salaId);
+  const busyT = teacher ? cand.others.find((x) => x.docenteId === teacher) : null;
+  const own = cand.others.find((x) => x.seccionId === sec.id);
+  const problems = [];
+  if (!pick.slots.length) problems.push('Elige al menos un día.');
+  if (sameRoom) problems.push(`${esc(room?.nombre || 'La sala')} ya tiene ${esc(sameRoom.nombre)} de ${esc(secLabel(secById(H, sameRoom.seccionId)))} en esas semanas.`);
+  if (busyT) problems.push(`${esc(docName(teacher))} ya tiene ${esc(busyT.nombre)} de ${esc(secLabel(secById(H, busyT.seccionId)))} a esa hora.`);
+  if (own) problems.push(`${esc(secLabel(sec))} ya tiene ${esc(own.nombre)} a esa hora.`);
+  const cap = room && room.capacidad < sec.estudiantes ? `${esc(room.nombre)} tiene ${room.capacidad} puestos y la sección ${sec.estudiantes}.` : '';
+  const n = pick.slots.length;
+  return `<aside class="rooms picking" aria-label="Asignar en sala">${head}
+    ${carSel}${semBtns}${secBtns}${subField}
+    <div class="pk-days" role="group" aria-label="Días de la clase">${days}</div>
+    <p class="pk-info"><span>Semanas ${cand.w0}–${cand.w1} · ${n} ${n === 1 ? 'sesión' : 'sesiones'} por semana · ${teacher ? esc(docName(teacher)) : '<span class="bad-t">Sin docente</span>'}</span></p>
+    ${cap ? `<p class="pk-warn">${icon('alert')}${cap}</p>` : ''}
+    ${problems.map((p) => `<p class="pk-warn">${icon('alert')}${p}</p>`).join('')}
+    <button class="btnp pk-go" data-act="confirmRoom" ${problems.length ? 'disabled' : ''}>Asignar aquí</button>
+  </aside>`;
 }
 
 function tipoLabel(t) {
   return { docente: 'Choque', 'sin-docente': 'Sin docente', disponibilidad: 'Disponibilidad', tope: 'Tope', sala: 'Sala', capacidad: 'Capacidad' }[t] || t;
 }
 
-function viewer(H) {
-  const modes = [['seccion', 'Sección'], ['docente', 'Docente'], ['sala', 'Sala']];
-  let options = [];
-  if (ui.mode === 'seccion') options = H.secciones.map((s) => [s.id, `${secLabel(s)} · ${s.carreraNombre}`]);
-  if (ui.mode === 'docente') options = [...new Set(H.sesiones.map((x) => x.docenteId).filter(Boolean))].map((id) => [id, docName(id)]).sort((a, b) => a[1].localeCompare(b[1]));
-  if (ui.mode === 'sala') options = [...new Set(H.sesiones.map((x) => x.salaId).filter(Boolean))].map((id) => [id, salaName(id)]);
-  if (!options.some((o) => o[0] === ui.sel)) ui.sel = options[0]?.[0] || null;
-  const maxW = H.semanasMax || 22;
-  ui.week = Math.min(Math.max(1, ui.week), maxW);
-  const keyOf = (x) => (ui.mode === 'seccion' ? x.seccionId : ui.mode === 'docente' ? x.docenteId : x.salaId);
-  const ses = H.sesiones.filter((x) => keyOf(x) === ui.sel && x.desde <= ui.week && x.hasta >= ui.week);
-  const sec = ui.mode === 'seccion' ? H.secciones.find((s) => s.id === ui.sel) : null;
-  const sub = sec ? `${sec.dias.map((d) => DAY_NAMES[d]).join(', ')} · ${esc(salaName(sec.salaId))} · ${sec.estudiantes} estudiantes` : `${ses.length} sesiones esta semana`;
-  return `<section class="viewer" aria-label="Horario semanal">
-    <div class="toolbar">
-      <div class="row" style="gap:10px">
-        <div class="seg" role="group" aria-label="Ver por">${modes.map(([m, l]) => `<button data-act="mode" data-v="${m}" aria-pressed="${ui.mode === m}">${l}</button>`).join('')}</div>
-        <select data-change="sel" aria-label="Elegir">${options.map(([v, l]) => `<option value="${esc(v)}" ${v === ui.sel ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>
-      </div>
-      <div class="weeknav"><button class="sq" data-act="week" data-v="-1" aria-label="Semana anterior">‹</button><span class="wk-label">Semana ${ui.week} <span class="faint">/ ${maxW}</span></span><button class="sq" data-act="week" data-v="1" aria-label="Semana siguiente">›</button></div>
-    </div>
-    <p class="muted small">${sub}${sec ? ` · <button class="linkbtn" data-act="modal" data-v="plan" data-k="${sec.id}">Plan del semestre</button>` : ''}</p>
-    <div class="tablewrap week-scroll">${weekGrid(ses, H, sec)}</div>${agenda(ses, H)}
-  </section>`;
-}
-
-// Filas: en una sección, «Bloque 1 / Bloque 2»; para docentes y salas, una fila por turno.
-function weekGrid(ses, H, sec) {
-  if (!ses.length) return '<p class="muted" style="padding:32px 0;text-align:center">Sin clases esta semana.</p>';
-  const bySection = ui.mode === 'seccion';
-  const rowOf = (x) => (bySection ? x.turno.slice(1) : x.turno);
-  const ROWS = bySection ? [['1', 'Bloque 1'], ['2', 'Bloque 2']] : TURNOS.map((t) => [t.id, t.nombre]);
-  const used = new Set(ses.map(rowOf));
-  const rows = ROWS.filter(([id]) => used.has(id));
-  const byKey = {};
-  for (const x of ses) (byKey[`${x.dia}|${rowOf(x)}`] = byKey[`${x.dia}|${rowOf(x)}`] || []).push(x);
-  const secById = Object.fromEntries(H.secciones.map((s) => [s.id, s]));
-  const activeDays = new Set(sec ? sec.dias : ses.map((x) => x.dia));
-  const rowTime = (id) => { const x = ses.find((s) => rowOf(s) === id && s.dia !== 'Sa') || ses.find((s) => rowOf(s) === id); return x ? x.inicio : ''; };
-  let html = `<div class="week" style="grid-template-columns:64px repeat(6,minmax(0,1fr))"><div></div>${DAYS.map((d) => `<div class="dh ${activeDays.has(d) ? 'active' : ''}">${DAY_NAMES[d]}</div>`).join('')}`;
-  for (const [id] of rows) {
-    html += `<div class="th2">${rowTime(id)}</div>`;
-    for (const d of DAYS) {
-      const list = byKey[`${d}|${id}`] || [];
-      if (!list.length) { html += `<div class="cell ${sec && !activeDays.has(d) ? 'off' : 'empty'}"></div>`; continue; }
-      const x = list[0];
-      const meta = ui.mode === 'seccion' ? docName(x.docenteId) : ui.mode === 'docente' ? `${secLabel(secById[x.seccionId])} · ${salaName(x.salaId)}` : `${secLabel(secById[x.seccionId])} · ${docName(x.docenteId)}`;
-      html += `<div class="cell ${list.length > 1 ? 'clash' : ''}" style="${cvar(x.codigo)}" title="${esc(x.nombre)} · ${x.inicio}–${x.fin} · semanas ${x.desde}–${x.hasta}">
-        <span class="s">${esc(x.nombre)}</span><span class="m">${esc(meta)}</span>${d === 'Sa' ? `<span class="t">${x.inicio}–${x.fin}</span>` : ''}
-        ${list.length > 1 ? `<span class="badge bad">+${list.length - 1} a la misma hora</span>` : ''}</div>`;
-    }
-  }
-  return html + '</div>';
-}
-
-// En el celular la semana se lee como agenda: un día debajo del otro.
 function agenda(ses, H) {
   if (!ses.length) return '';
-  const secById = Object.fromEntries(H.secciones.map((s) => [s.id, s]));
-  const metaOf = (x) => (ui.mode === 'seccion' ? docName(x.docenteId) : ui.mode === 'docente' ? `${secLabel(secById[x.seccionId])} · ${salaName(x.salaId)}` : `${secLabel(secById[x.seccionId])} · ${docName(x.docenteId)}`);
+  const metaOf = (x) => `${docName(x.docenteId)} · ${salaName(x.salaId)}`;
   const days = DAYS.filter((d) => ses.some((x) => x.dia === d));
   return `<div class="agenda">${days.map((d) => `<div class="ag-day"><h3>${DAY_NAMES[d]}</h3>${ses.filter((x) => x.dia === d).sort((a, b) => a.inicio.localeCompare(b.inicio)).map((x) => `<div class="ag-item" style="${cvar(x.codigo)}"><span class="ag-t">${x.inicio}<br>${x.fin}</span><span><b>${esc(x.nombre)}</b><span class="faint small">${esc(metaOf(x))}</span></span></div>`).join('')}</div>`).join('')}</div>`;
 }
@@ -347,7 +720,7 @@ function gantt(items, weeks, who, currentWeek = null) {
   let html = `<div class="gantt"><div class="gr head" style="grid-template-columns:${cols}"><div class="gname"></div>${Array.from({ length: weeks }, (_, i) => `<div class="wk ${currentWeek === i + 1 ? 'now' : ''}" style="grid-column:${i + 2}">${(i + 1) % 2 && i + 1 !== currentWeek ? '' : i + 1}</div>`).join('')}</div>`;
   for (const it of items) {
     const label = who ? esc(who(it)) : `${it.horas} h`;
-    html += `<div class="gr" style="grid-template-columns:${cols};${cvar(it.codigo)}">${stripe}<div class="gname">${esc(it.nombre)}</div><div class="bar" title="${esc(it.nombre)} · semanas ${it.desde}–${it.hasta} · ${it.horas} h" style="grid-column:${it.desde + 1} / ${it.hasta + 2};${cvar(it.codigo)}">${label}</div></div>`;
+    html += `<div class="gr" style="grid-template-columns:${cols};${cvar(it.codigo)}">${stripe}<div class="gname">${esc(it.nombre)}</div><div class="bar" title="${esc(it.nombre)} · ${it.fechaInicio ? `${fmtFecha(it.fechaInicio)} al ${fmtFecha(it.fechaFin)} · ` : ""}semanas ${it.desde}–${it.hasta} · ${it.horas} h${it.horasDadas && it.horasDadas !== it.horas ? ` (se dictan ${it.horasDadas})` : ""}" style="grid-column:${it.desde + 1} / ${it.hasta + 2};${cvar(it.codigo)}">${label}</div></div>`;
   }
   return html + '</div>';
 }
@@ -383,23 +756,36 @@ function malla(c) {
 }
 
 // ---------- Vista: Asistente por carrera ----------
-const STEP_LABELS = ['Oferta', 'Asignaturas', 'Docentes', 'Reglas y salas', 'Generar'];
+const STEP_LABELS = ['Oferta', 'Asignaturas', 'Docentes', 'Generar'];
+
+// Carrera del asistente: la de la ventana abierta desde Horario, o la de la página Carreras.
+function wizCode() { return ui.modal?.v === 'wizard' ? ui.modal.k : route().arg; }
+
+function wizardParts(code, enModal) {
+  const c = career(code);
+  const step = Math.min(ui.steps[code] || 1, STEP_LABELS.length);
+  const sems = activeSemesters(S.periodo.paridad);
+  const stepper = `<div class="stepper">${STEP_LABELS.map((l, i) => `<button data-act="step" data-v="${i + 1}" class="${i + 1 < step ? 'done' : ''}" ${i + 1 === step ? 'aria-current="step"' : ''}><span class="n">${i + 1 < step ? '✓' : i + 1}</span>${l}</button>`).join('')}</div>`;
+  const body = [wizOferta(c, sems), wizAsignaturas(c), wizDocentes(c), wizGenerar(c)][step - 1];
+  const last = enModal ? '<button class="btnp" data-act="closeModal">Listo</button>' : `<a class="btnp" href="#/horario">Ver horario de la sede ${icon('arrow')}</a>`;
+  const foot = `<button class="btn" data-act="step" data-v="${step - 1}" ${step === 1 ? 'disabled' : ''}>${icon('back')}Atrás</button>${step < STEP_LABELS.length ? `<button class="btnp" data-act="step" data-v="${step + 1}">Siguiente: ${STEP_LABELS[step].toLowerCase()} ${icon('arrow')}</button>` : last}`;
+  return { c, step, stepper, body, foot };
+}
 
 function viewWizard(code) {
   const c = career(code);
   if (!c) return '<p>Carrera no encontrada. <a href="#/carreras">Volver</a></p>';
-  const step = ui.steps[code] || 1;
-  const sems = activeSemesters();
+  const step = Math.min(ui.steps[code] || 1, STEP_LABELS.length);
+  const sems = activeSemesters(S.periodo.paridad);
   const stepper = `<div class="stepper">${STEP_LABELS.map((l, i) => `<button data-act="step" data-v="${i + 1}" class="${i + 1 < step ? 'done' : ''}" ${i + 1 === step ? 'aria-current="step"' : ''}><span class="n">${i + 1 < step ? '✓' : i + 1}</span>${l}</button>`).join('')}</div>`;
   let body = '';
   if (step === 1) body = wizOferta(c, sems);
   if (step === 2) body = wizAsignaturas(c);
   if (step === 3) body = wizDocentes(c);
-  if (step === 4) body = wizReglas(c);
-  if (step === 5) body = wizGenerar(c);
+  if (step === 4) body = wizGenerar(c);
   return `<div class="pagehead"><div><span class="kicker"><a href="#/carreras">Carreras</a> · ${c.codigo} · ${esc(c.jornada)} · ${esc(S.periodo.nombre)}</span><h1>${esc(c.nombre)}</h1></div></div>
     <nav aria-label="Pasos">${stepper}</nav><div class="card">${body}</div>
-    <div class="wiz-foot"><button class="btn" data-act="step" data-v="${step - 1}" ${step === 1 ? 'disabled' : ''}>${icon('back')}Atrás</button>${step < 5 ? `<button class="btnp" data-act="step" data-v="${step + 1}">Siguiente: ${STEP_LABELS[step].toLowerCase()} ${icon('arrow')}</button>` : `<a class="btnp" href="#/horario">Ver horario de la sede ${icon('arrow')}</a>`}</div>`;
+    <div class="wiz-foot"><button class="btn" data-act="step" data-v="${step - 1}" ${step === 1 ? 'disabled' : ''}>${icon('back')}Atrás</button>${step < STEP_LABELS.length ? `<button class="btnp" data-act="step" data-v="${step + 1}">Siguiente: ${STEP_LABELS[step].toLowerCase()} ${icon('arrow')}</button>` : `<a class="btnp" href="#/horario">Ver horario de la sede ${icon('arrow')}</a>`}</div>`;
 }
 
 function ofertaOf(code, sem) {
@@ -418,21 +804,25 @@ function wizOferta(c, sems) {
   const rows = sems.map((sem) => {
     const of = ofertaOf(c.codigo, sem);
     const sug = Math.max(of.estudiantes ? 1 : 0, Math.ceil((of.estudiantes || 0) / S.reglas.cupo));
-    const days = cohortDays(S.jornadas, c.jornada, sem);
+    const usados = S.horario?.secciones.filter((x) => x.carrera === c.codigo && x.sem === sem).flatMap((x) => x.diasUso || []) || [];
+    const days = usados.length ? DAYS.filter((d) => usados.includes(d)) : cohortDays(S.jornadas, c.jornada, sem);
+    const diasTxt = usados.length ? days.join(' ') : `${days.join(' ')}${(S.reglas.diasFijos || []).includes(c.codigo) ? '' : ' <span class="faint">(preferidos)</span>'}`;
     const per = of.secciones ? Math.ceil(of.estudiantes / of.secciones) : 0;
     return `<div class="offer-row ${of.secciones ? 'open' : ''}">
-      <div class="offer-sem"><b>Semestre ${roman(sem)}</b><span>${levelOf(sem)}º año · ${days.join(' ')}</span></div>
-      <label class="field">Estudiantes<input type="number" min="0" value="${of.estudiantes || 0}" data-change="estudiantes" data-sem="${sem}" data-code="${c.codigo}"></label>
-      <div class="field">Secciones<div class="counter sm"><button class="sq" data-act="secs" data-sem="${sem}" data-v="-1" aria-label="Menos secciones del semestre ${roman(sem)}">−</button><b>${of.secciones || 0}</b><button class="sq" data-act="secs" data-sem="${sem}" data-v="1" aria-label="Más secciones del semestre ${roman(sem)}">+</button></div></div>
+      <div class="offer-sem"><b>Semestre ${roman(sem)}</b><span>${diasTxt}</span></div>
+      <input type="number" min="0" value="${of.estudiantes || 0}" data-change="estudiantes" data-sem="${sem}" data-code="${c.codigo}" aria-label="Estudiantes del semestre ${roman(sem)}">
+      <div class="counter sm"><button class="sq" data-act="secs" data-sem="${sem}" data-v="-1" aria-label="Menos secciones del semestre ${roman(sem)}">−</button><b>${of.secciones || 0}</b><button class="sq" data-act="secs" data-sem="${sem}" data-v="1" aria-label="Más secciones del semestre ${roman(sem)}">+</button></div>
       <div class="offer-note small">${of.secciones ? `≈ ${per} por sección${per > S.reglas.cupo ? ' <span class="badge warn">sobre el cupo</span>' : ''}` : '<span class="faint">No abre</span>'}${sug !== (of.secciones || 0) && of.estudiantes ? ` <span class="faint">· sugerido ${sug}</span>` : ''}</div>
     </div>`;
   }).join('');
   return `<div class="section-title"><h2>Oferta de ${esc(S.periodo.nombre)}</h2><span class="muted small">Cupo ${S.reglas.cupo} por sección</span></div>
-    <div class="offer-list">${rows}
+    <div class="offer-list">
+      <div class="offer-row offer-headrow" aria-hidden="true"><span>Semestre</span><span>Estudiantes</span><span>Secciones</span><span></span></div>
+      ${rows}
       <div class="offer-row practice ${pr.estudiantes ? 'open' : ''}">
         <div class="offer-sem"><b>Semestre V</b><span>Práctica laboral${c.practica?.examen ? ' y examen' : ''}</span></div>
-        <label class="field">Estudiantes<input type="number" min="0" value="${pr.estudiantes || 0}" data-change="practicaEst" data-code="${c.codigo}"></label>
-        <label class="field">Horas de práctica<input type="number" min="0" step="10" value="${c.practica?.horas ?? 400}" data-change="practicaHoras" data-code="${c.codigo}"></label>
+        <input type="number" min="0" value="${pr.estudiantes || 0}" data-change="practicaEst" data-code="${c.codigo}" aria-label="Estudiantes en práctica">
+        <label class="hours"><input type="number" min="0" step="10" value="${c.practica?.horas ?? 400}" data-change="practicaHoras" data-code="${c.codigo}" aria-label="Horas de práctica"><span class="faint small">horas</span></label>
         <div class="offer-note small">${pr.estudiantes ? 'Sin sala ni bloques. El supervisor se elige en Docentes.' : '<span class="faint">Nadie en práctica</span>'}</div>
       </div>
     </div>`;
@@ -454,7 +844,7 @@ function wizAsignaturas(c) {
   const pk = key + sem;
   const body = view === 'lista'
     ? `<div class="tablewrap"><table class="dtable" data-pager><thead><tr><th>Asignatura</th><th class="num">Horas</th><th class="num">Semanas</th><th></th></tr></thead><tbody>${page(pk, s.asignaturas).map((a) => `<tr><td><span class="who" style="gap:8px">${dotOf(a.codigo)}${esc(a.nombre)}</span></td><td class="num">${a.horas}</td><td class="num">${moduleWeeks(a.horas)}</td><td>${a.transversal ? '<span class="faint small">transversal</span>' : ''}</td></tr>`).join('')}</tbody></table></div>${pagerHtml(pk, s.asignaturas.length)}`
-    : `<div class="tablewrap">${gantt(items, plan.semanas, (it) => docName(S.asignaciones[it.codigo]))}</div>`;
+    : `<div class="tablewrap">${gantt(items, plan.semanas, null)}</div>`;
   return `<div class="section-title"><div class="row" style="gap:14px"><h2>Asignaturas</h2>${subtabs(key, open.map((x) => [String(x), 'Semestre ' + roman(x)]))}</div>
       ${subtabs('asgView', [['lista', 'Lista'], ['gantt', 'Carta Gantt']])}</div>
     <p class="faint small">${s.horas} h · ${S.oferta[c.codigo][sem].secciones} ${S.oferta[c.codigo][sem].secciones === 1 ? 'sección' : 'secciones'} · ${plan.semanas} semanas</p>
@@ -496,64 +886,193 @@ function wizDocentes(c) {
   return head + `<div class="tablewrap"><table class="dtable" data-pager><thead><tr><th>Asignatura</th><th>Docente</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>${pagerHtml(pk, s.asignaturas.length)}`;
 }
 
-// Paso 4: días de cada año y horario de los bloques (por jornada), cupo y tope. Todo editable.
-function wizReglas(c) {
-  const jn = c.jornada;
-  const j = S.jornadas[jn];
-  const same = S.carreras.filter((x) => x.jornada === jn).length;
-  const t = curTab('rules', ['jornada', 'reglas']);
-  const head = `<div class="section-title"><div class="row" style="gap:14px"><h2>Reglas</h2>${subtabs('rules', [['jornada', 'Jornada ' + jn.toLowerCase()], ['reglas', 'Cupo, tope y salas']])}</div></div>`;
+// ---------- Vista: Configuración ----------
+// Jornadas, cupo y tope: se definen una vez y valen para todos los periodos.
+// Cada semestre (I a IV) tiene sus propios días y bloques; se edita uno a la vez y se ve cómo queda su semana.
+const dayList = (days) => days.map((d) => DAY_NAMES[d].toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' y $1');
+// Calendario del periodo elegido: inicio y cierre, horas por sesión, feriados y recesos.
+function calendarConfig() {
+  const cal = calendarOf(S);
+  const row = (label, help, ctl) => `<div class="rule-row"><div class="rule-label"><b>${label}</b><span>${help}</span></div><div>${ctl}</div></div>`;
+  const fer = (cal.feriados || []).slice().sort((a, b) => a.fecha.localeCompare(b.fecha));
+  const rec = (cal.recesos || []).slice().sort((a, b) => a.desde.localeCompare(b.desde));
+  const dn = (iso) => DAY_NAMES[dayCode(iso)] || (dayCode(iso) === 'Do' ? 'Domingo' : '');
+  return `<div class="rules cal-cfg" style="max-width:820px">
+    ${cal.referencial ? `<p class="cal-ref">${icon('info')} Calendario <b>referencial</b> de ${esc(S.periodo.nombre)}: feriados nacionales de fecha fija y receso de Fiestas Patrias. Revísalo con el calendario académico del CFT (algunos feriados se trasladan a lunes).</p>` : ''}
+    ${row('Inicio y cierre', 'Las clases parten el primer día y no deberían pasar del cierre', `<input type="date" value="${cal.inicio}" data-change="calField" data-k="inicio" aria-label="Inicio"> a <input type="date" value="${cal.fin}" data-change="calField" data-k="fin" aria-label="Cierre">`)}
+    ${row('Horas por sesión', 'Horas pedagógicas de cada bloque (40 min cada una)', `Lunes a viernes <input type="number" min="1" max="8" value="${cal.horasSemana}" data-change="calField" data-k="horasSemana" aria-label="Horas de lunes a viernes"> · Sábado <input type="number" min="1" max="8" value="${cal.horasSabado}" data-change="calField" data-k="horasSabado" aria-label="Horas del sábado">`)}
+    ${row('Feriados', 'Días sin clases', `<ul class="cal-list">${fer.map((x) => `<li><span>${dn(x.fecha)} ${fmtFecha(x.fecha)}</span><span class="faint">${esc(x.nombre || '')}</span><button class="btnq sm" data-act="calDel" data-k="feriados" data-v="${x.fecha}" aria-label="Quitar ${esc(x.nombre || x.fecha)}">Quitar</button></li>`).join('') || '<li class="faint">Sin feriados</li>'}</ul>
+      <div class="cal-add"><input type="date" id="fer-fecha" aria-label="Fecha del feriado"><input type="text" id="fer-nombre" placeholder="Nombre (opcional)" aria-label="Nombre del feriado"><button class="btn sm" data-act="calAdd" data-k="feriados">${icon('plus')}Agregar</button></div>`)}
+    ${row('Recesos', 'Semanas o días sin clases (vacaciones, Fiestas Patrias)', `<ul class="cal-list">${rec.map((x) => `<li><span>${fmtFecha(x.desde)} – ${fmtFecha(x.hasta)}</span><span class="faint">${esc(x.nombre || '')}</span><button class="btnq sm" data-act="calDel" data-k="recesos" data-v="${x.desde}" aria-label="Quitar ${esc(x.nombre || x.desde)}">Quitar</button></li>`).join('') || '<li class="faint">Sin recesos</li>'}</ul>
+      <div class="cal-add"><input type="date" id="rec-desde" aria-label="Desde"><input type="date" id="rec-hasta" aria-label="Hasta"><input type="text" id="rec-nombre" placeholder="Nombre (opcional)" aria-label="Nombre del receso"><button class="btn sm" data-act="calAdd" data-k="recesos">${icon('plus')}Agregar</button></div>`)}
+    ${!cal.referencial ? `<div class="rule-row"><div class="rule-label"><b>Volver al referencial</b><span>Descarta los cambios de este periodo</span></div><div><button class="btnq sm" data-act="calReset">Restablecer</button></div></div>` : ''}
+  </div>`;
+}
+
+// Copia editable del calendario del periodo (al primer cambio deja de ser referencial).
+function editCal(fn) {
+  mutate(() => {
+    const key = calendarKey(S.periodo);
+    S.calendarios = S.calendarios || {};
+    if (!S.calendarios[key]) { S.calendarios[key] = structuredClone(calendarOf(S)); }
+    delete S.calendarios[key].referencial;
+    fn(S.calendarios[key]);
+  });
+}
+
+function viewConfig() {
+  const names = Object.keys(S.jornadas);
+  const t = curTab('cfg', [...names, 'calendario', 'reglas']);
+  const head = `<div class="pagehead"><div><h1>Configuración</h1><p class="muted">Se define una vez y vale para todos los periodos.</p></div>
+    ${subtabs('cfg', names.map((n) => [n, 'Jornada ' + n.toLowerCase()]).concat([['calendario', 'Calendario'], ['reglas', 'Cupo y tope']]))}</div>`;
+  if (t === 'calendario') return head + calendarConfig();
   if (t === 'reglas') {
-    const open = openSemesters(S, c.codigo);
-    const secsMax = Math.max(0, ...open.map((s) => { const o = S.oferta[c.codigo][s]; return Math.ceil(o.estudiantes / o.secciones); }));
-    const fit = S.salas.filter((r) => r.capacidad >= secsMax).length;
-    return head + `<div class="rules">
-      <div class="rule-row"><div class="rule-label"><b>Cupo por sección</b><span>Estudiantes</span></div><input type="number" min="5" value="${S.reglas.cupo}" data-change="cupo"></div>
-      <div class="rule-row"><div class="rule-label"><b>Tope por docente</b><span>Sesiones por semana · se ajusta en cada docente</span></div><input type="number" min="1" max="12" value="${S.reglas.tope}" data-change="tope"></div>
-      <div class="rule-row"><div class="rule-label"><b>Salas</b><span>${S.salas.length} salas · ${fit} con cupo para ${secsMax}</span></div><a class="btnq" href="#/salas">Editar salas ${icon('arrow')}</a></div>
+    return head + `<div class="rules" style="max-width:720px">
+      <div class="rule-row"><div class="rule-label"><b>Cupo por sección</b><span>Máximo de estudiantes en una sección</span></div><input type="number" min="5" value="${S.reglas.cupo}" data-change="cupo"></div>
+      <div class="rule-row"><div class="rule-label"><b>Tope por docente</b><span>Sesiones por semana · se puede ajustar en cada docente</span></div><input type="number" min="1" max="12" value="${S.reglas.tope}" data-change="tope"></div>
+      <div class="rule-row"><div class="rule-label"><b>Días de clase</b><span>Marcadas: usan los días de su jornada. Sin marcar: el sistema elige 3 días de lunes a viernes, repartidos parejo; el sábado solo si falta espacio.</span></div>
+        <div class="dias-fijos">${S.carreras.map((c) => `<label class="chk"><input type="checkbox" data-change="diasFijos" data-v="${c.codigo}" ${(S.reglas.diasFijos || []).includes(c.codigo) ? 'checked' : ''}> ${c.codigo}</label>`).join('')}</div></div>
+      <div class="rule-row"><div class="rule-label"><b>Salas</b><span>${S.salas.length} salas registradas</span></div><a class="btnq" href="#/salas">Editar salas ${icon('arrow')}</a></div>
     </div>`;
   }
-  const usesSat = [1, 2].some((lv) => j.dias[lv].includes('Sa'));
-  const dayRow = (lv) => {
-    const n = j.dias[lv].length;
-    return `<div class="rule-row"><div class="rule-label"><b>${lv}º año</b><span>Semestres ${lv === 1 ? 'I y II' : 'III y IV'}</span></div>
-      <div class="row" style="gap:10px"><div class="daypick" role="group" aria-label="Días de ${lv}º año">${DAYS.map((d) => `<button data-act="dayToggle" data-lv="${lv}" data-v="${d}" aria-pressed="${j.dias[lv].includes(d)}" title="${DAY_NAMES[d]}">${d}</button>`).join('')}</div>
-      ${n === DAYS_PER_LEVEL ? '' : `<span class="badge warn">Elige ${DAYS_PER_LEVEL} días (hay ${n})</span>`}</div></div>`;
+  const jn = t;
+  const j = S.jornadas[jn];
+  const sem = Number(curTab('cfgSem', ['1', '2', '3', '4']));
+  const c = j.sems[sem];
+  const days = c.dias;
+  const D = `data-j="${esc(jn)}" data-s="${sem}"`;
+
+  // Tarjetas: resumen de los 4 semestres; se edita uno a la vez
+  const semCard = (n) => {
+    const d = j.sems[n].dias;
+    const ok = d.length === DAYS_PER_LEVEL && !saturdayIssue(S.jornadas, jn, n);
+    return `<button class="yr-card" data-act="tab" data-k="cfgSem" data-v="${n}" aria-pressed="${sem === n}">
+      <span class="sem-n">${roman(n)}</span><span class="yr-txt"><b>Semestre ${roman(n)}</b><span>${d.length ? d.map((x) => DAY_NAMES[x].slice(0, 3)).join(' · ') : 'Sin días'}</span></span>
+      ${ok ? `<span class="cfg-ok">${icon('check')}</span>` : '<span class="badge warn">Revisar</span>'}</button>`;
   };
-  const blockRow = (key, label) => {
-    const own = key === 'default' || !!j.bloques[key];
-    const list = j.bloques[key] || j.bloques.default;
+
+  // Bloques de este semestre: lunes a viernes si tiene días de semana; sábado si asiste el sábado
+  const weekAm = c.bloques.default.every(isSaturdayOk);
+  const blockLines = (key, label) => {
     const sat = key === 'Sa';
-    // El sábado solo hay clases en la mañana: «igual a la semana» solo sirve si la semana también es de mañana.
-    const weekAm = j.bloques.default.every(isSaturdayOk);
-    const satLink = !sat ? '<span>Bloques de clase</span>' : `<span>Solo en la mañana</span>${own && weekAm ? '<button class="linkbtn" data-act="satSame">Usar el de la semana</button>' : !own ? '<button class="linkbtn" data-act="satOwn">Usar otro horario</button>' : ''}`;
-    const lateBadge = (b) => (sat && !isSaturdayOk(b) ? `<span class="badge bad">Antes de las ${SATURDAY_LAST_START}</span>` : '');
-    return `<div class="rule-row"><div class="rule-label"><b>${label}</b>${satLink}</div>
-      ${own ? `<div class="blocks">${list.map((b, i) => `<span class="blk"><span class="faint small">${i + 1}</span><input type="time" value="${b.inicio}" data-change="blockTime" data-k="${key}" data-i="${i}" data-f="inicio" ${sat ? 'max="12:59"' : ''} aria-label="${label}, bloque ${i + 1}, inicio"><span class="faint">–</span><input type="time" value="${b.fin}" data-change="blockTime" data-k="${key}" data-i="${i}" data-f="fin" aria-label="${label}, bloque ${i + 1}, fin">${toMinutes(b.fin) <= toMinutes(b.inicio) ? '<span class="badge bad">Revisa</span>' : lateBadge(b)}</span>`).join('')}</div>`
-        : '<span class="faint small">Mismo horario que de lunes a viernes</span>'}</div>`;
+    const own = key === 'default' || !!c.bloques[key];
+    const list = c.bloques[key] || c.bloques.default;
+    const toggle = !sat ? '' : own && weekAm ? `<button class="linkbtn" data-act="satSame" ${D}>Igual que la semana</button>` : !own ? `<button class="linkbtn" data-act="satOwn" ${D}>Usar horario propio</button>` : '';
+    const lines = own ? list.map((bl, i) => `<div class="cfg-row blk-row"><span class="blk-n">Bloque ${i + 1}</span>
+        <input type="time" value="${bl.inicio}" data-change="blockTime" ${D} data-k="${key}" data-i="${i}" data-f="inicio" ${sat ? 'max="12:59"' : ''} aria-label="${label}, bloque ${i + 1}, inicio"><span class="faint">a</span>
+        <input type="time" value="${bl.fin}" data-change="blockTime" ${D} data-k="${key}" data-i="${i}" data-f="fin" aria-label="${label}, bloque ${i + 1}, fin">
+        ${toMinutes(bl.fin) <= toMinutes(bl.inicio) ? '<span class="badge bad">Revisa</span>' : sat && !isSaturdayOk(bl) ? `<span class="badge bad">Antes de las ${SATURDAY_LAST_START}</span>` : ''}</div>`).join('')
+      : '<div class="cfg-row"><span class="faint small">Mismo horario que de lunes a viernes</span></div>';
+    return `<div class="blk-group"><div class="blk-head"><b>${label}</b>${sat ? '<span class="faint small">solo mañana</span>' : ''}${toggle}</div>${lines}</div>`;
   };
-  return head + `<p class="faint small">Afecta a las ${same} carreras de jornada ${esc(jn.toLowerCase())}.</p>
-    <div class="rules">
-      ${dayRow(1)}${dayRow(2)}
-      ${blockRow('default', 'Lunes a viernes')}${usesSat ? blockRow('Sa', 'Sábado') : ''}
-      <label class="check-line"><input type="checkbox" data-change="confirmado" ${j.confirmado ? 'checked' : ''}> Días y bloques confirmados por la coordinación</label>
+  const weekdays = days.filter((d) => d !== 'Sa');
+  const blocks = (weekdays.length ? blockLines('default', 'Lunes a viernes') : '') + (days.includes('Sa') ? blockLines('Sa', 'Sábado') : '');
+
+  // Así queda la semana de este semestre
+  const preview = () => {
+    const rows = [0, 1].map((i) => `<span class="pv-lbl">Bloque ${i + 1}</span>${DAYS.map((d) => {
+      if (!days.includes(d)) return '<span class="pv-cell off"></span>';
+      const bl = blocksFor(S.jornadas, jn, d, sem)[i];
+      return `<span class="pv-cell on">${bl ? `<b>${bl.inicio}</b><span>${bl.fin}</span>` : ''}</span>`;
+    }).join('')}`).join('');
+    return `<div class="plp"><span></span>${DAYS.map((d) => `<span class="pv-dh ${days.includes(d) ? 'on' : ''}">${DAY_NAMES[d].slice(0, 3)}</span>`).join('')}${rows}</div>`;
+  };
+  const span = (d) => { const bl = blocksFor(S.jornadas, jn, d, sem); return `${bl[0].inicio} a ${bl[bl.length - 1].fin}`; };
+  const summary = !days.length ? 'Este semestre todavía no tiene días de clase.'
+    : `El semestre ${roman(sem)} asiste ${dayList(days)}${weekdays.length ? `, de ${span(weekdays[0])}` : ''}${days.includes('Sa') && weekdays.length ? `; el sábado, de ${span('Sa')}` : days.includes('Sa') ? `, de ${span('Sa')}` : ''}.`;
+  const others = [1, 2, 3, 4].filter((n) => n !== sem);
+
+  return head + `<div class="yr-cards sems">${[1, 2, 3, 4].map(semCard).join('')}</div>
+    <div class="cfg">
+      <section class="cfg-col">
+        <h3 class="sub">Días de clase del semestre ${roman(sem)}</h3>
+        <div class="cfg-row"><div class="daypick" role="group" aria-label="Días del semestre ${roman(sem)}">${DAYS.map((d) => `<button data-act="dayToggle" ${D} data-v="${d}" aria-pressed="${days.includes(d)}" title="${DAY_NAMES[d]}">${d}</button>`).join('')}</div>
+          ${days.length === DAYS_PER_LEVEL ? `<span class="cfg-ok">${icon('check')}3 días</span>` : `<span class="badge warn">Elige ${DAYS_PER_LEVEL} (hay ${days.length})</span>`}</div>
+        <p class="faint small">Un módulo se dicta en 3 sesiones por semana: cada semestre asiste 3 días.</p>
+        <h3 class="sub">Horario de los bloques</h3>
+        <div class="blk-groups">${blocks || '<span class="faint small">Elige los días para ver sus bloques.</span>'}</div>
+        <div class="copy-row"><span class="faint small">Copiar este horario a</span>${others.map((n) => `<button class="btnq sm" data-act="copySem" ${D} data-to="${n}">${roman(n)}</button>`).join('')}<button class="btnq sm" data-act="copySem" ${D} data-to="all">Todos</button></div>
+      </section>
+      <section class="cfg-col cfg-preview">
+        <h3 class="sub">Así queda la semana del semestre ${roman(sem)}</h3>
+        ${preview()}
+        <p class="pv-sum">${summary}</p>
+        <label class="check-line"><input type="checkbox" data-change="confirmado" data-j="${esc(jn)}" ${j.confirmado ? 'checked' : ''}> Jornada ${esc(jn.toLowerCase())} confirmada por la coordinación</label>
+      </section>
     </div>`;
 }
 
-// Paso 5: resumen por sección; el plan de cada una se abre en una ventana.
+// Resumen de los días de los semestres abiertos de una carrera, con enlace a Configuración.
+function jornadaLine(c) {
+  const open = openSemesters(S, c.codigo);
+  const parts = (open.length ? open : [1, 2, 3, 4]).map((n) => `${roman(n)}: ${cohortDays(S.jornadas, c.jornada, n).join(' ')}`);
+  const pref = (S.reglas.diasFijos || []).includes(c.codigo) ? 'días fijos' : 'días preferidos';
+  return `Jornada ${esc(c.jornada.toLowerCase())} · ${pref} ${parts.join(' · ')} · <a href="#/configuracion">Configuración</a>`;
+}
+
+
+// Paso 4: sala de cada sección, planificar y vista previa antes de confirmar.
 function wizGenerar(c) {
   const H = S.horario;
   const mine = H ? H.secciones.filter((s) => s.carrera === c.codigo) : [];
   const ids = new Set(mine.map((s) => s.id));
   const conf = H ? H.conflictos.filter((x) => x.secciones.some((id) => ids.has(id)) || (x.tipo === 'tope' && mine.some((s) => s.plan.some((p) => p.docenteId === x.docenteId)))) : [];
-  const head = `<div class="section-title"><h2>Generar</h2><button class="btnp" data-act="generate" ${ui.generating ? 'disabled' : ''}>${ui.generating ? 'Generando…' : H ? 'Volver a generar' : 'Generar horario'}</button></div>`;
+  const pv = ui.preview?.code === c.codigo ? ui.preview : null;
+  const btn = pv ? '' : `<button class="btnp" data-act="planCareer" data-k="${c.codigo}" ${ui.generating ? 'disabled' : ''}>${ui.generating ? 'Calculando…' : (mine.some((x) => x.plan.length) ? 'Volver a planificar' : 'Planificar esta carrera')}</button>`;
+  const head = `<div class="section-title"><div><h2>Generar</h2><p class="faint small">${jornadaLine(c)}</p></div>${btn}</div>`;
   if (!H) return head + '<p class="muted">Todavía no hay horario para este periodo.</p>';
-  const status = H.desactualizado ? `<p class="status warn">${icon('alert')}Hay cambios sin incluir. Vuelve a generar.</p>`
-    : conf.length ? `<p class="status bad">${icon('alert')}${conf.length} por revisar · <button class="linkbtn" data-act="modal" data-v="issues" data-k="${c.codigo}">Ver</button></p>`
+  if (pv) return head + previewHtml(c, pv);
+  // Qué otras carreras usan cada sala y en qué jornada (para elegir la sala de cada sección).
+  const usoDe = {};
+  for (const x of H.sesiones) { const s2 = secById(H, x.seccionId); if (x.salaId && s2 && s2.carrera !== c.codigo) (usoDe[x.salaId] ||= new Set()).add(`${s2.carrera} ${s2.jornada === 'Diurno' ? 'diurno' : 'vesp.'}`); }
+  const salaSel = (s) => {
+    const el = S.salaSeccion?.[s.id] || '';
+    return `<select class="sala-sec" data-change="salaSeccion" data-k="${s.id}" aria-label="Sala de ${secLabel(s)}">
+      <option value="">Automática${!el && s.salaId ? ` (hoy ${esc(salaName(s.salaId))})` : ''}</option>
+      ${S.salas.map((r) => `<option value="${r.id}" ${r.id === el ? 'selected' : ''}>${esc(r.nombre)}${usoDe[r.id] ? ` · usa ${[...usoDe[r.id]].join(', ')}` : ' · libre'}</option>`).join('')}
+    </select>`;
+  };
+  const status = conf.length ? `<p class="status bad">${icon('alert')}${conf.length} por revisar · <button class="linkbtn" data-act="modal" data-v="issues" data-k="${c.codigo}">Ver</button></p>`
     : `<p class="status ok">${icon('check')}${mine.length ? `${mine.length} secciones sin choques` : 'Sin secciones en el periodo'}</p>`;
-  return head + status + (mine.length ? `<div class="tablewrap"><table class="dtable" data-pager><thead><tr><th>Sección</th><th>Días</th><th>Sala</th><th></th></tr></thead><tbody>
-    ${page('gen-' + c.codigo, mine).map((s) => `<tr><td><span class="l1">${secLabel(s)}</span><span class="l2">${s.estudiantes} estudiantes · ${s.semanas} semanas</span></td><td>${s.dias.join(' ')}</td><td>${esc(salaName(s.salaId))}</td><td><button class="linkbtn" data-act="modal" data-v="plan" data-k="${s.id}">Ver plan</button></td></tr>`).join('')}
+  return head + status + (mine.length ? `<p class="faint small">Elige la sala de cada sección o deja «Automática». Al planificar verás una vista previa antes de confirmar.</p>
+    <div class="tablewrap"><table class="dtable" data-pager><thead><tr><th>Sección</th><th>Días</th><th>Sala</th><th></th></tr></thead><tbody>
+    ${page('gen-' + c.codigo, mine).map((s) => `<tr><td><span class="l1">${secLabel(s)}</span><span class="l2">${s.estudiantes} estudiantes · ${s.semanas} semanas</span></td><td>${s.diasUso?.length ? s.diasUso.join(' ') : `<span class="faint" title="Días configurados; se fijan al planificar">${s.dias.join(' ')}</span>`}</td><td>${salaSel(s)}</td><td><button class="linkbtn" data-act="modal" data-v="plan" data-k="${s.id}">Ver plan</button></td></tr>`).join('')}
     </tbody></table></div>${pagerHtml('gen-' + c.codigo, mine.length)}` : '');
+}
+
+// Pone las clases propuestas en un objeto manual ({ secId: { codigo: clase } }).
+function putItems(manual, items) {
+  for (const it of items) {
+    const m = (manual[it.secId] = manual[it.secId] || {});
+    const o = Number.isFinite(it.desde) ? it.desde : Math.max(0, ...Object.values(m).map((x) => x.o || 0)) + 1;
+    m[it.codigo] = { slots: it.slots.map((x) => ({ d: x.d, inicio: x.inicio, fin: x.fin })), o, salaId: it.salaId, desde: it.desde };
+  }
+}
+
+// Vista previa: cómo quedan las secciones (días, sala, cada asignatura con sus fechas), antes de guardar.
+function previewHtml(c, pv) {
+  const PH = pv.H;
+  const secs = PH.secciones.filter((s) => s.carrera === c.codigo);
+  const ids = new Set(secs.map((s) => s.id));
+  const choques = PH.conflictos.filter((x) => ['sala', 'seccion', 'docente', 'capacidad', 'sabado'].includes(x.tipo) && x.secciones.some((id) => ids.has(id)));
+  const salasDe = (s) => [...new Set(s.plan.map((p) => p.salaId).filter(Boolean))];
+  const dh = (p) => { const by = {}; for (const x of p.slots) (by[x.inicio + '–' + x.fin] ||= []).push(x.d); return Object.entries(by).map(([h, ds]) => `${ds.join(' ')} ${h}`).join(' · '); };
+  const fechas = (p) => (p.fechaInicio ? `${fmtFecha(p.fechaInicio)} – ${fmtFecha(p.fechaFin)}` : `semanas ${p.desde}–${p.hasta}`);
+  const bloque = (s) => {
+    const sinLugar = pv.unplaced.filter((u) => u.secId === s.id);
+    return `<div class="plp-sec">
+      <div class="plp-head"><b>${secLabel(s)}</b><span>${(s.diasUso || []).map((d) => DAY_NAMES[d]).join(', ') || 'sin días'}</span><span>${salasDe(s).map((id) => esc(salaName(id))).join(', ') || 'Sin sala'}</span><span class="${s.pasaCierre ? 'bad-t' : 'faint'}">${s.fechaFin ? `termina el ${fmtFecha(s.fechaFin)}${s.pasaCierre ? ' (después del cierre)' : ''}` : ''}</span></div>
+      <table class="dtable plp-tab"><thead><tr><th>Asignatura</th><th>Días y hora</th><th>Fechas</th><th>Sala</th></tr></thead><tbody>
+      ${s.plan.map((p) => `<tr><td><span class="who" style="gap:8px">${dotOf(p.codigo)}${esc(p.nombre)}</span></td><td class="small">${dh(p)}</td><td class="small">${fechas(p)}</td><td class="small">${p.salaId ? esc(salaName(p.salaId)) : '<span class="faint">Online</span>'}</td></tr>`).join('')}
+      ${sinLugar.map((u) => `<tr class="plp-miss"><td>${esc(subjName(u.secId, u.codigo))}</td><td colspan="3" class="small">Sin lugar: ${esc(u.motivo)}</td></tr>`).join('')}
+      </tbody></table></div>`;
+  };
+  return `<div class="plp">
+    <div class="plp-bar"><div><b>Vista previa</b> <span class="faint small">· aún no se guarda nada</span>
+      ${choques.length ? `<p class="status bad">${icon('alert')}${choques.length} choques: ${esc(choques[0].mensaje)}</p>` : `<p class="status ok">${icon('check')}Sin choques con lo ya asignado${pv.unplaced.length ? ` · ${pv.unplaced.length} asignaturas sin lugar` : ''}</p>`}</div>
+      <div class="row"><button class="btnq" data-act="discardPlan">Descartar</button><button class="btnp" data-act="confirmPlan">Confirmar y asignar</button></div></div>
+    ${secs.map(bloque).join('')}
+  </div>`;
 }
 
 // ---------- Vista: Docentes ----------
@@ -610,7 +1129,7 @@ function docForm(d) {
       ${hist.length ? `<table class="dtable hist"><thead><tr><th>Asignatura</th><th>Carreras</th><th>${esc(S.periodo.nombre)}</th><th></th></tr></thead><tbody>
         ${page(pk, hist, HIST_ROWS).map((r) => `<tr><td><span class="l1">${esc(r.nombre)}</span></td><td class="faint small">${r.carreras.join(', ') || '—'}</td>
           <td>${r.now ? `<span class="badge ok">${esc(r.now.join(' · '))}</span>` : '<span class="faint small">—</span>'}${r.i < 0 ? ' <span class="badge warn">No está en su lista</span>' : ''}</td>
-          <td>${r.i >= 0 ? `<button class="sq xs" data-act="rmMat" data-v="${r.i}" aria-label="Quitar ${esc(r.nombre)}" title="Quitar de su lista">×</button>` : ''}</td></tr>`).join('')}
+          <td><button class="sq xs" data-act="rmHist" data-v="${esc(r.nombre)}" aria-label="Quitar ${esc(r.nombre)}" title="${r.now ? 'Quitar de su lista y de su asignación en el periodo' : 'Quitar de su lista'}">×</button></td></tr>`).join('')}
       </tbody></table>${pagerHtml(pk, hist.length, HIST_ROWS)}` : '<p class="faint">Aún no tiene asignaturas. Agrega las que puede dictar.</p>'}`;
   }
   const avail = Array.isArray(d.disponibilidad) ? d.disponibilidad : ALL_SLOTS;
@@ -679,57 +1198,211 @@ function viewRespaldo() {
 // Bloques que empiezan antes de las 17:00 se cruzan con la disponibilidad de mañana (M); el resto, con la de noche (N).
 const turnoOf = (inicio, id) => (toMinutes(inicio) < 17 * 60 ? 'M' : 'N') + (id || 'B1').slice(1);
 // Bloques de sábado (siempre de mañana): los de la semana si ya son de mañana; si no, los del patrón vespertino actual de TLI.
-const satBlocks = (j) => structuredClone(j.bloques.default.every(isSaturdayOk) ? j.bloques.default : DEFAULT_JORNADAS.Vespertino.bloques.Sa).map((b) => ({ ...b, turno: 'M' + b.id.slice(1) }));
+const satBlocks = (c) => structuredClone(c.bloques.default.every(isSaturdayOk) ? c.bloques.default : SATURDAY_DEFAULT_BLOCKS).map((b) => ({ ...b, turno: 'M' + b.id.slice(1) }));
+const semOf = (el) => S.jornadas[el.dataset.j].sems[el.dataset.s];
 
 // ---------- Acciones ----------
 const actions = {
-  generate() {
-    ui.generating = true;
+  calAdd(el) {
+    const v = (id) => document.getElementById(id)?.value?.trim() || '';
+    if (el.dataset.k === 'feriados') {
+      const fecha = v('fer-fecha');
+      if (!fecha) return alert('Elige la fecha del feriado.');
+      editCal((c) => { c.feriados = [...(c.feriados || []).filter((x) => x.fecha !== fecha), { fecha, nombre: v('fer-nombre') || 'Feriado' }]; });
+    } else {
+      const desde = v('rec-desde'), hasta = v('rec-hasta') || desde;
+      if (!desde || hasta < desde) return alert('Elige las fechas del receso (desde y hasta).');
+      editCal((c) => { c.recesos = [...(c.recesos || []), { desde, hasta, nombre: v('rec-nombre') || 'Receso' }]; });
+    }
+  },
+  calDel(el) {
+    const k = el.dataset.k, v = el.dataset.v;
+    editCal((c) => { c[k] = (c[k] || []).filter((x) => (k === 'feriados' ? x.fecha : x.desde) !== v); });
+  },
+  calReset() {
+    if (!confirm('¿Volver al calendario referencial de este periodo? Se pierden los cambios.')) return;
+    mutate(() => { delete S.calendarios?.[calendarKey(S.periodo)]; });
+  },
+  async generate() {
+    // Propuesta con CP-SAT (servidor). Si el solver no responde, se usa la sugerencia local.
+    ui.generating = true; ui.pick = null; render();
+    try {
+      const r = await fetch('/api/suggest', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ state: S }) });
+      const body = await r.json();
+      // 422: el solver respondió pero no hay solución (o lo ya asignado tiene choques). No se usa la local: se explica.
+      if (r.status === 422) { alert(body.error); ui.generating = false; render(); return; }
+      if (!r.ok) throw new Error(body.error || 'Error del solver');
+      ui.sugg = { items: body.items, unplaced: body.unplaced, motor: 'CP-SAT' };
+      // La propuesta se ve en Ocupación de salas (también si se pidió desde el asistente).
+      ui.modal = null;
+      if (route().view !== 'ocupacion') location.hash = '#/ocupacion';
+      if (body.aviso) alert(body.aviso);
+    } catch (e) {
+      try { ui.sugg = { ...suggest(S), motor: 'local' }; alert('El solver no respondió (' + e.message + '). Usé la sugerencia local, menos completa.'); }
+      catch (e2) { alert('No se pudo sugerir la distribución: ' + e2.message); }
+    }
+    ui.generating = false;
     render();
-    setTimeout(() => {
-      try {
-        const res = solve(S, { seed: (Date.now() % 100000) + 1 });
-        S.horario = res;
-        ui.week = 1;
-        save();
-      } catch (e) {
-        alert('No se pudo generar el horario: ' + e.message);
-      }
+  },
+  // Planifica una carrera (sus secciones del periodo) con el solver, respetando lo ya asignado a las demás,
+  // y suma sus clases a la ocupación de salas. Si la carrera ya tenía clases, se reemplazan.
+  async planCareer(el) {
+    const code = el.dataset.k;
+    const c = career(code);
+    if (!c || ui.generating) return;
+    const mias = (id) => id.startsWith(code + '-');
+    const tiene = Object.keys(S.manual || {}).some((id) => mias(id) && Object.keys(S.manual[id]).length);
+    void tiene;
+    ui.generating = true; ui.preview = null; render();
+    try {
+      const copia = structuredClone(S);
+      for (const id of Object.keys(copia.manual || {})) if (mias(id)) delete copia.manual[id];
+      const r = await fetch('/api/suggest', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ state: copia, carrera: code }) });
+      const body = await r.json();
+      if (!r.ok) throw new Error(body.error || 'Error del solver');
+      // Vista previa: el horario como quedaría, calculado sobre una copia (no se guarda hasta confirmar).
+      putItems(copia.manual, body.items);
+      ui.preview = { code, items: body.items, unplaced: body.unplaced || [], H: buildManual(copia) };
       ui.generating = false;
       render();
-    }, 30);
+    } catch (e) {
+      ui.generating = false;
+      alert('No se pudo planificar ' + c.nombre + ': ' + e.message);
+      render();
+    }
   },
+  confirmPlan() {
+    const pv = ui.preview;
+    const c = pv && career(pv.code);
+    if (!c) return;
+    const tiene = Object.keys(S.manual || {}).some((id) => id.startsWith(pv.code + '-') && Object.keys(S.manual[id]).length);
+    if (tiene && !confirm(`${c.nombre} ya tenía clases asignadas: se reemplazan por esta propuesta. ¿Continuar?`)) return;
+    for (const id of Object.keys(S.manual || {})) if (id.startsWith(pv.code + '-')) delete S.manual[id];
+    ui.preview = null; ui.sugg = null; ui.modal = null;
+    ui.tabs.mxJor = c.jornada;
+    applySugg(pv.items);
+    location.hash = '#/ocupacion';
+  },
+  discardPlan() { ui.preview = null; render(); },
+  acceptSugg(el) {
+    const it = ui.sugg?.items[Number(el.dataset.i)];
+    if (!it) return;
+    applySugg([it]);
+  },
+  acceptAllSugg() { if (ui.sugg?.items.length) applySugg(ui.sugg.items); },
+  discardSugg() { ui.sugg = null; render(); },
   csv() { downloadCsv(); },
   tab(el) { ui.tabs[el.dataset.k] = el.dataset.v; render(); },
   page(el) { ui.pages[el.dataset.k] = Number(el.dataset.v); render(); },
   modal(el) { ui.modal = { v: el.dataset.v, k: el.dataset.k }; render(); },
   closeModal() { closeModal(); },
-  dayToggle(el) {
-    const j = S.jornadas[career(route().arg).jornada];
+  pickSlot(el) {
+    const sec = S.horario?.secciones.find((x) => x.id === ui.curSec);
+    if (!sec) return;
+    const d = el.dataset.d, row = { inicio: el.dataset.t, fin: el.dataset.f };
+    // Si el bloque es uno de los configurados del semestre, se proponen sus mismos días; si no, solo ese día. Se puede cambiar.
+    const bi = sec.dias.includes(d) ? blocksFor(S.jornadas, sec.jornada, d, sec.sem).findIndex((bl) => bl.inicio === row.inicio) : -1;
+    const slots = bi < 0 ? [{ d, ...row }]
+      : sec.dias.map((dd) => { const bl = blocksFor(S.jornadas, sec.jornada, dd, sec.sem)[bi]; return bl && { d: dd, inicio: bl.inicio, fin: bl.fin }; }).filter(Boolean);
+    ui.pick = { secId: sec.id, codigo: null, slots, row };
+    render();
+  },
+  editClass(el) {
+    const sec0 = S.horario?.secciones.find((x) => x.id === (el.dataset.sec || ui.curSec)); const it = sec0?.plan.find((x) => x.codigo === el.dataset.v);
+    if (!it) return;
+    ui.pick = { secId: sec0.id, codigo: it.codigo, edit: true, slots: it.slots.map((x) => ({ ...x })), row: { inicio: it.slots[0].inicio, fin: it.slots[0].fin } };
+    render();
+  },
+  toggleDay(el) {
+    const p = ui.pick;
+    if (!p) return;
+    const d = el.dataset.v;
+    const has = p.slots.some((x) => x.d === d);
+    if (has && p.slots.length === 1) return; // al menos un día
+    p.slots = has ? p.slots.filter((x) => x.d !== d) : [...p.slots, { d, ...p.row }].sort((a, b) => DAYS.indexOf(a.d) - DAYS.indexOf(b.d));
+    // Al editar, el cambio de días se guarda al tiro
+    if (p.edit) mutate(() => { const m = S.manual[p.secId]?.[p.codigo]; if (m) { m.slots = p.slots.map((x) => ({ ...x })); delete m.b; } }, { stale: false });
+    else render();
+  },
+  cancelPick() { ui.pick = null; render(); },
+  placeIn(el) {
+    const p = ui.pick;
+    if (!p?.codigo) return;
+    ui.pick = null;
     mutate(() => {
-      const set = new Set(j.dias[el.dataset.lv]);
+      const m = (S.manual[p.secId] = S.manual[p.secId] || {});
+      const slots = p.slots.map((x) => ({ ...x }));
+      if (p.edit && m[p.codigo]) { Object.assign(m[p.codigo], { salaId: el.dataset.v, slots }); delete m[p.codigo].b; return; }
+      const o = Math.max(0, ...Object.values(m).map((x) => x.o || 0)) + 1;
+      m[p.codigo] = { slots, o, salaId: el.dataset.v };
+    }, { stale: false });
+  },
+  removeClass() {
+    const p = ui.pick;
+    if (!p) return;
+    ui.pick = null;
+    mutate(() => { delete S.manual[p.secId]?.[p.codigo]; }, { stale: false });
+  },
+  hmode(el) { ui.hmode = el.dataset.v; ui.pick = null; render(); },
+  mxLibres() { ui.mxLibres = !ui.mxLibres; render(); },
+  roomSlot(el) {
+    const row = { inicio: el.dataset.t, fin: el.dataset.f };
+    ui.pick = { roomMode: true, salaId: el.dataset.v, secId: null, codigo: null, car: null, sem: null, slots: [{ d: el.dataset.d, ...row }], row };
+    render();
+  },
+  pickSem(el) { if (ui.pick) { ui.pick.sem = Number(el.dataset.v); ui.pick.secId = null; ui.pick.codigo = null; } render(); },
+  pickSecBtn(el) { if (ui.pick) { ui.pick.secId = el.dataset.v; ui.pick.codigo = null; } render(); },
+  confirmRoom() {
+    const p = ui.pick;
+    if (!p?.roomMode || !p.secId || !p.codigo) return;
+    ui.pick = null;
+    mutate(() => {
+      const m = (S.manual[p.secId] = S.manual[p.secId] || {});
+      const o = Math.max(0, ...Object.values(m).map((x) => x.o || 0)) + 1;
+      m[p.codigo] = { slots: p.slots.map((x) => ({ d: x.d, inicio: x.inicio, fin: x.fin })), o, salaId: p.salaId };
+    }, { stale: false });
+  },
+  closeNotice(el) { (ui.notesOff ||= {})[el.dataset.v] = true; render(); },
+  dayToggle(el) {
+    const c = semOf(el);
+    mutate(() => {
+      const set = new Set(c.dias);
       if (set.has(el.dataset.v)) set.delete(el.dataset.v); else set.add(el.dataset.v);
-      j.dias[el.dataset.lv] = DAYS.filter((d) => set.has(d));
-      if (set.has('Sa') && !j.bloques.Sa && !j.bloques.default.every(isSaturdayOk)) j.bloques.Sa = satBlocks(j);
+      c.dias = DAYS.filter((d) => set.has(d));
+      if (set.has('Sa') && !c.bloques.Sa && !c.bloques.default.every(isSaturdayOk)) c.bloques.Sa = satBlocks(c);
     });
   },
-  satOwn() {
-    const j = S.jornadas[career(route().arg).jornada];
-    mutate(() => { j.bloques.Sa = satBlocks(j); });
+  satOwn(el) {
+    const c = semOf(el);
+    mutate(() => { c.bloques.Sa = satBlocks(c); });
   },
-  satSame() { const j = S.jornadas[career(route().arg).jornada]; mutate(() => { delete j.bloques.Sa; }); },
-  mode(el) { ui.mode = el.dataset.v; ui.sel = null; render(); },
+  satSame(el) { const c = semOf(el); mutate(() => { delete c.bloques.Sa; }); },
+  // Copia días y bloques de un semestre a otro (o a todos) dentro de la misma jornada.
+  copySem(el) {
+    const j = S.jornadas[el.dataset.j];
+    const from = Number(el.dataset.s);
+    const to = el.dataset.to === 'all' ? [1, 2, 3, 4].filter((n) => n !== from) : [Number(el.dataset.to)];
+    if (!confirm(`¿Copiar los días y bloques del semestre ${roman(from)} al ${to.length > 1 ? 'resto de los semestres' : 'semestre ' + roman(to[0])}? Se reemplaza lo que tengan.`)) return;
+    mutate(() => { for (const n of to) j.sems[n] = structuredClone(j.sems[from]); });
+  },
+  hy(el) { ui.hy = Number(el.dataset.v); ui.hs = (ui.hy === 2 ? [3, 4] : [1, 2]).find((n) => activeSemesters(S.periodo.paridad).includes(n)) || (ui.hy === 2 ? 3 : 1); ui.week = 1; render(); },
+  hs(el) { ui.hs = Number(el.dataset.v); ui.week = 1; render(); },
+  hl(el) { ui.hl = el.dataset.v; render(); },
   week(el) { ui.week += Number(el.dataset.v); render(); },
   goWeek(el) { ui.week = Number(el.dataset.v); render(); },
   print() { window.print(); },
   go(el) { location.hash = el.dataset.v; },
   filter(el) { ui.filter = ui.filter === el.dataset.v ? 'all' : el.dataset.v; render(); },
   docFilter(el) { ui.docFilter = ui.docFilter === el.dataset.v ? 'all' : el.dataset.v; render(); },
-  viewsec(el) { ui.mode = 'seccion'; ui.sel = el.dataset.v; },
+  viewsec(el) {
+    const sec = S.horario?.secciones.find((x) => x.id === el.dataset.v);
+    ui.mode = 'seccion';
+    if (sec) { ui.hc = sec.carrera; ui.hs = sec.sem; ui.hy = sec.sem <= 2 ? 1 : 2; ui.hl = sec.letra; }
+  },
   malla(el) { ui.malla = ui.malla === el.dataset.v ? null : el.dataset.v; render(); },
-  step(el) { const { arg } = route(); ui.steps[arg] = Math.min(5, Math.max(1, Number(el.dataset.v))); ui.rows = null; render(); },
+  step(el) { const arg = wizCode(); ui.steps[arg] = Math.min(STEP_LABELS.length, Math.max(1, Number(el.dataset.v))); ui.rows = null; render(); },
   secs(el) {
-    const { arg } = route();
+    const arg = wizCode();
     mutate(() => {
       const of = ofertaOf(arg, el.dataset.sem);
       of.secciones = Math.max(0, Math.min(8, (of.secciones || 0) + Number(el.dataset.v)));
@@ -737,7 +1410,7 @@ const actions = {
     });
   },
   suggest(el) {
-    const { arg } = route();
+    const arg = wizCode();
     if (el.dataset.v === 'all' && !confirm('¿Rehacer la sugerencia de docentes de esta carrera? Se reemplazan las asignaciones actuales.')) return;
     mutate(() => { S.asignaciones = suggestAssignments(S, { careerCode: arg, overwrite: el.dataset.v === 'all' }).asignaciones; });
   },
@@ -774,7 +1447,17 @@ const actions = {
   pickAv() { ui.pickAv = !ui.pickAv; render(); },
   setFun(el) { ui.pickAv = false; mutate(() => { const d = S.docentes.find((x) => x.id === ui.editDoc); d.fun = Number(el.dataset.v); delete d.foto; }, { stale: false }); },
   rmFoto() { ui.pickAv = false; mutate(() => { const d = S.docentes.find((x) => x.id === ui.editDoc); delete d.foto; delete d.fun; }, { stale: false }); },
-  rmMat(el) { mutate(() => { const d = S.docentes.find((x) => x.id === ui.editDoc); d.materias.splice(Number(el.dataset.v), 1); }); },
+  // Quitar una asignatura del historial: sale de su lista y, si la tenía asignada, también de la asignación.
+  rmHist(el) {
+    const d = S.docentes.find((x) => x.id === ui.editDoc);
+    const name = el.dataset.v;
+    const codes = S.carreras.flatMap((c) => c.semestres.flatMap((s) => s.asignaturas)).filter((a) => a.nombre === name && S.asignaciones[a.codigo] === d.id).map((a) => a.codigo);
+    if (codes.length && !confirm(`¿Quitar «${name}» a ${d.nombre}? También queda sin docente en ${S.periodo.nombre} y habrá que volver a generar el horario.`)) return;
+    mutate(() => {
+      d.materias = d.materias.filter((m) => m !== name);
+      for (const k of codes) delete S.asignaciones[k];
+    }, { stale: codes.length > 0 });
+  },
   addSala() { const id = 's' + Date.now().toString(36); ui.editSala = id; ui.pages.salas = 9999; mutate(() => S.salas.push({ id, nombre: `Sala ${S.salas.length + 1}`, capacidad: 30, tipo: 'Sala' })); },
   editSala(el) { ui.editSala = el.dataset.v || null; render(); const f = app.querySelector('.room.editing input'); if (f) f.focus(); },
   delSala(el) { const r = S.salas[Number(el.dataset.v)]; if (confirm(`¿Eliminar ${r.nombre}?`)) { ui.editSala = null; mutate(() => S.salas.splice(Number(el.dataset.v), 1)); } },
@@ -794,11 +1477,23 @@ const actions = {
 };
 
 const changes = {
+  salaSeccion(el) { ui.preview = null; mutate(() => { S.salaSeccion = S.salaSeccion || {}; if (el.value) S.salaSeccion[el.dataset.k] = el.value; else delete S.salaSeccion[el.dataset.k]; }, { stale: false }); },
+  calField(el) {
+    const k = el.dataset.k;
+    if (['horasSemana', 'horasSabado'].includes(k)) { const v = Math.max(1, Math.min(8, Number(el.value) || 3)); editCal((c) => { c[k] = v; }); }
+    else if (el.value) editCal((c) => { c[k] = el.value; });
+  },
   periodo(el) {
     const [anio, paridad] = el.value.split('|');
-    mutate(() => { S.periodo = { anio: Number(anio), paridad, nombre: periodName(Number(anio), paridad) }; S.horario = null; }, { stale: false });
+    if (!Number(anio) || !['par', 'impar'].includes(paridad)) { render(); return; }
+    const n = S.horario?.resumen?.asignadas || 0;
+    if (n && !confirm(`Al cambiar a ${periodName(Number(anio), paridad)} se borran las ${n} clases asignadas en ${S.periodo.nombre}. ¿Continuar?`)) { render(); return; }
+    mutate(() => { S.periodo = { anio: Number(anio), paridad, nombre: periodName(Number(anio), paridad) }; S.horario = null; S.manual = {}; }, { stale: false });
   },
+  pickCar(el) { if (ui.pick) { ui.pick.car = el.value; ui.pick.secId = null; ui.pick.codigo = null; } render(); },
   sel(el) { ui.sel = el.value; render(); },
+  pickSubject(el) { if (ui.pick) ui.pick.codigo = el.value; render(); },
+  hc(el) { ui.hc = el.value; ui.week = 1; render(); },
   estudiantes(el) {
     mutate(() => {
       const of = ofertaOf(el.dataset.code, el.dataset.sem);
@@ -816,16 +1511,17 @@ const changes = {
   },
   blockTime(el) {
     if (!/^\d{2}:\d{2}$/.test(el.value)) return render();
-    const j = S.jornadas[career(route().arg).jornada];
+    const c = semOf(el);
     mutate(() => {
-      const b = j.bloques[el.dataset.k][Number(el.dataset.i)];
+      const b = c.bloques[el.dataset.k][Number(el.dataset.i)];
       b[el.dataset.f] = el.value;
       b.turno = el.dataset.k === 'Sa' ? 'M' + b.id.slice(1) : turnoOf(b.inicio, b.id);
     });
   },
-  confirmado(el) { mutate(() => { S.jornadas[career(route().arg).jornada].confirmado = el.checked; }, { stale: false }); },
+  confirmado(el) { mutate(() => { S.jornadas[el.dataset.j].confirmado = el.checked; }, { stale: false }); },
   asignar(el) { mutate(() => { if (el.value) S.asignaciones[el.dataset.cod] = el.value; else delete S.asignaciones[el.dataset.cod]; }); },
   cupo(el) { mutate(() => { S.reglas.cupo = Math.max(5, Number(el.value) || 30); }); },
+  diasFijos(el) { mutate(() => { const set = new Set(S.reglas.diasFijos || []); if (el.checked) set.add(el.dataset.v); else set.delete(el.dataset.v); S.reglas.diasFijos = [...set]; }, { stale: false }); },
   tope(el) { mutate(() => { S.reglas.tope = Math.max(1, Math.min(12, Number(el.value) || 12)); }); },
   docField(el) {
     const f = el.dataset.f;
@@ -876,7 +1572,7 @@ const changes = {
       const data = JSON.parse(await file.text());
       if (!Array.isArray(data.carreras) || !data.periodo) throw new Error('El archivo no parece un respaldo del planificador.');
       if (!confirm('¿Reemplazar todos los datos por los del respaldo?')) return;
-      S = data;
+      S = migrateState(data);
       save();
       location.hash = '#/horario';
       render();

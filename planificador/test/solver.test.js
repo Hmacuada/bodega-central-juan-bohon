@@ -2,12 +2,13 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { candidatePlans, moduleWeeks } from '../src/core/modules.js';
-import { buildInitialState, ALL_SLOTS } from '../src/core/initial.js';
+import { buildInitialState, ALL_SLOTS, migrateState } from '../src/core/initial.js';
+import { DEFAULT_JORNADAS } from '../src/core/calendar.js';
 import { solve } from '../src/core/solver.js';
 import { suggestAssignments } from '../src/core/assign.js';
 
 const seed = JSON.parse(readFileSync(new URL('../data/seed/carreras_mallas.json', import.meta.url)));
-const demo = JSON.parse(readFileSync(new URL('../data/seed/demo.json', import.meta.url)));
+const demo = JSON.parse(readFileSync(new URL('./fixtures/demo-15-docentes.json', import.meta.url)));
 
 test('las mallas traen 15 carreras y 359 asignaturas', () => {
   assert.equal(seed.carreras.length, 15);
@@ -54,13 +55,16 @@ test('detecta choques imposibles: un solo docente para 3 secciones', () => {
   assert.ok(res.resumen.choquesDocente > 0);
 });
 
-test('cualquier periodo puede abrir los 4 semestres (I y II a la vez)', () => {
+test('cada periodo dicta solo 2 semestres: impar I y III, par II y IV', () => {
   const state = buildInitialState(seed, demo);
-  state.oferta.TLI[2] = { estudiantes: 30, secciones: 1 };
-  state.oferta.TLI[4] = { estudiantes: 25, secciones: 1 };
+  for (const n of [1, 2, 3, 4]) state.oferta.TLI[n] = { estudiantes: 20, secciones: 1 };
+  state.periodo = { anio: 2027, paridad: 'impar', nombre: 'Otoño 2027' };
+  let ids = solve(state, { seed: 5 }).secciones.map((s) => s.id).filter((x) => x.startsWith('TLI'));
+  assert.deepEqual(ids.sort(), ['TLI-1-A', 'TLI-3-A']);
+  state.periodo = { anio: 2027, paridad: 'par', nombre: 'Primavera 2027' };
   const res = solve(state, { seed: 5 });
-  const ids = res.secciones.map((s) => s.id);
-  assert.ok(ids.includes('TLI-2-A') && ids.includes('TLI-4-A'), ids.join(','));
+  ids = res.secciones.map((s) => s.id).filter((x) => x.startsWith('TLI'));
+  assert.deepEqual(ids.sort(), ['TLI-2-A', 'TLI-4-A']);
   const dias2 = new Set(res.sesiones.filter((x) => x.seccionId === 'TLI-2-A').map((x) => x.dia));
   assert.deepEqual([...dias2].sort(), ['Ju', 'Ma', 'Sa']);
 });
@@ -75,19 +79,41 @@ test('la práctica (V semestre) es configurable y no ocupa bloques', () => {
 
 test('días mal configurados se informan con un mensaje claro', () => {
   const state = buildInitialState(seed, demo);
-  state.jornadas.Vespertino.dias[1] = ['Ma', 'Ju'];
+  state.jornadas.Vespertino.sems[1].dias = ['Ma', 'Ju'];
   assert.throws(() => solve(state, { seed: 1 }), /deben ser 3/);
 });
 
 test('el sábado solo admite bloques de mañana', () => {
   const state = buildInitialState(seed, demo);
-  state.jornadas.Vespertino.bloques.Sa[1].inicio = '15:00';
+  state.jornadas.Vespertino.sems[1].bloques.Sa[1].inicio = '15:00';
   assert.throws(() => solve(state, { seed: 1 }), /solo hay clases en la mañana/);
-  delete state.jornadas.Vespertino.bloques.Sa; // usaría los bloques de la noche
+  delete state.jornadas.Vespertino.sems[1].bloques.Sa; // usaría los bloques de la noche
   assert.throws(() => solve(state, { seed: 1 }), /solo hay clases en la mañana/);
 });
 
 test('la disponibilidad no tiene sábado en la noche', () => {
   assert.ok(ALL_SLOTS.includes('Sa-M1'));
   assert.ok(!ALL_SLOTS.some((s) => s.startsWith('Sa-N')));
+});
+
+test('cada semestre tiene sus propios días y bloques', () => {
+  const state = buildInitialState(seed, demo);
+  state.oferta.TLI = { 1: { estudiantes: 30, secciones: 1 }, 3: { estudiantes: 30, secciones: 1 } };
+  const s3 = state.jornadas.Vespertino.sems[3];
+  s3.dias = ['Lu', 'Mi', 'Vi'];
+  s3.bloques = { default: [{ id: 'B1', turno: 'N1', inicio: '19:00', fin: '21:00' }, { id: 'B2', turno: 'N2', inicio: '21:10', fin: '23:00' }] };
+  const res = solve(state, { seed: 3 });
+  const of = (id) => res.sesiones.filter((x) => x.seccionId.startsWith(id));
+  assert.deepEqual([...new Set(of('TLI-1').map((x) => x.dia))].sort(), ['Ju', 'Ma', 'Sa']);
+  assert.deepEqual([...new Set(of('TLI-3').map((x) => x.dia))].sort(), ['Lu', 'Mi', 'Vi']);
+  assert.ok(of('TLI-3').every((x) => ['19:00', '21:10'].includes(x.inicio)));
+});
+
+test('un estado guardado con días por año se convierte a días por semestre', () => {
+  const state = buildInitialState(seed, demo);
+  state.jornadas.Vespertino = { confirmado: true, dias: { 1: ['Ma', 'Ju', 'Sa'], 2: ['Lu', 'Mi', 'Vi'] }, bloques: structuredClone(DEFAULT_JORNADAS.Vespertino.sems[1].bloques) };
+  migrateState(state);
+  assert.deepEqual(state.jornadas.Vespertino.sems[2].dias, ['Ma', 'Ju', 'Sa']);
+  assert.deepEqual(state.jornadas.Vespertino.sems[3].dias, ['Lu', 'Mi', 'Vi']);
+  assert.ok(!state.jornadas.Vespertino.dias);
 });

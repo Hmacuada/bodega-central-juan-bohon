@@ -1,0 +1,238 @@
+{
+  "_nota": "Datos de ejemplo FICTICIOS para probar el MVP. Reemplazar por docentes, salas y matrícula reales.",
+  "oferta": {
+    "TLI": {
+      "1": {
+        "estudiantes": 58,
+        "secciones": 2
+      },
+      "3": {
+        "estudiantes": 44,
+        "secciones": 2
+      }
+    },
+    "APM": {
+      "1": {
+        "estudiantes": 30,
+        "secciones": 1
+      },
+      "3": {
+        "estudiantes": 24,
+        "secciones": 1
+      }
+    },
+    "MME": {
+      "1": {
+        "estudiantes": 32,
+        "secciones": 1
+      },
+      "3": {
+        "estudiantes": 26,
+        "secciones": 1
+      }
+    }
+  },
+  "salas": [
+    {
+      "id": "s1",
+      "nombre": "Sala 1",
+      "capacidad": 35,
+      "tipo": "Sala"
+    },
+    {
+      "id": "s2",
+      "nombre": "Sala 2",
+      "capacidad": 35,
+      "tipo": "Sala"
+    },
+    {
+      "id": "s3",
+      "nombre": "Sala 3",
+      "capacidad": 30,
+      "tipo": "Sala"
+    },
+    {
+      "id": "s4",
+      "nombre": "Sala 4",
+      "capacidad": 30,
+      "tipo": "Sala"
+    },
+    {
+      "id": "s5",
+      "nombre": "Sala 5",
+      "capacidad": 40,
+      "tipo": "Sala"
+    },
+    {
+      "id": "s6",
+      "nombre": "Sala 6",
+      "capacidad": 40,
+      "tipo": "Sala"
+    },
+    {
+      "id": "lab1",
+      "nombre": "Laboratorio de computación",
+      "capacidad": 30,
+      "tipo": "Laboratorio"
+    }
+  ],
+  "docentes": [
+    {
+      "id": "d1",
+      "nombre": "M. Fuentes",
+      "especialidad": "Inventario y almacenamiento",
+      "materias": [
+        "Gestión de Inventario",
+        "Operaciones de Almacenamiento",
+        "Introducción a la Cadena de Suministros Logísticos",
+        "Administración de Bodegas e Inventarios"
+      ]
+    },
+    {
+      "id": "d2",
+      "nombre": "F. Lagos",
+      "especialidad": "Transporte y gestión",
+      "materias": [
+        "Liderazgo en Logística",
+        "Operación de Transporte y Distribución I",
+        "Operación de Transporte y Distribución II",
+        "Liderazgo e Inclusión en Contextos Mineros",
+        "Logística y Cadena de Suministro en Minería"
+      ]
+    },
+    {
+      "id": "d3",
+      "nombre": "S. Reyes",
+      "especialidad": "Seguridad y medio ambiente",
+      "materias": [
+        "Medio Ambiente y Seguridad Industrial",
+        "Seguridad Industrial",
+        "Seguridad, Salud y Medio Ambiente en Minería",
+        "Legislación y Medioambiente"
+      ],
+      "disponibilidad_excluye": [
+        "Sa-M1",
+        "Sa-M2"
+      ]
+    },
+    {
+      "id": "d4",
+      "nombre": "C. Rojas",
+      "especialidad": "Administración y finanzas",
+      "materias": [
+        "Herramientas para Análisis Contable Básico",
+        "Administración de Personal en el Área Logística",
+        "Gestión de Recursos Humanos y Remuneraciones"
+      ]
+    },
+    {
+      "id": "d5",
+      "nombre": "I. Campos",
+      "especialidad": "Administración",
+      "materias": [
+        "Administración General",
+        "Administración de Personal en el Área Logística",
+        "Herramientas Digitales para la Gestión Administrativa"
+      ]
+    },
+    {
+      "id": "d6",
+      "nombre": "P. Muñoz",
+      "especialidad": "Ciencias básicas",
+      "materias": [
+        "Matemática Básica",
+        "Física"
+      ]
+    },
+    {
+      "id": "d7",
+      "nombre": "G. Díaz",
+      "especialidad": "Ciencias básicas",
+      "materias": [
+        "Matemática Básica",
+        "Física",
+        "Física Aplicada"
+      ]
+    },
+    {
+      "id": "d8",
+      "nombre": "J. Soto",
+      "especialidad": "Inglés",
+      "materias": [
+        "Inglés Técnico"
+      ]
+    },
+    {
+      "id": "d9",
+      "nombre": "A. Vera",
+      "especialidad": "Área transversal",
+      "materias": [
+        "Tecnologías de la Información",
+        "Comunicación Efectiva"
+      ]
+    },
+    {
+      "id": "d10",
+      "nombre": "L. Pizarro",
+      "especialidad": "Área transversal",
+      "materias": [
+        "Taller de Habilidades Sociales",
+        "Innovación y Creatividad",
+        "Comunicación Efectiva"
+      ]
+    },
+    {
+      "id": "d11",
+      "nombre": "T. Olivares",
+      "especialidad": "Área transversal",
+      "materias": [
+        "Taller de Habilidades Sociales",
+        "Tecnologías de la Información",
+        "Innovación y Creatividad"
+      ]
+    },
+    {
+      "id": "d12",
+      "nombre": "R. Castillo",
+      "especialidad": "Minería",
+      "materias": [
+        "Introducción a los Procesos Mineros",
+        "Introducción a la Minería y Metalurgia",
+        "Máquinas y Equipos Industriales",
+        "Herramientas Digitales para Procesos Minero-Metalúrgicos"
+      ]
+    },
+    {
+      "id": "d13",
+      "nombre": "D. Herrera",
+      "especialidad": "Gestión minera",
+      "materias": [
+        "Gestión de Proyectos en Minería",
+        "Sistema de Gestión de Calidad en Minería",
+        "Sustentabilidad y Sostenibilidad en Minería",
+        "Ética Profesional y Responsabilidad Social en Minería"
+      ]
+    },
+    {
+      "id": "d14",
+      "nombre": "E. Araya",
+      "especialidad": "Procesos mineros",
+      "materias": [
+        "Proceso de Conminución y Concentración de Minerales",
+        "Equipos de Carguío y Transporte",
+        "Sistemas de Control y Monitoreo de Procesos Mineros"
+      ]
+    },
+    {
+      "id": "d15",
+      "nombre": "V. Tapia",
+      "especialidad": "Seguridad y medio ambiente",
+      "materias": [
+        "Seguridad Industrial",
+        "Seguridad, Salud y Medio Ambiente en Minería",
+        "Legislación y Medioambiente",
+        "Medio Ambiente y Seguridad Industrial"
+      ]
+    }
+  ]
+}

@@ -29,11 +29,11 @@ export function buildProblem(state) {
       const semObj = c.semestres[sem - 1];
       const days = cohortDays(state.jornadas, c.jornada, sem);
       if (days.length !== DAYS_PER_LEVEL) {
-        throw new Error(`La jornada ${c.jornada} tiene ${days.length} días para ${sem <= 2 ? '1º' : '2º'} año; deben ser ${DAYS_PER_LEVEL}. Corrígelo en Reglas.`);
+        throw new Error(`El semestre ${roman(sem)} de la jornada ${c.jornada.toLowerCase()} tiene ${days.length} días de clase; deben ser ${DAYS_PER_LEVEL}. Corrígelo en Configuración.`);
       }
-      const sat = saturdayIssue(state.jornadas, c.jornada);
-      if (sat) throw new Error(sat + ' Corrígelo en Reglas.');
-      const blocks = days.map((d) => blocksFor(state.jornadas, c.jornada, d).map((b) => ({ ...b, s: toMinutes(b.inicio), e: toMinutes(b.fin) })));
+      const sat = saturdayIssue(state.jornadas, c.jornada, sem);
+      if (sat) throw new Error(sat + ' Corrígelo en Configuración.');
+      const blocks = days.map((d) => blocksFor(state.jornadas, c.jornada, d, sem).map((b) => ({ ...b, s: toMinutes(b.inicio), e: toMinutes(b.fin) })));
       const subjects = semObj.asignaturas;
       const g = {
         key: `${c.codigo}-${sem}`, carrera: c, sem, jornada: c.jornada, days, blocks, subjects,

@@ -5,7 +5,7 @@ import { activeSemesters, roman, cohortDays, blocksFor } from './calendar.js';
 export function availableForLevel(state, docente, carrera, sem) {
   if (!Array.isArray(docente.disponibilidad)) return true;
   const days = cohortDays(state.jornadas, carrera.jornada, sem);
-  return days.every((d) => blocksFor(state.jornadas, carrera.jornada, d).some((b) => docente.disponibilidad.includes(`${d}-${b.turno}`)));
+  return days.every((d) => blocksFor(state.jornadas, carrera.jornada, d, sem).some((b) => docente.disponibilidad.includes(`${d}-${b.turno}`)));
 }
 
 export function norm(s) {

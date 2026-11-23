@@ -19,15 +19,15 @@ npm test
 
 Flujo sugerido:
 
-1. **Carreras** → elige una carrera → **Planificar** abre el asistente de 5 pasos:
+1. **Carreras** → elige una carrera → **Planificar** abre el asistente de 4 pasos:
    1. **Oferta:** estudiantes y secciones por semestre.
    2. **Asignaturas:** malla del semestre y su carta Gantt (módulos de 3 sesiones semanales en 2 carriles).
    3. **Docentes:** asigna quién dicta cada asignatura, a mano o con «Sugerir».
-   4. **Reglas y salas:** jornada, cupo por sección y tope semanal de sesiones.
-   5. **Generar:** calcula el horario de toda la sede y muestra los conflictos de esa carrera.
-2. **Horario:** revisa el resultado por sección, docente o sala, semana a semana, y expórtalo a CSV.
+   4. **Generar:** calcula el horario de toda la sede y muestra los conflictos de esa carrera.
+2. **Horario:** la vista principal es la **matriz de salas**: filas de día y hora, columnas de sala, con todas las carreras. Cada hueco libre se asigna desde el panel (carrera, semestre, sección, asignatura, días y sala) y el sistema avisa si la sala, el docente o la sección ya están ocupados en esas semanas. Cada asignatura ocupa la sala solo entre sus semanas de inicio y fin. La vista **Por sección** muestra la grilla de un curso. Ya no hay horario generado aparte: lo que ves es lo asignado. Elige carrera, año, semestre y sección en la vista por sección; Asigna cada clase a mano con **+** en cualquier bloque libre (cualquier día; el sábado solo en la mañana), elige sus días y su sala; el panel **Ocupación de salas** muestra al instante cómo se llenan todas las salas en la semana. Cada asignatura dura las semanas que piden sus horas según sus sesiones por semana, y las de un mismo bloque se dictan una tras otra. **Generar automático** llena todo (pide confirmación) y después se puede ajustar a mano. Se exporta a CSV.
 3. **Docentes** y **Salas:** edita las fichas, la disponibilidad y la capacidad.
-4. **Respaldo:** descarga o carga el estado en JSON, o reinícialo vacío o con los datos de ejemplo.
+4. **Configuración:** días de cada año y bloques de cada jornada (el sábado solo de mañana), cupo por sección y tope semanal. Se define una vez, no en cada periodo.
+5. **Respaldo:** descarga o carga el estado en JSON, o reinícialo vacío o con los datos de ejemplo.
 
 El estado se guarda en `data/state.json`, que no se versiona.
 

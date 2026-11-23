@@ -1,0 +1,10 @@
+node_modules
+data/state.json
+data/state.json.tmp
+data/state.backup-*.json
+*.tmp.json
+*.tmp.mjs
+estimacion.json
+solver/__pycache__
+test
+.git

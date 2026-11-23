@@ -78,17 +78,6 @@
   ],
   "docentes": [
     {
-      "id": "d1",
-      "nombre": "M. Fuentes",
-      "especialidad": "Inventario y almacenamiento",
-      "materias": [
-        "Gestión de Inventario",
-        "Operaciones de Almacenamiento",
-        "Introducción a la Cadena de Suministros Logísticos",
-        "Administración de Bodegas e Inventarios"
-      ]
-    },
-    {
       "id": "d2",
       "nombre": "F. Lagos",
       "especialidad": "Transporte y gestión",
@@ -97,7 +86,11 @@
         "Operación de Transporte y Distribución I",
         "Operación de Transporte y Distribución II",
         "Liderazgo e Inclusión en Contextos Mineros",
-        "Logística y Cadena de Suministro en Minería"
+        "Logística y Cadena de Suministro en Minería",
+        "Gestión de Inventario",
+        "Operaciones de Almacenamiento",
+        "Introducción a la Cadena de Suministros Logísticos",
+        "Administración de Bodegas e Inventarios"
       ]
     },
     {
@@ -122,26 +115,9 @@
       "materias": [
         "Herramientas para Análisis Contable Básico",
         "Administración de Personal en el Área Logística",
-        "Gestión de Recursos Humanos y Remuneraciones"
-      ]
-    },
-    {
-      "id": "d5",
-      "nombre": "I. Campos",
-      "especialidad": "Administración",
-      "materias": [
+        "Gestión de Recursos Humanos y Remuneraciones",
         "Administración General",
-        "Administración de Personal en el Área Logística",
         "Herramientas Digitales para la Gestión Administrativa"
-      ]
-    },
-    {
-      "id": "d6",
-      "nombre": "P. Muñoz",
-      "especialidad": "Ciencias básicas",
-      "materias": [
-        "Matemática Básica",
-        "Física"
       ]
     },
     {
@@ -151,7 +127,10 @@
       "materias": [
         "Matemática Básica",
         "Física",
-        "Física Aplicada"
+        "Física Aplicada",
+        "Taller de Habilidades Sociales",
+        "Tecnologías de la Información",
+        "Innovación y Creatividad"
       ]
     },
     {
@@ -159,35 +138,10 @@
       "nombre": "J. Soto",
       "especialidad": "Inglés",
       "materias": [
-        "Inglés Técnico"
-      ]
-    },
-    {
-      "id": "d9",
-      "nombre": "A. Vera",
-      "especialidad": "Área transversal",
-      "materias": [
+        "Inglés Técnico",
         "Tecnologías de la Información",
-        "Comunicación Efectiva"
-      ]
-    },
-    {
-      "id": "d10",
-      "nombre": "L. Pizarro",
-      "especialidad": "Área transversal",
-      "materias": [
+        "Comunicación Efectiva",
         "Taller de Habilidades Sociales",
-        "Innovación y Creatividad",
-        "Comunicación Efectiva"
-      ]
-    },
-    {
-      "id": "d11",
-      "nombre": "T. Olivares",
-      "especialidad": "Área transversal",
-      "materias": [
-        "Taller de Habilidades Sociales",
-        "Tecnologías de la Información",
         "Innovación y Creatividad"
       ]
     },
@@ -199,39 +153,14 @@
         "Introducción a los Procesos Mineros",
         "Introducción a la Minería y Metalurgia",
         "Máquinas y Equipos Industriales",
-        "Herramientas Digitales para Procesos Minero-Metalúrgicos"
-      ]
-    },
-    {
-      "id": "d13",
-      "nombre": "D. Herrera",
-      "especialidad": "Gestión minera",
-      "materias": [
+        "Herramientas Digitales para Procesos Minero-Metalúrgicos",
         "Gestión de Proyectos en Minería",
         "Sistema de Gestión de Calidad en Minería",
         "Sustentabilidad y Sostenibilidad en Minería",
-        "Ética Profesional y Responsabilidad Social en Minería"
-      ]
-    },
-    {
-      "id": "d14",
-      "nombre": "E. Araya",
-      "especialidad": "Procesos mineros",
-      "materias": [
+        "Ética Profesional y Responsabilidad Social en Minería",
         "Proceso de Conminución y Concentración de Minerales",
         "Equipos de Carguío y Transporte",
         "Sistemas de Control y Monitoreo de Procesos Mineros"
-      ]
-    },
-    {
-      "id": "d15",
-      "nombre": "V. Tapia",
-      "especialidad": "Seguridad y medio ambiente",
-      "materias": [
-        "Seguridad Industrial",
-        "Seguridad, Salud y Medio Ambiente en Minería",
-        "Legislación y Medioambiente",
-        "Medio Ambiente y Seguridad Industrial"
       ]
     }
   ]
