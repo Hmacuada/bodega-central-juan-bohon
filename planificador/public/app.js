@@ -761,14 +761,21 @@ function viewCarreras() {
   const tab = (v, label, count) => `<button data-act="filter" data-v="${v}" aria-pressed="${f === v}">${label} <span class="count">${count}</span></button>`;
   const estado = ({ estado: e, missing }) => (e === 'lista' ? '<span class="badge ok">Lista</span>' : e === 'faltan' ? `<span class="badge warn">Faltan ${missing} docentes</span>` : '<span class="faint small">Pendiente</span>');
   return `<div class="pagehead"><div><h1>Carreras</h1><p class="muted">${S.carreras.length} carreras · mallas oficiales${enPractica ? ` · ${enPractica} con estudiantes en práctica` : ''}</p></div></div>
-    <div class="seg" role="group" aria-label="Filtrar">${tab('all', 'Todas', info.length)}${tab('lista', 'Listas', n('lista'))}${tab('sin', 'Pendientes', n('sin'))}${tab('faltan', 'Faltan docentes', n('faltan'))}</div>
-    <div class="car-grid">
+    <div class="car-bar"><div class="seg" role="group" aria-label="Filtrar">${tab('all', 'Todas', info.length)}${tab('lista', 'Listas', n('lista'))}${tab('sin', 'Pendientes', n('sin'))}${tab('faltan', 'Faltan docentes', n('faltan'))}</div>
+    <div class="car-modo" aria-label="Forma de ver las carreras">${subtabs('carVista', [['tarjetas', 'Tarjetas'], ['lista', 'Lista']])}</div></div>
+    ${ui.tabs.carVista === 'lista' ? `<div class="card" style="padding:4px 8px;margin-top:10px"><div class="tablewrap"><table class="dtable car-tabla"><thead><tr><th>Carrera</th><th>Secciones</th><th>Estado</th><th></th></tr></thead><tbody>
+      ${list.map((x) => `<tr class="click" data-act="go" data-v="#/carreras/${x.c.codigo}">
+        <td><span class="l1">${esc(x.c.nombre)}</span><span class="l2">${x.c.codigo} · ${esc(x.c.jornada)}</span></td>
+        <td class="num">${x.secs || '<span class="faint">—</span>'}</td>
+        <td>${estado(x)}</td>
+        <td style="text-align:right;color:var(--ink-3)">${icon('arrow')}</td></tr>`).join('') || '<tr><td colspan="4" class="muted" style="padding:24px">Ninguna carrera en este filtro.</td></tr>'}
+    </tbody></table></div></div>` : `<div class="car-grid">
       ${list.map((x) => `<a class="car-card ${x.estado}" href="#/carreras/${x.c.codigo}" style="--c:${careerColor(x.c.codigo)}" title="Abrir ${esc(x.c.nombre)} para editar">
         <span class="car-top"><b>${x.c.codigo}</b><small>${esc(x.c.jornada)}</small></span>
         <span class="car-name">${esc(x.c.nombre)}</span>
         <span class="car-foot"><span>${x.secs ? `${x.secs} ${x.secs === 1 ? 'sección' : 'secciones'}` : 'Sin secciones'}</span>${estado(x)}</span>
       </a>`).join('') || '<p class="muted" style="padding:24px">Ninguna carrera en este filtro.</p>'}
-    </div>`;
+    </div>`}`;
 }
 
 function malla(c) {
