@@ -309,8 +309,7 @@ function viewHorario() {
 function viewOcupacion() {
   const H = S.horario;
   const head = `<div class="pagehead">
-      <div><h1>Ocupación de salas</h1><p class="muted">${esc(S.periodo.nombre)} · una columna por sala; debajo del nombre, la carrera que la usa${H?.avisos?.length ? ` · <span class="bad-t" title="${esc(H.avisos.map((x) => x.mensaje).join(" "))}">${H.avisos.length} ${H.avisos.length === 1 ? "curso termina" : "cursos terminan"} después del cierre</span>` : ""}</p></div>
-      <div class="row"><button class="btnp" data-act="generate" ${ui.generating ? 'disabled' : ''}>${ui.generating ? 'Calculando… (unos minutos)' : 'Sugerir distribución'}</button></div></div>`;
+      <div><h1>Ocupación de salas</h1><p class="muted">${esc(S.periodo.nombre)} · una columna por sala; debajo del nombre, la carrera que la usa${H?.avisos?.length ? ` · <span class="bad-t" title="${esc(H.avisos.map((x) => x.mensaje).join(" "))}">${H.avisos.length} ${H.avisos.length === 1 ? "curso termina" : "cursos terminan"} después del cierre</span>` : ""}</p></div></div>`;
   if (!H) return head + notice(`err-${ui.planError}`, 'alert', 'No se puede armar el horario', `${esc(ui.planError)} <a href="#/configuracion">Ir a Configuración</a>`);
   return head + matrixViewer(H);
 }
