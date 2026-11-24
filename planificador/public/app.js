@@ -773,7 +773,7 @@ function viewCarreras() {
       ${list.map((x) => `<a class="car-card ${x.estado}" href="#/carreras/${x.c.codigo}" style="--c:${careerColor(x.c.codigo)}" title="Abrir ${esc(x.c.nombre)} para editar">
         <span class="car-top"><b>${x.c.codigo}</b><small>${esc(x.c.jornada)}</small></span>
         <span class="car-name">${esc(x.c.nombre)}</span>
-        <span class="car-foot"><span>${x.secs ? `${x.secs} ${x.secs === 1 ? 'sección' : 'secciones'}` : 'Sin secciones'}</span>${estado(x)}</span>
+        <span class="car-foot"><span>${x.secs ? `${x.secs} secc.` : 'Sin secc.'}</span>${x.estado === 'faltan' ? `<span class="badge warn" title="Faltan ${x.missing} docentes">Faltan ${x.missing} doc.</span>` : estado(x)}</span>
       </a>`).join('') || '<p class="muted" style="padding:24px">Ninguna carrera en este filtro.</p>'}
     </div>`}`;
 }

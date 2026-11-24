@@ -1111,3 +1111,8 @@ div.mx-busy { display: flex; align-items: center; }
 .car-tabla { font-size: 13px; }
 .car-tabla td:first-child { white-space: nowrap; max-width: 0; width: 70%; overflow: hidden; text-overflow: ellipsis; }
 .car-tabla th, .car-tabla td { padding-top: 4px; padding-bottom: 4px; }
+/* Pie de tarjeta: todo queda dentro (sin desbordes) */
+.car-card { min-width: 0; overflow: hidden; }
+.car-foot { flex-wrap: wrap; row-gap: 3px; }
+.car-foot > * { white-space: nowrap; }
+.car-foot .badge { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
