@@ -309,13 +309,14 @@ function viewHorario() {
   const enPractica = S.carreras.reduce((t, c) => t + (S.oferta?.[c.codigo]?.practica?.estudiantes || 0), 0);
   const semTxt = open.length ? `semestres ${open.map(roman).join(', ').replace(/, ([^,]*)$/, ' y $1')}` : 'sin secciones abiertas';
   const body = courseViewer(H);
-  const head = `<div class="pagehead">
-      <div><h1>Horario</h1><p class="muted">${ui.hsub || `${esc(S.periodo.nombre)} · ${semTxt}${enPractica ? ` · ${enPractica} en práctica` : ''}`}</p></div>
+  const head = `<div class="pagehead ph-fija">
+      <div><h1>Horario</h1></div>
       <div class="row">
         ${H ? `<button class="btnq" data-act="print" title="Imprimir la semana de la sección elegida">${icon('printer')}<span class="sr">Imprimir</span></button><button class="btnq" data-act="csv" title="Descargar todas las clases del periodo (se abre en Excel)">${icon('download')}<span class="sr">Excel</span></button>` : ''}
         <a class="btnq" href="#/ocupacion">${icon('grid')}Ocupación de salas</a>
         <button class="btnp" data-act="modal" data-v="wizard" data-k="${ui.hc}" ${ui.hc ? '' : 'disabled title="Elige una carrera"'}>${icon('sparkle')}Planificar carrera</button>
-      </div></div>`;
+      </div>
+      <p class="muted ph-sub">${ui.hsub || `${esc(S.periodo.nombre)} · ${semTxt}${enPractica ? ` · ${enPractica} en práctica` : ''}`}</p></div>`;
   if (!H) return head + notice(`err-${ui.planError}`, 'alert', 'No se puede armar el horario', `${esc(ui.planError)} <a href="#/configuracion">Ir a Configuración</a>`) + body;
   if (!H.resumen.asignadas) {
     const missing = needsChecklist().find(([, , k]) => k !== 'ok');
@@ -329,7 +330,7 @@ function viewHorario() {
 // Matriz de salas por día y hora, con la sugerencia automática y la asignación sala por sala.
 function viewOcupacion() {
   const H = S.horario;
-  const head = `<div class="pagehead">
+  const head = `<div class="pagehead ph-fija">
       <div><h1>Ocupación de salas</h1><p class="muted">${esc(S.periodo.nombre)} · una columna por sala; debajo del nombre, la carrera que la usa${H?.avisos?.length ? ` · <span class="bad-t" title="${esc(H.avisos.map((x) => x.mensaje).join(" "))}">${H.avisos.length} ${H.avisos.length === 1 ? "curso termina" : "cursos terminan"} después del cierre</span>` : ""}</p></div></div>`;
   if (!H) return head + notice(`err-${ui.planError}`, 'alert', 'No se puede armar el horario', `${esc(ui.planError)} <a href="#/configuracion">Ir a Configuración</a>`);
   return head + matrixViewer(H);
@@ -995,7 +996,7 @@ function editCal(fn) {
 function viewConfig() {
   const names = Object.keys(S.jornadas);
   const t = curTab('cfg', [...names, 'calendario', 'reglas', 'demo']);
-  const head = `<div class="pagehead"><div><h1>Configuración</h1><p class="muted">Se define una vez y vale para todos los periodos.</p></div>
+  const head = `<div class="pagehead ph-fija"><div><h1>Configuración</h1><p class="muted">Se define una vez y vale para todos los periodos.</p></div>
     ${subtabs('cfg', names.map((n) => [n, 'Jornada ' + n.toLowerCase()]).concat([['calendario', 'Calendario'], ['reglas', 'Cupo y tope'], ['demo', 'Demo']]))}</div>`;
   if (t === 'calendario') return head + calendarConfig();
   if (t === 'demo') {

@@ -1174,3 +1174,12 @@ div.mx-busy { display: flex; align-items: center; }
   .print-head { margin: 0 0 10px; font-size: 14px; }
   .viewer .hfilters { display: none !important; }
 }
+
+/* Horario: los botones quedan siempre arriba a la derecha; el texto de la izquierda se ajusta en varias líneas */
+.pagehead.ph-fija { flex-wrap: nowrap; align-items: flex-start; }
+.pagehead.ph-fija > div:first-child { flex: 1 1 auto; }
+.pagehead.ph-fija > .row { flex: 0 0 auto; flex-wrap: nowrap; padding-top: 4px; }
+@media (max-width: 900px) { .pagehead.ph-fija { flex-wrap: wrap; } }
+.pagehead.ph-fija { flex-wrap: wrap; align-items: center; }
+.pagehead.ph-fija > .row { padding-top: 0; }
+.pagehead .ph-sub { flex-basis: 100%; margin: -6px 0 0; }
