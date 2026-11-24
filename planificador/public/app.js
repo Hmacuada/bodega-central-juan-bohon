@@ -106,7 +106,7 @@ function route() {
   const [view, arg] = h.split('/');
   return { view, arg };
 }
-window.addEventListener('hashchange', () => { ui.modal = null; ui.editDoc = null; ui.rows = null; render(); });
+window.addEventListener('hashchange', () => { if (route().arg !== ui.wizSnap?.code) ui.wizSnap = null; ui.modal = null; ui.editDoc = null; ui.rows = null; render(); });
 let resizeTimer = null;
 window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { ui.rows = null; render(); }, 150); });
 document.addEventListener('keydown', (e) => {
@@ -828,16 +828,22 @@ function wizardParts(code, enModal) {
   return { c, step, stepper, body, foot };
 }
 
+// Copia de los datos al entrar a una carrera, para poder cancelar lo editado (el horario se recalcula solo).
+const datosSinHorario = () => { const { horario, ...resto } = S; return JSON.stringify(resto); };
+
 function viewWizard(code) {
   const c = career(code);
   if (!c) return '<p>Carrera no encontrada. <a href="#/carreras">Volver</a></p>';
+  if (ui.wizSnap?.code !== code) ui.wizSnap = { code, datos: datosSinHorario() };
+  const cambios = ui.wizSnap.datos !== datosSinHorario();
   const step = Math.min(ui.steps[code] || 1, STEP_LABELS.length);
   const sems = activeSemesters(S.periodo.paridad);
   const stepper = `<div class="stepper">${STEP_LABELS.map((l, i) => `<button data-act="step" data-v="${i + 1}" class="${i + 1 < step ? 'done' : ''}" ${i + 1 === step ? 'aria-current="step"' : ''}><span class="n">${i + 1 < step ? '✓' : i + 1}</span>${l}</button>`).join('')}</div>`;
   const body = wizBody(c, step, sems);
-  return `<div class="pagehead"><div><span class="kicker"><a href="#/carreras">Carreras</a> · ${c.codigo} · ${esc(c.jornada)} · ${esc(S.periodo.nombre)}</span><h1>${esc(c.nombre)}</h1></div></div>
+  return `<div class="pagehead"><div><span class="kicker"><a href="#/carreras">Carreras</a> · ${c.codigo} · ${esc(c.jornada)} · ${esc(S.periodo.nombre)}</span><h1>${esc(c.nombre)}</h1></div>
+      <div class="row"><a class="btn" href="#/carreras">${icon('back')}Volver a carreras</a>${cambios ? '<button class="btn" data-act="wizCancel">Cancelar cambios</button>' : ''}</div></div>
     <nav aria-label="Pasos">${stepper}</nav><div class="card">${body}</div>
-    <div class="wiz-foot"><button class="btn" data-act="step" data-v="${step - 1}" ${step === 1 ? 'disabled' : ''}>${icon('back')}Atrás</button>${step < STEP_LABELS.length ? `<button class="btnp" data-act="step" data-v="${step + 1}">Siguiente: ${STEP_LABELS[step].toLowerCase()} ${icon('arrow')}</button>` : wizLast(c)}</div>`;
+    <div class="wiz-foot">${step === 1 ? `<a class="btn" href="#/carreras">${icon('back')}Volver a carreras</a>` : `<button class="btn" data-act="step" data-v="${step - 1}">${icon('back')}Atrás</button>`}${step < STEP_LABELS.length ? `<button class="btnp" data-act="step" data-v="${step + 1}">Siguiente: ${STEP_LABELS[step].toLowerCase()} ${icon('arrow')}</button>` : wizLast(c)}</div>`;
 }
 
 function ofertaOf(code, sem) {
@@ -1482,6 +1488,22 @@ const actions = {
     if (sec) { ui.hc = sec.carrera; ui.hs = sec.sem; ui.hy = sec.sem <= 2 ? 1 : 2; ui.hl = sec.letra; }
   },
   malla(el) { ui.malla = ui.malla === el.dataset.v ? null : el.dataset.v; render(); },
+  // Descarta lo editado desde que se entró a la carrera y vuelve a la lista.
+  wizCancel() {
+    const snap = ui.wizSnap;
+    if (!snap) return;
+    const c = career(snap.code);
+    if (!confirm(`¿Descartar los cambios hechos en ${c ? c.nombre : snap.code}?
+
+Los datos vuelven a como estaban al entrar.`)) return;
+    const antes = JSON.parse(snap.datos);
+    for (const k of Object.keys(S)) delete S[k];
+    Object.assign(S, antes);
+    ui.preview = null; ui.sugg = null; ui.wizSnap = null; ui.steps[snap.code] = 1;
+    save();
+    location.hash = '#/carreras';
+    render();
+  },
   step(el) {
     const arg = wizCode();
     ui.steps[arg] = Math.min(STEP_LABELS.length, Math.max(1, Number(el.dataset.v)));

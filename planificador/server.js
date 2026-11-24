@@ -130,7 +130,12 @@ const server = createServer(async (req, res) => {
       const modo = url.searchParams.get('demo');
       // demo=varias: datos de prueba de varias carreras; demo=0: solo las mallas (todo en cero).
       const state = buildInitialState(seed, demo, { withDemo: modo !== '0' && modo !== 'varias' });
-      if (modo === 'varias') cargarDemo(state);
+      if (modo === 'varias') {
+        cargarDemo(state);
+        // Horario ya calculado (con el solver) para los datos de prueba: Otoño (I y III) y Primavera (II y IV).
+        const fx = join(ROOT, 'data/seed/demo-horario.json');
+        if (existsSync(fx)) state.manual = JSON.parse(await readFile(fx, 'utf8'))[state.periodo.paridad] || {};
+      }
       await saveState(state);
       return send(res, 200, state);
     }
