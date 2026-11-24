@@ -8,6 +8,14 @@ import { buildManual, manualFromSolved, previewWeeks, slotAllowed } from '/src/c
 import { suggest } from '/src/core/suggest.js';
 import { calendarOf, calendarKey, defaultCalendar, weekMonday, addDays, fmtFecha, sinClases, dayCode } from '/src/core/fechas.js';
 
+// Sesión vencida: el servidor responde 401 y se vuelve a la página de ingreso.
+const fetchOriginal = window.fetch.bind(window);
+window.fetch = async (...args) => {
+  const r = await fetchOriginal(...args);
+  if (r.status === 401) { location.href = '/login'; throw new Error('Sesión expirada'); }
+  return r;
+};
+
 let S = null; // estado persistido
 const ui = { sugg: null, hmode: 'salas', hc: '', hy: 1, hs: 1, hl: 'A', steps: {}, mode: 'seccion', sel: null, week: 1, editDoc: null, docQuery: '', malla: null, generating: false, saveMsg: '', tabs: {}, pages: {}, rows: null, modal: null };
 const app = document.getElementById('app');
@@ -275,7 +283,7 @@ function sidebar(active) {
     </div></header>`;
   return top + `<nav class="side-nav" aria-label="Menú principal">
     ${link('horario', 'Horario', 'calendar')}${link('ocupacion', 'Ocupación de salas', 'grid')}${link('carreras', 'Carreras', 'cap')}${link('docentes', 'Docentes', 'person')}${link('salas', 'Salas', 'door')}
-    <span class="side-sep"></span>${link('configuracion', 'Configuración', 'settings')}
+    <span class="side-sep"></span>${link('configuracion', 'Configuración', 'settings')}<a class="side-out" href="/logout">${icon('back')}<span>Salir</span></a>
   </nav>`;
 }
 
@@ -974,10 +982,23 @@ function editCal(fn) {
 
 function viewConfig() {
   const names = Object.keys(S.jornadas);
-  const t = curTab('cfg', [...names, 'calendario', 'reglas']);
+  const t = curTab('cfg', [...names, 'calendario', 'reglas', 'demo']);
   const head = `<div class="pagehead"><div><h1>Configuración</h1><p class="muted">Se define una vez y vale para todos los periodos.</p></div>
-    ${subtabs('cfg', names.map((n) => [n, 'Jornada ' + n.toLowerCase()]).concat([['calendario', 'Calendario'], ['reglas', 'Cupo y tope']]))}</div>`;
+    ${subtabs('cfg', names.map((n) => [n, 'Jornada ' + n.toLowerCase()]).concat([['calendario', 'Calendario'], ['reglas', 'Cupo y tope'], ['demo', 'Demo']]))}</div>`;
   if (t === 'calendario') return head + calendarConfig();
+  if (t === 'demo') {
+    const n = { docentes: S.docentes.length, salas: S.salas.length, carreras: Object.keys(S.oferta || {}).length };
+    return head + `<div class="cal-grid" style="max-width:1000px">
+      <section class="card cal-card"><div class="cal-h"><h2>Cargar datos de prueba</h2><span class="faint small">Para practicar con el planificador.</span></div>
+        <p class="small">Carga 6 carreras (3 diurnas y 3 vespertinas) con matrícula en los 4 semestres, 23 docentes que cubren sus asignaturas y 15 salas. Docentes, salas y matrícula son ficticios; las mallas son las oficiales.</p>
+        <p class="status warn">${icon('alert')}Reemplaza todos los datos actuales.</p>
+        <div><button class="btnp" data-act="reset" data-v="varias">Cargar datos de prueba</button></div></section>
+      <section class="card cal-card"><div class="cal-h"><h2>Limpiar datos</h2><span class="faint small">Deja el sistema en cero.</span></div>
+        <p class="small">Borra docentes, salas, matrícula, asignaciones y horarios. Se mantienen las mallas de las carreras y la configuración de jornadas.</p>
+        <p class="faint small">Hoy hay ${n.carreras} carreras con matrícula, ${n.docentes} docentes y ${n.salas} salas.</p>
+        <div><button class="btnq danger-q" data-act="reset" data-v="0">Limpiar todos los datos</button></div></section>
+    </div>`;
+  }
   if (t === 'reglas') {
     return head + `<div class="rules" style="max-width:720px">
       <div class="rule-row"><div class="rule-label"><b>Cupo por sección</b><span>Máximo de estudiantes en una sección</span></div><input type="number" min="5" value="${S.reglas.cupo}" data-change="cupo"></div>
@@ -1539,11 +1560,13 @@ const actions = {
     download(blob, `planificador-respaldo-${new Date().toISOString().slice(0, 10)}.json`);
   },
   async reset(el) {
-    const demo = el.dataset.v === '1';
-    if (!confirm(demo ? '¿Reemplazar todo por los datos de ejemplo?' : '¿Borrar docentes, salas, matrícula y horario? Las mallas se mantienen. Descarga un respaldo antes si lo necesitas.')) return;
-    const r = await fetch(`/api/reset?demo=${demo ? 1 : 0}`, { method: 'POST' });
+    const v = el.dataset.v === '0' ? '0' : el.dataset.v === 'varias' ? 'varias' : '1';
+    if (!confirm(v === '0' ? '¿Borrar docentes, salas, matrícula, asignaciones y horarios? Las mallas se mantienen.\n\nEsta acción no se puede deshacer.' : '¿Reemplazar todos los datos por los datos de prueba?\n\nLos datos actuales se pierden.')) return;
+    const r = await fetch(`/api/reset?demo=${v}`, { method: 'POST' });
+    if (!r.ok) return alert('No se pudo completar: ' + r.status);
     S = await r.json();
-    ui.saveMsg = 'Datos reiniciados';
+    ui.preview = null; ui.sugg = null; ui.pick = null;
+    ui.saveMsg = v === '0' ? 'Datos limpiados' : 'Datos de prueba cargados';
     location.hash = '#/horario';
     render();
   }

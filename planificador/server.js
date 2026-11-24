@@ -6,6 +6,8 @@ import { existsSync } from 'node:fs';
 import { join, normalize, extname, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildInitialState } from './src/core/initial.js';
+import { cargarDemo } from './src/core/demo.js';
+import { authActiva, sesionValida, intentarLogin, cookieSalida, paginaLogin } from './src/auth.js';
 import { buildSolverInput, fromSolverResult } from './src/core/cpsat.js';
 import { buildManual } from './src/core/manual.js';
 import { spawn } from 'node:child_process';
@@ -43,6 +45,11 @@ async function saveState(state) {
   const tmp = STATE + '.tmp';
   await writeFile(tmp, JSON.stringify(state, null, 1));
   await rename(tmp, STATE);
+}
+
+function redirect(res, to, cookie) {
+  res.writeHead(303, { Location: to, 'Cache-Control': 'no-store', ...(cookie ? { 'Set-Cookie': cookie } : {}) });
+  res.end();
 }
 
 function send(res, code, body, type = 'application/json; charset=utf-8') {
@@ -96,6 +103,20 @@ const server = createServer(async (req, res) => {
     const url = new URL(req.url, 'http://localhost');
     const path = decodeURIComponent(url.pathname);
 
+    // Acceso con clave (si APP_PASSWORD está definida). El logo se ve sin sesión, para la página de ingreso.
+    if (path === '/login' && req.method === 'GET') return sesionValida(req) ? redirect(res, '/') : send(res, 200, paginaLogin(), 'text/html; charset=utf-8');
+    if (path === '/login' && req.method === 'POST') {
+      const clave = new URLSearchParams(await readBody(req, 10 * 1024)).get('clave') || '';
+      const r = intentarLogin(req, clave);
+      if (r.ok) return redirect(res, '/', r.cookie);
+      return send(res, r.bloqueado ? 429 : 401, paginaLogin(r.bloqueado ? 'Demasiados intentos. Espera 10 minutos.' : 'Clave incorrecta.'), 'text/html; charset=utf-8');
+    }
+    if (path === '/logout') return redirect(res, authActiva() ? '/login' : '/', cookieSalida(req));
+    if (!sesionValida(req) && path !== '/public/logo.png') {
+      if (path.startsWith('/api/')) return send(res, 401, { error: 'Sesión expirada. Vuelve a ingresar.' });
+      return redirect(res, '/login');
+    }
+
     if (path === '/api/state' && req.method === 'GET') return send(res, 200, await readState());
     if (path === '/api/state' && req.method === 'PUT') {
       const body = JSON.parse(await readBody(req));
@@ -105,7 +126,10 @@ const server = createServer(async (req, res) => {
     }
     if (path === '/api/reset' && req.method === 'POST') {
       const { seed, demo } = await loadSeed();
-      const state = buildInitialState(seed, demo, { withDemo: url.searchParams.get('demo') !== '0' });
+      const modo = url.searchParams.get('demo');
+      // demo=varias: datos de prueba de varias carreras; demo=0: solo las mallas (todo en cero).
+      const state = buildInitialState(seed, demo, { withDemo: modo !== '0' && modo !== 'varias' });
+      if (modo === 'varias') cargarDemo(state);
       await saveState(state);
       return send(res, 200, state);
     }

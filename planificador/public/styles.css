@@ -1162,3 +1162,6 @@ div.mx-busy { display: flex; align-items: center; }
 .cal-card .cal-add input[type=text] { flex: 1; min-width: 140px; }
 .cal-reset { margin: 0; }
 .cal-nota { display: flex; align-items: center; gap: 6px; margin: 0; }
+
+.side-out { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 10px; color: var(--ink-3); text-decoration: none; font-size: 14px; }
+.side-out:hover { background: var(--navy-50); color: var(--ink); }
