@@ -887,10 +887,10 @@ function wizDocentes(c) {
   }
   const sem = Number(cur);
   const s = c.semestres[sem - 1];
-  const pk = key + sem;
   const load = estimatedLoad(S, S.asignaciones);
   const secsN = S.oferta?.[c.codigo]?.[sem]?.secciones || 1;
-  const rows = page(pk, s.asignaturas).map((a) => {
+  // Todas las asignaturas del semestre, sin paginar.
+  const rows = s.asignaturas.map((a) => {
     const asg = S.asignaciones[a.codigo] || '';
     const h = a.horas * secsN;
     // Solo docentes con capacidad para esta asignatura (el ya asignado siempre aparece).
@@ -910,7 +910,7 @@ function wizDocentes(c) {
       ${others.length ? `<optgroup label="Otros docentes">${others.map((d) => `<option value="${d.id}" ${d.id === asg ? 'selected' : ''}>${esc(d.nombre)} · ${libreH(d)} h libres</option>`).join('')}</optgroup>` : ''}
     </select>${llenos ? `<span class="faint small" title="Docentes que ya llegaron a su capacidad del periodo"> ${llenos} sin capacidad</span>` : ''}</td><td>${warn}</td></tr>`;
   }).join('');
-  return head + `<div class="tablewrap"><table class="dtable" data-pager><thead><tr><th>Asignatura</th><th>Docente</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>${pagerHtml(pk, s.asignaturas.length)}`;
+  return head + `<div class="tablewrap"><table class="dtable"><thead><tr><th>Asignatura</th><th>Docente</th><th></th></tr></thead><tbody>${rows}</tbody></table></div><p class="faint small" style="margin-top:8px">${s.asignaturas.length} asignaturas del ${roman(sem)} semestre</p>`;
 }
 
 // ---------- Vista: Configuración ----------
