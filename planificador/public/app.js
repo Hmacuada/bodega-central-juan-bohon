@@ -939,19 +939,26 @@ const dayList = (days) => days.map((d) => DAY_NAMES[d].toLowerCase()).join(', ')
 // Calendario del periodo elegido: inicio y cierre, horas por sesión, feriados y recesos.
 function calendarConfig() {
   const cal = calendarOf(S);
-  const row = (label, help, ctl) => `<div class="rule-row"><div class="rule-label"><b>${label}</b><span>${help}</span></div><div>${ctl}</div></div>`;
   const fer = (cal.feriados || []).slice().sort((a, b) => a.fecha.localeCompare(b.fecha));
   const rec = (cal.recesos || []).slice().sort((a, b) => a.desde.localeCompare(b.desde));
   const dn = (iso) => DAY_NAMES[dayCode(iso)] || (dayCode(iso) === 'Do' ? 'Domingo' : '');
-  return `<div class="rules cal-cfg" style="max-width:820px">
-    ${cal.referencial ? `<p class="cal-ref">${icon('info')} Calendario <b>referencial</b> de ${esc(S.periodo.nombre)}: feriados nacionales de fecha fija y receso de Fiestas Patrias. Revísalo con el calendario académico del CFT (algunos feriados se trasladan a lunes).</p>` : ''}
-    ${row('Inicio y cierre', 'Las clases parten el primer día y no deberían pasar del cierre', `<input type="date" value="${cal.inicio}" data-change="calField" data-k="inicio" aria-label="Inicio"> a <input type="date" value="${cal.fin}" data-change="calField" data-k="fin" aria-label="Cierre">`)}
-    ${row('Horas por sesión', 'Horas pedagógicas de cada bloque (40 min cada una)', `Lunes a viernes <input type="number" min="1" max="8" value="${cal.horasSemana}" data-change="calField" data-k="horasSemana" aria-label="Horas de lunes a viernes"> · Sábado <input type="number" min="1" max="8" value="${cal.horasSabado}" data-change="calField" data-k="horasSabado" aria-label="Horas del sábado">`)}
-    ${row('Feriados', 'Días sin clases', `<ul class="cal-list">${fer.map((x) => `<li><span>${dn(x.fecha)} ${fmtFecha(x.fecha)}</span><span class="faint">${esc(x.nombre || '')}</span><button class="btnq sm" data-act="calDel" data-k="feriados" data-v="${x.fecha}" aria-label="Quitar ${esc(x.nombre || x.fecha)}">Quitar</button></li>`).join('') || '<li class="faint">Sin feriados</li>'}</ul>
-      <div class="cal-add"><input type="date" id="fer-fecha" aria-label="Fecha del feriado"><input type="text" id="fer-nombre" placeholder="Nombre (opcional)" aria-label="Nombre del feriado"><button class="btn sm" data-act="calAdd" data-k="feriados">${icon('plus')}Agregar</button></div>`)}
-    ${row('Recesos', 'Semanas o días sin clases (vacaciones, Fiestas Patrias)', `<ul class="cal-list">${rec.map((x) => `<li><span>${fmtFecha(x.desde)} – ${fmtFecha(x.hasta)}</span><span class="faint">${esc(x.nombre || '')}</span><button class="btnq sm" data-act="calDel" data-k="recesos" data-v="${x.desde}" aria-label="Quitar ${esc(x.nombre || x.desde)}">Quitar</button></li>`).join('') || '<li class="faint">Sin recesos</li>'}</ul>
-      <div class="cal-add"><input type="date" id="rec-desde" aria-label="Desde"><input type="date" id="rec-hasta" aria-label="Hasta"><input type="text" id="rec-nombre" placeholder="Nombre (opcional)" aria-label="Nombre del receso"><button class="btn sm" data-act="calAdd" data-k="recesos">${icon('plus')}Agregar</button></div>`)}
-    ${!cal.referencial ? `<div class="rule-row"><div class="rule-label"><b>Volver al referencial</b><span>Descarta los cambios de este periodo</span></div><div><button class="btnq sm" data-act="calReset">Restablecer</button></div></div>` : ''}
+  const card = (title, help, body) => `<section class="card cal-card"><div class="cal-h"><h2>${title}</h2><span class="faint small">${help}</span></div>${body}</section>`;
+  const quitar = (k, v, n) => `<button class="btnq sm" data-act="calDel" data-k="${k}" data-v="${v}" aria-label="Quitar ${esc(n)}">Quitar</button>`;
+  return `<div class="cal-cfg2">
+    ${cal.referencial ? `<p class="faint small cal-nota">${icon('info')}Calendario de referencia. Revísalo con el calendario académico del CFT.</p>` : ''}
+    <div class="cal-grid">
+      ${card('Inicio y cierre', 'Las clases parten el primer día y no deberían pasar del cierre', `<div class="cal-fields">
+        <label class="field">Inicio<input type="date" value="${cal.inicio}" data-change="calField" data-k="inicio"></label>
+        <label class="field">Cierre<input type="date" value="${cal.fin}" data-change="calField" data-k="fin"></label></div>`)}
+      ${card('Horas por sesión', 'Horas pedagógicas de cada bloque (40 min cada una)', `<div class="cal-fields">
+        <label class="field">Lunes a viernes<input type="number" min="1" max="8" value="${cal.horasSemana}" data-change="calField" data-k="horasSemana"></label>
+        <label class="field">Sábado<input type="number" min="1" max="8" value="${cal.horasSabado}" data-change="calField" data-k="horasSabado"></label></div>`)}
+      ${card(`Feriados <span class="count">${fer.length}</span>`, 'Días sin clases', `<ul class="cal-list2">${fer.map((x) => `<li><b>${dn(x.fecha).slice(0, 3)} ${fmtFecha(x.fecha)}</b><span class="faint">${esc(x.nombre || '')}</span>${quitar('feriados', x.fecha, x.nombre || x.fecha)}</li>`).join('') || '<li class="faint">Sin feriados</li>'}</ul>
+        <div class="cal-add"><input type="date" id="fer-fecha" aria-label="Fecha del feriado"><input type="text" id="fer-nombre" placeholder="Nombre (opcional)" aria-label="Nombre del feriado"><button class="btn sm" data-act="calAdd" data-k="feriados">${icon('plus')}Agregar</button></div>`)}
+      ${card(`Recesos <span class="count">${rec.length}</span>`, 'Semanas o días sin clases (vacaciones, Fiestas Patrias)', `<ul class="cal-list2">${rec.map((x) => `<li><b>${fmtFecha(x.desde)} – ${fmtFecha(x.hasta)}</b><span class="faint">${esc(x.nombre || '')}</span>${quitar('recesos', x.desde, x.nombre || x.desde)}</li>`).join('') || '<li class="faint">Sin recesos</li>'}</ul>
+        <div class="cal-add"><input type="date" id="rec-desde" aria-label="Desde"><input type="date" id="rec-hasta" aria-label="Hasta"><input type="text" id="rec-nombre" placeholder="Nombre (opcional)" aria-label="Nombre del receso"><button class="btn sm" data-act="calAdd" data-k="recesos">${icon('plus')}Agregar</button></div>`)}
+    </div>
+    ${!cal.referencial ? `<p class="faint small cal-reset">¿Quieres descartar los cambios de este periodo? <button class="linkbtn" data-act="calReset">Volver al calendario referencial</button></p>` : ''}
   </div>`;
 }
 
@@ -1231,24 +1238,16 @@ function viewSalas() {
   const chips = (x) => x.grupos.map(([k, sec]) => `<span class="sala-chip" style="--c:${careerColor(sec.carrera)}" title="${esc(secLabel(sec))} · ${sec.estudiantes} estudiantes">${k}</span>`).join('');
   const acciones = (x) => `<span class="sala-acc"><button class="btnq sm" data-act="editSala" data-v="${x.r.id}" aria-label="Editar ${esc(x.r.nombre)}">Editar</button><button class="btnq sm danger-q" data-act="delSala" data-v="${x.i}" aria-label="Eliminar ${esc(x.r.nombre)}">Eliminar</button></span>`;
   const tipo = (r) => esc(r.tipo || 'Sala');
-  const vista = subtabs('salaVista', [['tarjetas', 'Tarjetas'], ['lista', 'Lista']]);
   const vacia = '<p class="muted" style="padding:24px">Ninguna sala en este filtro.</p>';
-  const cuerpo = ui.tabs.salaVista === 'lista'
-    ? `<div class="card" style="padding:4px 8px;margin-top:10px"><div class="tablewrap"><table class="dtable car-tabla" data-pager><thead><tr><th>Sala</th><th>Tipo</th><th class="num">Puestos</th><th>Uso</th><th></th></tr></thead><tbody>
+  const cuerpo = `<div class="card" style="padding:4px 8px;margin-top:10px"><div class="tablewrap"><table class="dtable car-tabla" data-pager><thead><tr><th>Sala</th><th>Tipo</th><th class="num">Puestos</th><th>Uso</th><th></th></tr></thead><tbody>
       ${page('salas-' + f, list).map((x) => `<tr>
         <td><span class="l1">${esc(x.r.nombre)}</span></td><td class="small">${tipo(x.r)}</td><td class="num">${x.r.capacidad}</td>
         <td>${x.grupos.length ? `<span class="sala-chips">${chips(x)}</span>` : '<span class="faint small">Libre</span>'}${x.over ? ' <span class="badge bad">Excede capacidad</span>' : ''}</td>
         <td style="text-align:right">${acciones(x)}</td></tr>`).join('') || `<tr><td colspan="5">${vacia}</td></tr>`}
-      </tbody></table></div>${pagerHtml('salas-' + f, list.length)}</div>`
-    : `<div class="car-grid">${list.map((x) => `<div class="car-card sala-card ${x.estado}" style="--c:${x.grupos.length ? careerColor(x.grupos[0][1].carrera) : 'var(--line-2)'}">
-        <span class="car-top"><b>${esc(x.r.nombre)}</b><small>${tipo(x.r)}</small></span>
-        <span class="sala-cap"><b>${x.r.capacidad}</b> puestos${x.over ? ' <span class="badge bad">Excede</span>' : ''}</span>
-        <span class="sala-chips">${x.grupos.length ? chips(x) : '<span class="faint small">Libre</span>'}</span>
-        ${acciones(x)}
-      </div>`).join('') || vacia}</div>`;
+      </tbody></table></div>${pagerHtml('salas-' + f, list.length)}</div>`;
   return `<div class="pagehead"><div><h1>Salas</h1><p class="muted">${S.salas.length} salas · ${seats} puestos</p></div><button class="btnp" data-act="addSala">${icon('plus')}Agregar</button></div>
     <div class="car-bar"><div class="seg" role="group" aria-label="Filtrar">${tab('all', 'Todas', info.length)}${tab('ocupada', 'Ocupadas', n('ocupada'))}${tab('libre', 'Libres', n('libre'))}</div>
-    <div class="car-modo" aria-label="Forma de ver las salas">${vista}</div></div>
+</div>
     ${cuerpo}`;
 }
 
