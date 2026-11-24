@@ -583,6 +583,9 @@ function matrixViewer(H) {
   for (const x of H.sesiones) cuenta(x.salaId, secById(H, x.seccionId)?.carrera);
   for (const it of ui.sugg?.items || []) cuenta(it.salaId, secById(H, it.secId)?.carrera);
   const carreraDe = (r) => Object.entries(usoSala[r.id] || {}).sort((a, b) => b[1] - a[1])[0]?.[0] || '';
+  const usoSem = {};
+  for (const x of H.sesiones) { const sc = secById(H, x.seccionId); if (x.salaId && sc) { const u = (usoSem[x.salaId] ||= {}); const k = `${sc.carrera} ${roman(sc.sem)}`; u[k] = (u[k] || 0) + 1; } }
+  const semDe = (r) => Object.entries(usoSem[r.id] || {}).sort((a, b) => b[1] - a[1])[0]?.[0] || carreraDe(r);
   // Orden: salas de carreras vespertinas, luego diurnas (cada grupo por carrera); las salas sin uso al final y ocultas
   // salvo que se pidan, o que haya una asignación sala por sala en curso.
   const jorDe = (code) => career(code)?.jornada || '';
@@ -594,9 +597,21 @@ function matrixViewer(H) {
   // Todas las salas: primero las de esta jornada, luego las de otras carreras y al final las libres.
   const rooms = [...usadas, ...S.salas.filter((r) => !usadas.includes(r) && carreraDe(r)), ...libres];
   // Color fijo por carrera (según su orden en la lista de carreras).
-  const carColor = (code) => { const i = S.carreras.findIndex((c) => c.codigo === code); return i < 0 ? 'var(--navy-500)' : SERIES[i % SERIES.length]; };
-  const carrerasVis = [...new Set(H.sesiones.filter((x) => x.desde <= wk && x.hasta >= wk && x.salaId && (porDia ? x.dia === vista : true) && secById(H, x.seccionId)?.jornada === jor).map((x) => secById(H, x.seccionId)?.carrera).filter(Boolean))];
-  const leyenda = carrerasVis.length ? `<div class="mx-leyenda" aria-label="Colores por carrera">${carrerasVis.map((c) => `<span><i style="background:${carColor(c)}"></i>${esc(career(c)?.nombre || c)} <small>${c}</small></span>`).join('')}</div>` : '';
+  // Color por carrera y semestre: el tono es de la carrera; cada semestre, un poco más oscuro (I, III, V…).
+  const semsAct = activeSemesters(S.periodo.paridad);
+  const carColor = (sec) => {
+    const i = S.carreras.findIndex((c) => c.codigo === sec?.carrera);
+    if (i < 0) return 'var(--navy-500)';
+    const k = Math.max(0, semsAct.indexOf(sec.sem));
+    return k ? `color-mix(in srgb, ${SERIES[i % SERIES.length]} ${100 - 28 * k}%, #000)` : SERIES[i % SERIES.length];
+  };
+  const carSem = (sec) => (sec ? `${sec.carrera} ${roman(sec.sem)}` : '');
+  const visibles = new Map();
+  for (const x of H.sesiones) {
+    const sec = secById(H, x.seccionId);
+    if (sec && x.salaId && x.desde <= wk && x.hasta >= wk && (!porDia || x.dia === vista) && sec.jornada === jor) visibles.set(carSem(sec), sec);
+  }
+  const leyenda = visibles.size ? `<div class="mx-leyenda" aria-label="Colores por carrera y semestre">${[...visibles.entries()].sort((a, b) => a[0].localeCompare(b[0]) || a[1].sem - b[1].sem).map(([k, sec]) => `<span title="${esc(career(sec.carrera)?.nombre || sec.carrera)} · ${roman(sec.sem)} semestre"><i style="background:${carColor(sec)}"></i>${k}</span>`).join('')}</div>` : '';
   const short =(n) => n.replace(/^Sala /, 'S').replace(/^Laboratorio.*$/, 'Lab.');
   const cell = (r, d, t) => {
     const list = H.sesiones.filter((x) => x.salaId === r.id && x.dia === d && x.inicio === t.inicio && x.desde <= wk && x.hasta >= wk);
@@ -604,7 +619,7 @@ function matrixViewer(H) {
       const x = list[0];
       const sec = secById(H, x.seccionId);
       const on = pick && !pick.roomMode && pick.codigo === x.codigo && pick.secId === x.seccionId;
-      return `<div class="mx-busy${list.length > 1 ? ' clash' : ''}${on ? ' on' : ''}" style="--c:${carColor(sec?.carrera)}" title="${esc(sec ? secLabel(sec) : '')} · ${esc(x.nombre)} · ${x.inicio}–${x.fin} · semanas ${x.desde}–${x.hasta}${list.length > 1 ? ' · ¡choque!' : ''}"><b>${esc(sec ? (porDia ? secLabel(sec) : sec.carrera) : '')}</b>${porDia ? `<span class="mx-subj">${esc(x.nombre)}</span><span class="mx-hrs">${x.inicio}–${x.fin}</span>` : ''}</div>`;
+      return `<div class="mx-busy${list.length > 1 ? ' clash' : ''}${on ? ' on' : ''}" style="--c:${carColor(sec)}" title="${esc(sec ? secLabel(sec) : '')} · ${esc(x.nombre)} · ${x.inicio}–${x.fin} · semanas ${x.desde}–${x.hasta}${list.length > 1 ? ' · ¡choque!' : ''}"><b>${esc(sec ? (porDia ? secLabel(sec) : carSem(sec)) : '')}</b>${porDia ? `<span class="mx-subj">${esc(x.nombre)}</span><span class="mx-hrs">${x.inicio}–${x.fin}</span>` : ''}</div>`;
     }
     const sg = ui.sugg ? ui.sugg.items.findIndex((it) => it.salaId === r.id && wk >= it.desde && wk <= it.hasta && it.slots.some((x) => x.d === d && x.inicio === t.inicio)) : -1;
     if (sg >= 0) {
@@ -616,11 +631,11 @@ function matrixViewer(H) {
     const on = pick?.roomMode && pick.salaId === r.id && pick.slots?.some((s) => s.d === d && s.inicio === t.inicio);
     return `<span class="mx-free${on ? ' on' : ''}" title="${esc(r.nombre)} · ${DAY_NAMES[d]} ${t.inicio} · libre"></span>`;
   };
-  const head =`<div class="mx-corner"></div>${rooms.map((r) => `<div class="mx-room" title="${esc(r.nombre)} · ${r.capacidad} puestos"><b>${esc(short(r.nombre))}</b><small>${carreraDe(r) ? `<span class="mx-car">${carreraDe(r)}</span>` : r.capacidad}</small></div>`).join('')}`;
+  const head =`<div class="mx-corner"></div>${rooms.map((r) => `<div class="mx-room" title="${esc(r.nombre)} · ${r.capacidad} puestos"><b>${esc(short(r.nombre))}</b><small>${carreraDe(r) ? `<span class="mx-car">${semDe(r)}</span>` : r.capacidad}</small></div>`).join('')}`;
   const nRows = dias.reduce((t, d) => t + timesOf(d).length, 0);
   const body = dias.map((d) => timesOf(d).map((t, i) => `<div class="mx-time${i === 0 ? ' mx-first' : ''}">${i === 0 ? `<b${sinClases(calendarOf(S), dateOfDay(d)) ? ` class="mx-off" title="${esc(sinClases(calendarOf(S), dateOfDay(d)))}: sin clases"` : ''}>${DAY_NAMES[d].slice(0, 3)} ${fmtFecha(dateOfDay(d)).split(' ')[0]}</b>` : ''}<span>${t.inicio}</span></div>${rooms.map((r) => cell(r, d, t)).join('')}`).join('')).join('');
   // Salas como cuadros pequeños de tamaño fijo (en el día, algo más anchos para leer la asignatura).
-  const grid = `<div class="mx-grid mx-sq${porDia ? ' mx-dia' : ''}" style="row-gap:0;column-gap:3px;grid-template-columns:100px repeat(${rooms.length},${porDia ? '104px' : '34px'});grid-template-rows:auto repeat(${nRows},${porDia ? 'minmax(64px,auto)' : '30px'})">${head}${body}</div>`;
+  const grid = `<div class="mx-grid mx-sq${porDia ? ' mx-dia' : ''}" style="row-gap:0;column-gap:3px;grid-template-columns:100px repeat(${rooms.length},${porDia ? '104px' : '42px'});grid-template-rows:auto repeat(${nRows},${porDia ? 'minmax(64px,auto)' : '30px'})">${head}${body}</div>`;
   const fer = (d) => sinClases(calendarOf(S), dateOfDay(d));
   const diaTabs = `<div class="seg sm mx-dias" role="tablist" aria-label="Día">${[...DAYS, 'sem'].map((d) => { const lbl = d === 'sem' ? 'Semana' : `${DAY_NAMES[d].slice(0, 3)} ${fmtFecha(dateOfDay(d)).split(' ')[0]}`; return `<button role="tab" data-act="tab" data-k="mxVista" data-v="${d}" aria-selected="${vista === d}" aria-pressed="${vista === d}"${d !== 'sem' && fer(d) ? ` class="mx-tab-off" title="${esc(fer(d))}: sin clases"` : ''}>${lbl}</button>`; }).join('')}</div>`;
   const avisoDia = porDia && fer(vista) ? `<p class="status warn">${icon('alert')}${DAY_NAMES[vista]} ${fmtFecha(dateOfDay(vista))}: ${esc(fer(vista))}, sin clases.</p>` : '';
