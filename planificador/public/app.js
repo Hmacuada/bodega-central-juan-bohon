@@ -759,9 +759,9 @@ function viewCarreras() {
   const n = (k) => info.filter((x) => x.estado === k).length;
   const enPractica = S.carreras.filter((c) => S.oferta?.[c.codigo]?.practica?.estudiantes).length;
   const tab = (v, label, count) => `<button data-act="filter" data-v="${v}" aria-pressed="${f === v}">${label} <span class="count">${count}</span></button>`;
-  const estado = ({ estado: e, missing }) => (e === 'lista' ? '<span class="badge ok">Lista</span>' : e === 'faltan' ? `<span class="badge warn">Faltan ${missing} docentes</span>` : '<span class="faint small">Sin oferta</span>');
+  const estado = ({ estado: e, missing }) => (e === 'lista' ? '<span class="badge ok">Lista</span>' : e === 'faltan' ? `<span class="badge warn">Faltan ${missing} docentes</span>` : '<span class="faint small">Pendiente</span>');
   return `<div class="pagehead"><div><h1>Carreras</h1><p class="muted">${S.carreras.length} carreras · mallas oficiales${enPractica ? ` · ${enPractica} con estudiantes en práctica` : ''}</p></div></div>
-    <div class="seg" role="group" aria-label="Filtrar">${tab('all', 'Todas', info.length)}${tab('lista', 'Listas', n('lista'))}${tab('faltan', 'Faltan docentes', n('faltan'))}${tab('sin', 'Sin oferta', n('sin'))}</div>
+    <div class="seg" role="group" aria-label="Filtrar">${tab('all', 'Todas', info.length)}${tab('lista', 'Listas', n('lista'))}${tab('sin', 'Pendientes', n('sin'))}${tab('faltan', 'Faltan docentes', n('faltan'))}</div>
     <div class="car-grid">
       ${list.map((x) => `<a class="car-card ${x.estado}" href="#/carreras/${x.c.codigo}" style="--c:${careerColor(x.c.codigo)}" title="Abrir ${esc(x.c.nombre)} para editar">
         <span class="car-top"><b>${x.c.codigo}</b><small>${esc(x.c.jornada)}</small></span>
