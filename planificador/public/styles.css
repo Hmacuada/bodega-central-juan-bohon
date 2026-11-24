@@ -1131,3 +1131,15 @@ div.mx-busy { display: flex; align-items: center; }
 .sala-form { display: grid; gap: 12px; min-width: min(360px, 80vw); }
 .car-tabla .sala-acc { flex-wrap: nowrap; white-space: nowrap; }
 .car-tabla td:last-child { width: 1%; }
+
+/* Configuración de jornada: horario único y días preferidos */
+.jor-cfg { display: grid; gap: 16px; max-width: 860px; }
+.jor-card h2 { margin: 0 0 4px; font-size: 16px; }
+.jor-horario { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px 28px; margin-top: 10px; }
+.jor-horario .sub { margin: 0 0 6px; }
+.jor-blk { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.jor-blk .faint.small { width: 56px; }
+.jor-dias td { vertical-align: middle; padding-top: 6px; padding-bottom: 6px; }
+.jor-dias td:first-child { width: 130px; }
+.daypick.sm button { min-width: 36px; padding: 4px 8px; font-size: 12px; }
+.jor-dias td:last-child { width: 1%; white-space: nowrap; }

@@ -981,71 +981,50 @@ function viewConfig() {
       <div class="rule-row"><div class="rule-label"><b>Salas</b><span>${S.salas.length} salas registradas</span></div><a class="btnq" href="#/salas">Editar salas ${icon('arrow')}</a></div>
     </div>`;
   }
-  const jn = t;
+  return head + jornadaConfig(t);
+}
+
+// Horario del sábado de la jornada: el propio del semestre I, o uno de mañana si el de la semana no lo es.
+function satDeJornada(jn) {
+  const c = S.jornadas[jn].sems[1];
+  if (c.bloques.Sa) return c.bloques.Sa;
+  return c.bloques.default.every(isSaturdayOk) ? c.bloques.default : satBlocks(c);
+}
+
+// Jornada: un horario para todos sus semestres y los días preferidos de cada semestre.
+function jornadaConfig(jn) {
   const j = S.jornadas[jn];
-  const sem = Number(curTab('cfgSem', ['1', '2', '3', '4']));
-  const c = j.sems[sem];
-  const days = c.dias;
-  const D = `data-j="${esc(jn)}" data-s="${sem}"`;
-
-  // Tarjetas: resumen de los 4 semestres; se edita uno a la vez
-  const semCard = (n) => {
-    const d = j.sems[n].dias;
-    const ok = d.length === DAYS_PER_LEVEL && !saturdayIssue(S.jornadas, jn, n);
-    return `<button class="yr-card" data-act="tab" data-k="cfgSem" data-v="${n}" aria-pressed="${sem === n}">
-      <span class="sem-n">${roman(n)}</span><span class="yr-txt"><b>Semestre ${roman(n)}</b><span>${d.length ? d.map((x) => DAY_NAMES[x].slice(0, 3)).join(' · ') : 'Sin días'}</span></span>
-      ${ok ? `<span class="cfg-ok">${icon('check')}</span>` : '<span class="badge warn">Revisar</span>'}</button>`;
+  const semana = j.sems[1].bloques.default;
+  const sabado = satDeJornada(jn);
+  const dispares = [2, 3, 4].some((n) => JSON.stringify(j.sems[n].bloques.default) !== JSON.stringify(semana));
+  const fila = (key, list) => list.map((bl, i) => `<div class="jor-blk"><span class="faint small">Bloque ${i + 1}</span>
+      <input type="time" value="${bl.inicio}" data-change="jorBlock" data-j="${esc(jn)}" data-k="${key}" data-i="${i}" data-f="inicio" ${key === 'Sa' ? 'max="12:59"' : ''} aria-label="${key === 'Sa' ? 'Sábado' : 'Lunes a viernes'}, bloque ${i + 1}, inicio">
+      <span class="faint">a</span>
+      <input type="time" value="${bl.fin}" data-change="jorBlock" data-j="${esc(jn)}" data-k="${key}" data-i="${i}" data-f="fin" aria-label="${key === 'Sa' ? 'Sábado' : 'Lunes a viernes'}, bloque ${i + 1}, fin">
+      ${toMinutes(bl.fin) <= toMinutes(bl.inicio) ? '<span class="badge bad">Revisa</span>' : key === 'Sa' && !isSaturdayOk(bl) ? `<span class="badge bad">Antes de las ${SATURDAY_LAST_START}</span>` : ''}</div>`).join('');
+  const diasSem = (n) => {
+    const days = j.sems[n].dias;
+    const D = `data-j="${esc(jn)}" data-s="${n}"`;
+    return `<tr><td><b>Semestre ${roman(n)}</b></td>
+      <td><div class="daypick sm" role="group" aria-label="Días preferidos del semestre ${roman(n)}">${DAYS.map((d) => `<button data-act="dayToggle" ${D} data-v="${d}" aria-pressed="${days.includes(d)}" title="${DAY_NAMES[d]}">${d}</button>`).join('')}</div></td>
+      <td>${days.length === DAYS_PER_LEVEL ? `<span class="cfg-ok">${icon('check')}3 días</span>` : `<span class="badge warn">Elige 3 (hay ${days.length})</span>`}</td></tr>`;
   };
-
-  // Bloques de este semestre: lunes a viernes si tiene días de semana; sábado si asiste el sábado
-  const weekAm = c.bloques.default.every(isSaturdayOk);
-  const blockLines = (key, label) => {
-    const sat = key === 'Sa';
-    const own = key === 'default' || !!c.bloques[key];
-    const list = c.bloques[key] || c.bloques.default;
-    const toggle = !sat ? '' : own && weekAm ? `<button class="linkbtn" data-act="satSame" ${D}>Igual que la semana</button>` : !own ? `<button class="linkbtn" data-act="satOwn" ${D}>Usar horario propio</button>` : '';
-    const lines = own ? list.map((bl, i) => `<div class="cfg-row blk-row"><span class="blk-n">Bloque ${i + 1}</span>
-        <input type="time" value="${bl.inicio}" data-change="blockTime" ${D} data-k="${key}" data-i="${i}" data-f="inicio" ${sat ? 'max="12:59"' : ''} aria-label="${label}, bloque ${i + 1}, inicio"><span class="faint">a</span>
-        <input type="time" value="${bl.fin}" data-change="blockTime" ${D} data-k="${key}" data-i="${i}" data-f="fin" aria-label="${label}, bloque ${i + 1}, fin">
-        ${toMinutes(bl.fin) <= toMinutes(bl.inicio) ? '<span class="badge bad">Revisa</span>' : sat && !isSaturdayOk(bl) ? `<span class="badge bad">Antes de las ${SATURDAY_LAST_START}</span>` : ''}</div>`).join('')
-      : '<div class="cfg-row"><span class="faint small">Mismo horario que de lunes a viernes</span></div>';
-    return `<div class="blk-group"><div class="blk-head"><b>${label}</b>${sat ? '<span class="faint small">solo mañana</span>' : ''}${toggle}</div>${lines}</div>`;
-  };
-  const weekdays = days.filter((d) => d !== 'Sa');
-  const blocks = (weekdays.length ? blockLines('default', 'Lunes a viernes') : '') + (days.includes('Sa') ? blockLines('Sa', 'Sábado') : '');
-
-  // Así queda la semana de este semestre
-  const preview = () => {
-    const rows = [0, 1].map((i) => `<span class="pv-lbl">Bloque ${i + 1}</span>${DAYS.map((d) => {
-      if (!days.includes(d)) return '<span class="pv-cell off"></span>';
-      const bl = blocksFor(S.jornadas, jn, d, sem)[i];
-      return `<span class="pv-cell on">${bl ? `<b>${bl.inicio}</b><span>${bl.fin}</span>` : ''}</span>`;
-    }).join('')}`).join('');
-    return `<div class="plp"><span></span>${DAYS.map((d) => `<span class="pv-dh ${days.includes(d) ? 'on' : ''}">${DAY_NAMES[d].slice(0, 3)}</span>`).join('')}${rows}</div>`;
-  };
-  const span = (d) => { const bl = blocksFor(S.jornadas, jn, d, sem); return `${bl[0].inicio} a ${bl[bl.length - 1].fin}`; };
-  const summary = !days.length ? 'Este semestre todavía no tiene días de clase.'
-    : `El semestre ${roman(sem)} asiste ${dayList(days)}${weekdays.length ? `, de ${span(weekdays[0])}` : ''}${days.includes('Sa') && weekdays.length ? `; el sábado, de ${span('Sa')}` : days.includes('Sa') ? `, de ${span('Sa')}` : ''}.`;
-  const others = [1, 2, 3, 4].filter((n) => n !== sem);
-
-  return head + `<div class="yr-cards sems">${[1, 2, 3, 4].map(semCard).join('')}</div>
-    <div class="cfg">
-      <section class="cfg-col">
-        <h3 class="sub">Días de clase del semestre ${roman(sem)}</h3>
-        <div class="cfg-row"><div class="daypick" role="group" aria-label="Días del semestre ${roman(sem)}">${DAYS.map((d) => `<button data-act="dayToggle" ${D} data-v="${d}" aria-pressed="${days.includes(d)}" title="${DAY_NAMES[d]}">${d}</button>`).join('')}</div>
-          ${days.length === DAYS_PER_LEVEL ? `<span class="cfg-ok">${icon('check')}3 días</span>` : `<span class="badge warn">Elige ${DAYS_PER_LEVEL} (hay ${days.length})</span>`}</div>
-        <p class="faint small">Un módulo se dicta en 3 sesiones por semana: cada semestre asiste 3 días.</p>
-        <h3 class="sub">Horario de los bloques</h3>
-        <div class="blk-groups">${blocks || '<span class="faint small">Elige los días para ver sus bloques.</span>'}</div>
-        <div class="copy-row"><span class="faint small">Copiar este horario a</span>${others.map((n) => `<button class="btnq sm" data-act="copySem" ${D} data-to="${n}">${roman(n)}</button>`).join('')}<button class="btnq sm" data-act="copySem" ${D} data-to="all">Todos</button></div>
-      </section>
-      <section class="cfg-col cfg-preview">
-        <h3 class="sub">Así queda la semana del semestre ${roman(sem)}</h3>
-        ${preview()}
-        <p class="pv-sum">${summary}</p>
-        <label class="check-line"><input type="checkbox" data-change="confirmado" data-j="${esc(jn)}" ${j.confirmado ? 'checked' : ''}> Jornada ${esc(jn.toLowerCase())} confirmada por la coordinación</label>
-      </section>
-    </div>`;
+  return `<div class="jor-cfg">
+    <section class="card jor-card">
+      <h2>Horario de la jornada ${esc(jn.toLowerCase())}</h2>
+      <p class="faint small">Cada día de clase tiene 2 bloques. Vale para todos los semestres de la jornada.</p>
+      <div class="jor-horario">
+        <div><h3 class="sub">Lunes a viernes</h3>${fila('default', semana)}</div>
+        <div><h3 class="sub">Sábado <span class="faint small">solo mañana</span></h3>${fila('Sa', sabado)}</div>
+      </div>
+      ${dispares ? '<p class="status warn">' + icon('alert') + 'Los semestres tenían horarios distintos; al cambiar una hora se iguala en todos.</p>' : ''}
+    </section>
+    <section class="card jor-card">
+      <h2>Días preferidos de cada semestre</h2>
+      <p class="faint small">Cada semestre asiste 3 días a la semana. Estos días son una <b>preferencia</b>: al planificar, el sistema los usa si puede y elige otros si faltan salas o docentes. Para que una carrera los use siempre, márcala en <button class="linkbtn" data-act="tab" data-k="cfg" data-v="reglas">Cupo y tope → Días de clase</button>.</p>
+      <table class="dtable jor-dias"><tbody>${[1, 2, 3, 4].map(diasSem).join('')}</tbody></table>
+    </section>
+  </div>`;
 }
 
 // Resumen de los días de los semestres abiertos de una carrera, con enlace a Configuración.
@@ -1626,6 +1605,14 @@ const changes = {
     });
   },
   confirmado(el) { mutate(() => { S.jornadas[el.dataset.j].confirmado = el.checked; }, { stale: false }); },
+  jorBlock(el) {
+    if (!/^\d{2}:\d{2}$/.test(el.value)) return render();
+    const jn = el.dataset.j, k = el.dataset.k, i = Number(el.dataset.i);
+    const base = structuredClone(k === 'Sa' ? satDeJornada(jn) : S.jornadas[jn].sems[1].bloques.default);
+    base[i][el.dataset.f] = el.value;
+    for (const b of base) b.turno = k === 'Sa' ? 'M' + b.id.slice(1) : turnoOf(b.inicio, b.id);
+    mutate(() => { for (const n of [1, 2, 3, 4]) S.jornadas[jn].sems[n].bloques[k] = structuredClone(base); });
+  },
   asignar(el) { mutate(() => { if (el.value) S.asignaciones[el.dataset.cod] = el.value; else delete S.asignaciones[el.dataset.cod]; }); },
   cupo(el) { mutate(() => { S.reglas.cupo = Math.max(5, Number(el.value) || 30); }); },
   diasFijos(el) { mutate(() => { const set = new Set(S.reglas.diasFijos || []); if (el.checked) set.add(el.dataset.v); else set.delete(el.dataset.v); S.reglas.diasFijos = [...set]; }, { stale: false }); },
