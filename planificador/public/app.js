@@ -1,4 +1,4 @@
-// Interfaz del planificador. Vistas: Horario, Carreras (con asistente de 5 pasos), Docentes, Salas, Respaldo.
+// Interfaz del planificador. Vistas: Horario, Carreras (con asistente de 5 pasos), Docentes, Salas, Configuración.
 import { solve } from '/src/core/solver.js';
 import { suggestAssignments, qualifiedTeachers, canTeach, teacherNeeds, availableForLevel, estimatedLoad, neededSubjects, capacidadHoras, leCabe } from '/src/core/assign.js';
 import { activeSemesters, openSemesters, DAYS, DAY_NAMES, DAYS_PER_LEVEL, TURNOS, roman, cohortDays, blocksFor, toMinutes, levelOf, isSaturdayOk, saturdayIssue, SATURDAY_LAST_START, SATURDAY_DEFAULT_BLOCKS } from '/src/core/calendar.js';
@@ -256,27 +256,26 @@ function rebuild(view, arg) {
   if (view === 'carreras') return viewCarreras();
   if (view === 'docentes') return viewDocentes();
   if (view === 'salas') return viewSalas();
-  if (view === 'respaldo') return viewRespaldo();
   if (view === 'configuracion') return viewConfig();
   if (view === 'ocupacion') return viewOcupacion();
   return viewHorario();
 }
 
 function sidebar(active) {
-  const isHome = !['carreras', 'docentes', 'salas', 'configuracion', 'respaldo', 'ocupacion'].includes(active);
+  const isHome = !['carreras', 'docentes', 'salas', 'configuracion', 'ocupacion'].includes(active);
   const link = (v, label, ic) => `<a href="#/${v}" ${active === v || (v === 'horario' && isHome) ? 'aria-current="page"' : ''}>${icon(ic)}${label}</a>`;
   const top = `<header class="topbar">
     <a class="brand" href="#/horario" aria-label="Planificador CFT Juan Bohon, inicio"><span class="logo"><img src="/public/logo.png" alt="CFT Juan Bohon"></span><b class="brand-name">Planificador</b></a>
     <div class="top-right">
       <span id="savemsg" aria-live="polite">${esc(ui.saveMsg)}</span>
-      ${S.datosDeEjemplo ? `<a class="demo-tag" href="#/respaldo" title="Docentes, salas y matrícula son ficticios. Las mallas son las oficiales.">Ejemplo</a>` : ''}
+      ${S.datosDeEjemplo ? `<a class="demo-tag" href="#/configuracion" title="Docentes, salas y matrícula son ficticios. Las mallas son las oficiales.">Ejemplo</a>` : ''}
       <select data-change="periodo" aria-label="Periodo">
         ${[2026, 2027, 2028].flatMap((y) => ['impar', 'par'].map((p) => `<option value="${y}|${p}" ${S.periodo.anio === y && S.periodo.paridad === p ? 'selected' : ''}>${periodName(y, p)}</option>`)).join('')}
       </select>
     </div></header>`;
   return top + `<nav class="side-nav" aria-label="Menú principal">
     ${link('horario', 'Horario', 'calendar')}${link('ocupacion', 'Ocupación de salas', 'grid')}${link('carreras', 'Carreras', 'cap')}${link('docentes', 'Docentes', 'person')}${link('salas', 'Salas', 'door')}
-    <span class="side-sep"></span>${link('configuracion', 'Configuración', 'settings')}${link('respaldo', 'Respaldo', 'archive')}
+    <span class="side-sep"></span>${link('configuracion', 'Configuración', 'settings')}
   </nav>`;
 }
 
@@ -1249,17 +1248,6 @@ function viewSalas() {
     <div class="car-bar"><div class="seg" role="group" aria-label="Filtrar">${tab('all', 'Todas', info.length)}${tab('ocupada', 'Ocupadas', n('ocupada'))}${tab('libre', 'Libres', n('libre'))}</div>
 </div>
     ${cuerpo}`;
-}
-
-function viewRespaldo() {
-  return `<div class="pagehead"><div><h1>Respaldo</h1></div></div>
-    <div class="grid-auto">
-      <div class="card"><h2>Descargar respaldo</h2><p class="muted">Todo en un archivo JSON.</p><button class="btn" data-act="backup">Descargar</button></div>
-      <div class="card"><h2>Cargar respaldo</h2><p class="muted">Reemplaza los datos actuales.</p><input type="file" accept="application/json,.json" data-change="restore" aria-label="Archivo de respaldo"></div>
-      <div class="card"><h2>Empezar con datos reales</h2><p class="muted">Mantiene las mallas y borra el ejemplo.</p><button class="btn danger" data-act="reset" data-v="0">Empezar vacío</button></div>
-      <div class="card"><h2>Volver al ejemplo</h2><p class="muted">Datos ficticios de TLI, APM y MME.</p><button class="btn" data-act="reset" data-v="1">Restaurar ejemplo</button></div>
-    </div>
-    `;
 }
 
 // Bloques que empiezan antes de las 17:00 se cruzan con la disponibilidad de mañana (M); el resto, con la de noche (N).
