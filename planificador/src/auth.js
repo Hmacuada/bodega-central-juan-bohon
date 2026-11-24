@@ -67,9 +67,20 @@ export function paginaLogin(error = '', usuario = '') {
 <style>
   :root { --navy: #1b2f55; --ink: #18202c; --ink-3: #6b7484; --line: #dfe3ea; --bg: #f3f5f8; --bad: #c0352b; }
   * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: var(--bg); color: var(--ink);
-    font: 15px/1.45 Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; padding: 16px; }
-  .box { width: 100%; max-width: 380px; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 32px 28px; box-shadow: 0 10px 30px rgba(20, 30, 50, .08); }
+  /* Fondo: azul institucional con luces suaves (dorado y celeste) y una trama fina de puntos. */
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; color: var(--ink);
+    font: 15px/1.45 Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; padding: 16px;
+    background-color: #142544;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(255, 255, 255, .07) 1px, transparent 0),
+      radial-gradient(60vw 60vw at 85% 10%, rgba(242, 183, 5, .22), transparent 60%),
+      radial-gradient(70vw 70vw at 5% 95%, rgba(64, 140, 230, .35), transparent 60%),
+      linear-gradient(135deg, #0f1d38 0%, #1b2f55 55%, #22407a 100%);
+    background-size: 22px 22px, auto, auto, auto;
+    background-attachment: fixed; }
+  .wrap { width: 100%; max-width: 380px; display: grid; gap: 16px; }
+  .box { width: 100%; background: #fff; border-radius: 18px; padding: 32px 28px; box-shadow: 0 24px 60px rgba(5, 12, 30, .45), 0 2px 6px rgba(5, 12, 30, .2); }
+  .pie { margin: 0; text-align: center; color: rgba(255, 255, 255, .6); font-size: 12px; }
   .logo { display: block; width: 220px; max-width: 80%; height: auto; margin: 0 auto 18px; }
   h1 { margin: 0; font-size: 20px; text-align: center; }
   p.sub { margin: 4px 0 22px; text-align: center; color: var(--ink-3); font-size: 13.5px; }
@@ -80,7 +91,7 @@ export function paginaLogin(error = '', usuario = '') {
   button:hover { filter: brightness(1.1); }
   .err { margin: 0 0 14px; padding: 9px 12px; border-radius: 10px; background: #fdecea; color: var(--bad); font-size: 13px; }
 </style></head>
-<body><main class="box">
+<body><div class="wrap"><main class="box">
   <img class="logo" src="/public/logo.png" alt="CFT Juan Bohon">
   <h1>Planificador académico</h1>
   <p class="sub">CFT Juan Bohon</p>
@@ -90,5 +101,5 @@ export function paginaLogin(error = '', usuario = '') {
     <label>Clave<input type="password" name="clave" autocomplete="current-password" required ${usuario ? 'autofocus' : ''}></label>
     <button type="submit">Ingresar</button>
   </form>
-</main></body></html>`;
+</main><p class="pie">Uso interno · Coordinación académica</p></div></body></html>`;
 }
