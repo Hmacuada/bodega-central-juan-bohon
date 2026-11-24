@@ -60,6 +60,8 @@ const icon = (name, cls = '') => `<svg class="i ${cls}" viewBox="0 0 24 24" aria
 const docName = (id) => S.docentes.find((d) => d.id === id)?.nombre || 'Sin docente';
 const salaName = (id) => S.salas.find((r) => r.id === id)?.nombre || 'Sin sala';
 const career = (code) => S.carreras.find((c) => c.codigo === code);
+// Color fijo de cada carrera (el mismo en Carreras y en Ocupación).
+const careerColor = (code) => { const i = S.carreras.findIndex((c) => c.codigo === code); return i < 0 ? 'var(--navy-500)' : SERIES[i % SERIES.length]; };
 const secLabel = (sec) => `${sec.carrera} ${roman(sec.sem)}-${sec.letra}`;
 
 // ---------- Persistencia ----------
@@ -229,7 +231,7 @@ function render() {
   const body = rebuild(view, arg);
   const navView = view === 'carreras' ? 'carreras' : view;
   // Ancho de lectura según la página: las listas no se estiran a todo el monitor.
-  const width = view === 'carreras' && arg ? 'medium' : ['carreras', 'salas', 'respaldo', 'docentes'].includes(view) ? 'narrow' : 'wide';
+  const width = view === 'carreras' && arg ? 'medium' : ['salas', 'respaldo', 'docentes'].includes(view) ? 'narrow' : 'wide';
   app.innerHTML = `<div class="shell">${sidebar(navView)}<main class="${width}">${body}</main></div>${modalHtml()}`;
   bind();
   if (!render.fitting) { render.fitting = true; try { for (let i = 0; i < 3 && fitScreen(); i++) { app.querySelector('main').innerHTML = rebuild(view, arg); bind(); } } finally { render.fitting = false; } }
@@ -599,10 +601,9 @@ function matrixViewer(H) {
   // Color por carrera y semestre: el tono es de la carrera; cada semestre, un poco más oscuro (I, III, V…).
   const semsAct = activeSemesters(S.periodo.paridad);
   const carColor = (sec) => {
-    const i = S.carreras.findIndex((c) => c.codigo === sec?.carrera);
-    if (i < 0) return 'var(--navy-500)';
-    const k = Math.max(0, semsAct.indexOf(sec.sem));
-    return k ? `color-mix(in srgb, ${SERIES[i % SERIES.length]} ${100 - 28 * k}%, #000)` : SERIES[i % SERIES.length];
+    const base = careerColor(sec?.carrera);
+    const k = Math.max(0, semsAct.indexOf(sec?.sem));
+    return k ? `color-mix(in srgb, ${base} ${100 - 28 * k}%, #000)` : base;
   };
   const carSem = (sec) => (sec ? `${sec.carrera} ${roman(sec.sem)}` : '');
   const visibles = new Map();
@@ -761,13 +762,13 @@ function viewCarreras() {
   const estado = ({ estado: e, missing }) => (e === 'lista' ? '<span class="badge ok">Lista</span>' : e === 'faltan' ? `<span class="badge warn">Faltan ${missing} docentes</span>` : '<span class="faint small">Sin oferta</span>');
   return `<div class="pagehead"><div><h1>Carreras</h1><p class="muted">${S.carreras.length} carreras · mallas oficiales${enPractica ? ` · ${enPractica} con estudiantes en práctica` : ''}</p></div></div>
     <div class="seg" role="group" aria-label="Filtrar">${tab('all', 'Todas', info.length)}${tab('lista', 'Listas', n('lista'))}${tab('faltan', 'Faltan docentes', n('faltan'))}${tab('sin', 'Sin oferta', n('sin'))}</div>
-    <div class="card" style="padding:4px 8px"><div class="tablewrap"><table class="dtable" data-pager><thead><tr><th>Carrera</th><th>Secciones</th><th>Estado</th><th></th></tr></thead><tbody>
-      ${page('carreras-' + f, list).map((x) => `<tr class="click" data-act="go" data-v="#/carreras/${x.c.codigo}">
-        <td><span class="l1">${esc(x.c.nombre)}</span><span class="l2">${x.c.codigo} · ${esc(x.c.jornada)}</span></td>
-        <td class="num">${x.secs || '<span class="faint">—</span>'}</td>
-        <td>${estado(x)}</td>
-        <td style="text-align:right;color:var(--ink-3)">${icon('arrow')}</td></tr>`).join('') || '<tr><td colspan="4" class="muted" style="padding:24px">Ninguna carrera en este filtro.</td></tr>'}
-    </tbody></table></div>${pagerHtml('carreras-' + f, list.length)}</div>`;
+    <div class="car-grid">
+      ${list.map((x) => `<a class="car-card ${x.estado}" href="#/carreras/${x.c.codigo}" style="--c:${careerColor(x.c.codigo)}" title="Abrir ${esc(x.c.nombre)} para editar">
+        <span class="car-top"><b>${x.c.codigo}</b><small>${esc(x.c.jornada)}</small></span>
+        <span class="car-name">${esc(x.c.nombre)}</span>
+        <span class="car-foot"><span>${x.secs ? `${x.secs} ${x.secs === 1 ? 'sección' : 'secciones'}` : 'Sin secciones'}</span>${estado(x)}</span>
+      </a>`).join('') || '<p class="muted" style="padding:24px">Ninguna carrera en este filtro.</p>'}
+    </div>`;
 }
 
 function malla(c) {
