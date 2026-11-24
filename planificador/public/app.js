@@ -759,9 +759,9 @@ function viewCarreras() {
   const n = (k) => info.filter((x) => x.estado === k).length;
   const enPractica = S.carreras.filter((c) => S.oferta?.[c.codigo]?.practica?.estudiantes).length;
   const tab = (v, label, count) => `<button data-act="filter" data-v="${v}" aria-pressed="${f === v}">${label} <span class="count">${count}</span></button>`;
-  const estado = ({ estado: e, missing }) => (e === 'lista' ? '<span class="badge ok">Lista</span>' : e === 'faltan' ? `<span class="badge warn">Faltan ${missing} docentes</span>` : '<span class="faint small">Pendiente</span>');
+  const estado = ({ estado: e, missing }) => (e === 'lista' ? '<span class="badge ok">Lista</span>' : e === 'faltan' ? `<span class="badge warn">Faltan ${missing} docentes</span>` : '<span class="faint small">Sin oferta</span>');
   return `<div class="pagehead"><div><h1>Carreras</h1><p class="muted">${S.carreras.length} carreras · mallas oficiales${enPractica ? ` · ${enPractica} con estudiantes en práctica` : ''}</p></div></div>
-    <div class="car-bar"><div class="seg" role="group" aria-label="Filtrar">${tab('all', 'Todas', info.length)}${tab('lista', 'Listas', n('lista'))}${tab('sin', 'Pendientes', n('sin'))}${tab('faltan', 'Faltan docentes', n('faltan'))}</div>
+    <div class="car-bar"><div class="seg" role="group" aria-label="Filtrar">${tab('all', 'Todas', info.length)}${tab('lista', 'Listas', n('lista'))}${tab('sin', 'Sin oferta', n('sin'))}${tab('faltan', 'Faltan docentes', n('faltan'))}</div>
     <div class="car-modo" aria-label="Forma de ver las carreras">${subtabs('carVista', [['tarjetas', 'Tarjetas'], ['lista', 'Lista']])}</div></div>
     ${ui.tabs.carVista === 'lista' ? `<div class="card" style="padding:4px 8px;margin-top:10px"><div class="tablewrap"><table class="dtable car-tabla"><thead><tr><th>Carrera</th><th>Secciones</th><th>Estado</th><th></th></tr></thead><tbody>
       ${list.map((x) => `<tr class="click" data-act="go" data-v="#/carreras/${x.c.codigo}">
