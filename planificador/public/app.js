@@ -365,7 +365,7 @@ function courseViewer(H) {
   const filters = `<div class="hfilters">
       <label class="hf"><span>Carrera</span><select data-change="hc" aria-label="Carrera"><option value="">Elige una carrera</option>${S.carreras.map((x) => `<option value="${x.codigo}" ${x.codigo === ui.hc ? 'selected' : ''}>${esc(x.nombre)}</option>`).join('')}</select></label>
       <div class="hf"><span>Año</span>${seg('hy', [[1, '1º año'], [2, '2º año']], ui.hy)}</div>
-      <div class="hf" title="En ${esc(S.periodo.nombre)} se dictan los semestres ${activos.map(roman).join(' y ')}"><span>Semestre</span>${seg('hs', yrSems.map((n) => [n, roman(n) + (activos.includes(n) ? '' : ' <small class="faint">otro periodo</small>')]), sem)}</div>
+      <div class="hf" title="En ${esc(S.periodo.nombre)} se dictan los semestres ${activos.map(roman).join(' y ')}"><span>Semestre</span>${seg('hs', yrSems.map((n) => [n, roman(n)]), sem)}</div>
       ${secs.length > 1 ? `<div class="hf"><span>Sección</span>${seg('hl', secs.map((x) => [x.letra, x.letra]), ui.hl)}</div>` : ''}
       <div class="hf hf-end">${H ? weekNav(maxW) : ''}</div>
     </div>`;
