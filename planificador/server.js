@@ -106,10 +106,11 @@ const server = createServer(async (req, res) => {
     // Acceso con clave (si APP_PASSWORD está definida). El logo se ve sin sesión, para la página de ingreso.
     if (path === '/login' && req.method === 'GET') return sesionValida(req) ? redirect(res, '/') : send(res, 200, paginaLogin(), 'text/html; charset=utf-8');
     if (path === '/login' && req.method === 'POST') {
-      const clave = new URLSearchParams(await readBody(req, 10 * 1024)).get('clave') || '';
-      const r = intentarLogin(req, clave);
+      const form = new URLSearchParams(await readBody(req, 10 * 1024));
+      const usuario = form.get('usuario') || '';
+      const r = intentarLogin(req, usuario, form.get('clave') || '');
       if (r.ok) return redirect(res, '/', r.cookie);
-      return send(res, r.bloqueado ? 429 : 401, paginaLogin(r.bloqueado ? 'Demasiados intentos. Espera 10 minutos.' : 'Clave incorrecta.'), 'text/html; charset=utf-8');
+      return send(res, r.bloqueado ? 429 : 401, paginaLogin(r.bloqueado ? 'Demasiados intentos. Espera 10 minutos.' : 'Usuario o clave incorrectos.', usuario), 'text/html; charset=utf-8');
     }
     if (path === '/logout') return redirect(res, authActiva() ? '/login' : '/', cookieSalida(req));
     if (!sesionValida(req) && path !== '/public/logo.png') {

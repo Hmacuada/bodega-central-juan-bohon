@@ -1,7 +1,8 @@
-// Acceso con clave (sencillo): una sola clave para todos, definida en la variable de entorno APP_PASSWORD.
+// Acceso con usuario y clave (sencillo): un solo usuario, definido en las variables de entorno APP_USER y APP_PASSWORD.
 // Sin APP_PASSWORD el sistema queda abierto (uso local). La sesión es una cookie firmada que dura 12 horas.
 import { createHmac, createHash, timingSafeEqual, randomBytes } from 'node:crypto';
 
+const USUARIO = (process.env.APP_USER || 'admin').trim().toLowerCase();
 const CLAVE = process.env.APP_PASSWORD || '';
 // Si no hay SESSION_SECRET, se usa uno al azar: las sesiones se pierden al reiniciar el servidor.
 const SECRETO = process.env.SESSION_SECRET || randomBytes(32).toString('hex');
@@ -41,11 +42,14 @@ function cookieSesion(req) {
 const ipDe = (req) => (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket.remoteAddress || '';
 
 // Revisa la clave. Tras 5 intentos fallidos desde la misma IP, espera 10 minutos.
-export function intentarLogin(req, clave) {
+export function intentarLogin(req, usuario, clave) {
   const ip = ipDe(req);
   const reg = intentos.get(ip);
   if (reg && reg.n >= 5 && Date.now() - reg.desde < 10 * 60 * 1000) return { ok: false, bloqueado: true };
-  const ok = CLAVE && timingSafeEqual(hash(clave), hash(CLAVE));
+  // Se comparan usuario y clave siempre, para no revelar cuál de los dos falló.
+  const okUsuario = timingSafeEqual(hash(String(usuario).trim().toLowerCase()), hash(USUARIO));
+  const okClave = timingSafeEqual(hash(clave), hash(CLAVE));
+  const ok = !!CLAVE && okUsuario && okClave;
   if (ok) { intentos.delete(ip); return { ok: true, cookie: cookieSesion(req) }; }
   const nuevo = reg && Date.now() - reg.desde < 10 * 60 * 1000 ? { n: reg.n + 1, desde: reg.desde } : { n: 1, desde: Date.now() };
   intentos.set(ip, nuevo);
@@ -56,7 +60,7 @@ export const cookieSalida = (req) => `${COOKIE}=; Path=/; HttpOnly; SameSite=Lax
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-export function paginaLogin(error = '') {
+export function paginaLogin(error = '', usuario = '') {
   return `<!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ingresar · Planificador CFT Juan Bohon</title><link rel="icon" href="/public/logo.png">
@@ -69,10 +73,10 @@ export function paginaLogin(error = '') {
   .logo { display: block; width: 220px; max-width: 80%; height: auto; margin: 0 auto 18px; }
   h1 { margin: 0; font-size: 20px; text-align: center; }
   p.sub { margin: 4px 0 22px; text-align: center; color: var(--ink-3); font-size: 13.5px; }
-  label { display: grid; gap: 6px; font-size: 13px; font-weight: 600; }
+  label { display: grid; gap: 6px; font-size: 13px; font-weight: 600; margin-bottom: 12px; }
   input { font: inherit; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; }
   input:focus { outline: 2px solid var(--navy); outline-offset: 1px; border-color: var(--navy); }
-  button { margin-top: 16px; width: 100%; font: inherit; font-weight: 600; padding: 11px; border: 0; border-radius: 10px; background: var(--navy); color: #fff; cursor: pointer; }
+  button { margin-top: 6px; width: 100%; font: inherit; font-weight: 600; padding: 11px; border: 0; border-radius: 10px; background: var(--navy); color: #fff; cursor: pointer; }
   button:hover { filter: brightness(1.1); }
   .err { margin: 0 0 14px; padding: 9px 12px; border-radius: 10px; background: #fdecea; color: var(--bad); font-size: 13px; }
 </style></head>
@@ -82,7 +86,8 @@ export function paginaLogin(error = '') {
   <p class="sub">CFT Juan Bohon</p>
   ${error ? `<p class="err" role="alert">${esc(error)}</p>` : ''}
   <form method="post" action="/login">
-    <label>Clave de acceso<input type="password" name="clave" autocomplete="current-password" required autofocus></label>
+    <label>Usuario<input type="text" name="usuario" value="${esc(usuario)}" autocomplete="username" autocapitalize="none" spellcheck="false" required ${usuario ? '' : 'autofocus'}></label>
+    <label>Clave<input type="password" name="clave" autocomplete="current-password" required ${usuario ? 'autofocus' : ''}></label>
     <button type="submit">Ingresar</button>
   </form>
 </main></body></html>`;
