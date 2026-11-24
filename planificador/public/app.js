@@ -177,6 +177,18 @@ function modalHtml() {
       <div><h2>${esc(title)}</h2><span class="faint small">${esc(d.especialidad || 'Sin especialidad')} · ${h ? `${h} h en el periodo` : 'sin carga en el periodo'}</span></div></div>`;
     body = docForm(d);
     foot = '<button class="btnq danger-q" data-act="delDoc">Eliminar docente</button><button class="btnp" data-act="closeModal">Listo</button>';
+  } else if (m.v === 'sala') {
+    const i = S.salas.findIndex((x) => x.id === m.k);
+    const rm = S.salas[i];
+    if (!rm) { ui.modal = null; return ''; }
+    const grupos = [...(usoSalas()[rm.id]?.keys() || [])];
+    title = rm.nombre || 'Sala';
+    body = `<div class="sala-form">
+      <label class="field">Nombre<input type="text" value="${esc(rm.nombre)}" data-change="sala" data-i="${i}" data-f="nombre"></label>
+      <label class="field">Capacidad (puestos)<input type="number" min="1" value="${rm.capacidad}" data-change="sala" data-i="${i}" data-f="capacidad"></label>
+      <label class="field">Tipo<select data-change="sala" data-i="${i}" data-f="tipo">${['Sala', 'Laboratorio', 'Taller'].map((t) => `<option ${(rm.tipo || 'Sala') === t ? 'selected' : ''}>${t}</option>`).join('')}</select></label>
+      <p class="faint small">${grupos.length ? `La usan: ${grupos.join(', ')}.` : 'Libre en este periodo.'}</p></div>`;
+    foot = `<button class="btnq danger-q" data-act="delSala" data-v="${i}">Eliminar sala</button><button class="btnp" data-act="closeModal">Listo</button>`;
   } else if (m.v === 'wizard' && career(m.k)) {
     const w = wizardParts(m.k, true);
     title = 'Planificar ' + w.c.nombre;
@@ -231,7 +243,7 @@ function render() {
   const body = rebuild(view, arg);
   const navView = view === 'carreras' ? 'carreras' : view;
   // Ancho de lectura según la página: las listas no se estiran a todo el monitor.
-  const width = view === 'carreras' && arg ? 'medium' : ['salas', 'respaldo', 'docentes'].includes(view) ? 'narrow' : 'wide';
+  const width = view === 'carreras' && arg ? 'medium' : ['respaldo', 'docentes'].includes(view) ? 'narrow' : 'wide';
   app.innerHTML = `<div class="shell">${sidebar(navView)}<main class="${width}">${body}</main></div>${modalHtml()}`;
   bind();
   if (!render.fitting) { render.fitting = true; try { for (let i = 0; i < 3 && fitScreen(); i++) { app.querySelector('main').innerHTML = rebuild(view, arg); bind(); } } finally { render.fitting = false; } }
@@ -1214,30 +1226,51 @@ function docForm(d) {
 }
 
 // ---------- Vista: Salas ----------
+// Uso de cada sala en el periodo: grupos (carrera y semestre) con clases o elegidos para una sección.
+function usoSalas() {
+  const H = S.horario;
+  const uso = {};
+  const add = (salaId, sec) => { if (!salaId || !sec) return; const u = (uso[salaId] ||= new Map()); u.set(`${sec.carrera} ${roman(sec.sem)}`, sec); };
+  for (const x of H?.sesiones || []) add(x.salaId, secById(H, x.seccionId));
+  for (const sec of H?.secciones || []) add(sec.salaId, sec);
+  for (const [sid, salaId] of Object.entries(S.salaSeccion || {})) add(salaId, H && secById(H, sid));
+  return uso;
+}
+
 function viewSalas() {
-  const usedBy = {};
-  for (const s of S.horario?.secciones || []) (usedBy[s.salaId] = usedBy[s.salaId] || []).push(s);
+  const uso = usoSalas();
   const seats = S.salas.reduce((t, r) => t + (Number(r.capacidad) || 0), 0);
-  const row = (r, i) => {
-    const secs = usedBy[r.id] || [];
-    const over = secs.some((s) => s.estudiantes > r.capacidad);
-    if (ui.editSala === r.id) {
-      return `<li class="room editing">
-        <label class="field grow">Nombre<input type="text" value="${esc(r.nombre)}" data-change="sala" data-i="${i}" data-f="nombre"></label>
-        <label class="field">Capacidad<input type="number" min="1" value="${r.capacidad}" data-change="sala" data-i="${i}" data-f="capacidad"></label>
-        <label class="field">Tipo<select data-change="sala" data-i="${i}" data-f="tipo">${['Sala', 'Laboratorio', 'Taller'].map((t) => `<option ${r.tipo === t ? 'selected' : ''}>${t}</option>`).join('')}</select></label>
-        <div class="room-actions"><button class="btnq danger-q" data-act="delSala" data-v="${i}">Eliminar</button><button class="btn" data-act="editSala" data-v="">Listo</button></div>
-      </li>`;
-    }
-    return `<li class="room" data-act="editSala" data-v="${r.id}" tabindex="0" role="button" aria-label="Editar ${esc(r.nombre)}">
-      <span class="room-name"><b>${esc(r.nombre)}</b>${r.tipo && r.tipo !== 'Sala' ? `<span>${esc(r.tipo)}</span>` : ''}</span>
-      <span class="room-cap num">${r.capacidad}<small>puestos</small></span>
-      <span class="room-use">${secs.length ? secs.map((s) => `<span class="${s.estudiantes > r.capacidad ? 'over' : ''}">${esc(secLabel(s))}</span>`).join('') : '<span class="free">Libre</span>'}${over ? '<span class="badge bad">Excede capacidad</span>' : ''}</span>
-    </li>`;
-  };
+  const info = S.salas.map((r, i) => {
+    const grupos = [...(uso[r.id]?.entries() || [])].sort((x, y) => x[0].localeCompare(y[0]));
+    const over = grupos.some(([, sec]) => sec.estudiantes > r.capacidad);
+    return { r, i, grupos, over, estado: grupos.length ? 'ocupada' : 'libre' };
+  });
+  const f = ui.salaFilter || 'all';
+  const list = f === 'all' ? info : info.filter((x) => x.estado === f);
+  const n = (k) => info.filter((x) => x.estado === k).length;
+  const tab = (v, label, count) => `<button data-act="salaFilter" data-v="${v}" aria-pressed="${f === v}">${label} <span class="count">${count}</span></button>`;
+  const chips = (x) => x.grupos.map(([k, sec]) => `<span class="sala-chip" style="--c:${careerColor(sec.carrera)}" title="${esc(secLabel(sec))} · ${sec.estudiantes} estudiantes">${k}</span>`).join('');
+  const acciones = (x) => `<span class="sala-acc"><button class="btnq sm" data-act="editSala" data-v="${x.r.id}" aria-label="Editar ${esc(x.r.nombre)}">Editar</button><button class="btnq sm danger-q" data-act="delSala" data-v="${x.i}" aria-label="Eliminar ${esc(x.r.nombre)}">Eliminar</button></span>`;
+  const tipo = (r) => esc(r.tipo || 'Sala');
+  const vista = subtabs('salaVista', [['tarjetas', 'Tarjetas'], ['lista', 'Lista']]);
+  const vacia = '<p class="muted" style="padding:24px">Ninguna sala en este filtro.</p>';
+  const cuerpo = ui.tabs.salaVista === 'lista'
+    ? `<div class="card" style="padding:4px 8px;margin-top:10px"><div class="tablewrap"><table class="dtable car-tabla" data-pager><thead><tr><th>Sala</th><th>Tipo</th><th class="num">Puestos</th><th>Uso</th><th></th></tr></thead><tbody>
+      ${page('salas-' + f, list).map((x) => `<tr>
+        <td><span class="l1">${esc(x.r.nombre)}</span></td><td class="small">${tipo(x.r)}</td><td class="num">${x.r.capacidad}</td>
+        <td>${x.grupos.length ? `<span class="sala-chips">${chips(x)}</span>` : '<span class="faint small">Libre</span>'}${x.over ? ' <span class="badge bad">Excede capacidad</span>' : ''}</td>
+        <td style="text-align:right">${acciones(x)}</td></tr>`).join('') || `<tr><td colspan="5">${vacia}</td></tr>`}
+      </tbody></table></div>${pagerHtml('salas-' + f, list.length)}</div>`
+    : `<div class="car-grid">${list.map((x) => `<div class="car-card sala-card ${x.estado}" style="--c:${x.grupos.length ? careerColor(x.grupos[0][1].carrera) : 'var(--line-2)'}">
+        <span class="car-top"><b>${esc(x.r.nombre)}</b><small>${tipo(x.r)}</small></span>
+        <span class="sala-cap"><b>${x.r.capacidad}</b> puestos${x.over ? ' <span class="badge bad">Excede</span>' : ''}</span>
+        <span class="sala-chips">${x.grupos.length ? chips(x) : '<span class="faint small">Libre</span>'}</span>
+        ${acciones(x)}
+      </div>`).join('') || vacia}</div>`;
   return `<div class="pagehead"><div><h1>Salas</h1><p class="muted">${S.salas.length} salas · ${seats} puestos</p></div><button class="btnp" data-act="addSala">${icon('plus')}Agregar</button></div>
-    <ul class="rooms" data-pagerlist>${page('salas', S.salas.map((r, i) => [r, i])).map(([r, i]) => row(r, i)).join('') || '<li class="room empty-room">Aún no hay salas.</li>'}</ul>${pagerHtml('salas', S.salas.length)}
-    <p class="faint small">Haz clic en una sala para editarla.${S.horario ? '' : ' Al generar el horario verás qué sección usa cada sala.'}</p>`;
+    <div class="car-bar"><div class="seg" role="group" aria-label="Filtrar">${tab('all', 'Todas', info.length)}${tab('ocupada', 'Ocupadas', n('ocupada'))}${tab('libre', 'Libres', n('libre'))}</div>
+    <div class="car-modo" aria-label="Forma de ver las salas">${vista}</div></div>
+    ${cuerpo}`;
 }
 
 function viewRespaldo() {
@@ -1520,9 +1553,21 @@ const actions = {
       for (const k of codes) delete S.asignaciones[k];
     }, { stale: codes.length > 0 });
   },
-  addSala() { const id = 's' + Date.now().toString(36); ui.editSala = id; ui.pages.salas = 9999; mutate(() => S.salas.push({ id, nombre: `Sala ${S.salas.length + 1}`, capacidad: 30, tipo: 'Sala' })); },
-  editSala(el) { ui.editSala = el.dataset.v || null; render(); const f = app.querySelector('.room.editing input'); if (f) f.focus(); },
-  delSala(el) { const r = S.salas[Number(el.dataset.v)]; if (confirm(`¿Eliminar ${r.nombre}?`)) { ui.editSala = null; mutate(() => S.salas.splice(Number(el.dataset.v), 1)); } },
+  addSala() { const id = 's' + Date.now().toString(36); ui.modal = { v: 'sala', k: id }; mutate(() => S.salas.push({ id, nombre: `Sala ${S.salas.length + 1}`, capacidad: 30, tipo: 'Sala' })); },
+  editSala(el) { ui.modal = { v: 'sala', k: el.dataset.v }; render(); app.querySelector('.modal input')?.focus(); },
+  salaFilter(el) { ui.salaFilter = el.dataset.v; ui.rows = null; render(); },
+  // Eliminar una sala: avisa si la usa alguna sección; se quita también de las salas elegidas por sección.
+  delSala(el) {
+    const rm = S.salas[Number(el.dataset.v)];
+    if (!rm) return;
+    const grupos = [...(usoSalas()[rm.id]?.keys() || [])];
+    if (!confirm(`¿Eliminar ${rm.nombre}?${grupos.length ? `\n\nLa usan ${grupos.join(', ')}: esas clases quedarán sin sala hasta volver a planificar.` : ''}\n\nEsta acción no se puede deshacer.`)) return;
+    ui.modal = null;
+    mutate(() => {
+      S.salas = S.salas.filter((x) => x.id !== rm.id);
+      for (const [sid, salaId] of Object.entries(S.salaSeccion || {})) if (salaId === rm.id) delete S.salaSeccion[sid];
+    });
+  },
   backup() {
     const blob = new Blob([JSON.stringify(S, null, 1)], { type: 'application/json' });
     download(blob, `planificador-respaldo-${new Date().toISOString().slice(0, 10)}.json`);
