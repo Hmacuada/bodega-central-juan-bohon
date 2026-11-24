@@ -50,6 +50,14 @@ function send(res, code, body, type = 'application/json; charset=utf-8') {
   res.end(typeof body === 'string' || Buffer.isBuffer(body) ? body : JSON.stringify(body));
 }
 
+// Choques (sala, docente, sección) que tendría la propuesta con las fechas reales, en las secciones de la carrera.
+function contarChoques(state, items, carrera) {
+  const copia = structuredClone(state);
+  copia.manual = copia.manual || {};
+  for (const it of items) (copia.manual[it.secId] ||= {})[it.codigo] = { slots: it.slots, o: it.desde, salaId: it.salaId, desde: it.desde };
+  return buildManual(copia).conflictos.filter((x) => ['sala', 'docente', 'seccion'].includes(x.tipo) && (!carrera || x.secciones.some((id) => id.startsWith(carrera + '-')))).length;
+}
+
 async function readBody(req, limit = 20 * 1024 * 1024) {
   const chunks = [];
   let size = 0;
@@ -109,11 +117,20 @@ const server = createServer(async (req, res) => {
       // Lo asignado a mano queda fijo: si ya tiene choques de sala o de sección, el solver no puede resolver.
       const choques = buildManual(state).conflictos.filter((c) => ['sala', 'seccion'].includes(c.tipo));
       if (choques.length) return send(res, 422, { error: 'Lo ya asignado tiene ' + choques.length + ' choques (p. ej.: ' + choques[0].mensaje + ') Corrígelos o quita esas clases antes de sugerir.' });
-      const built = buildSolverInput(state, { jornada: null, diasLibres: true, carrera, tiempoSeg: carrera ? 60 : 600 });
-      const r = await runSolver(built.input);
-      if (!['OPTIMAL', 'FEASIBLE'].includes(r.estado)) return send(res, 422, { error: 'El solver no encontró distribución (' + r.estado + ')' });
-      const p = fromSolverResult(r, built);
-      return send(res, 200, { items: p.items, unplaced: p.unplaced, estado: r.estado, dias: p.dias });
+      // El solver trabaja en semanas; las fechas reales (feriados, sábado de 4 horas) se desfasan un poco. Si con las
+      // fechas reales queda algún choque, se recalcula con más margen (2 semanas) y se queda la mejor propuesta.
+      let mejor = null;
+      for (const margen of carrera ? [1, 2] : [1]) {
+        const built = buildSolverInput(state, { jornada: null, diasLibres: true, carrera, margen, tiempoSeg: carrera ? 60 : 600 });
+        const r = await runSolver(built.input);
+        if (!['OPTIMAL', 'FEASIBLE'].includes(r.estado)) continue;
+        const p = fromSolverResult(r, built);
+        const choquesReales = contarChoques(state, p.items, carrera);
+        if (!mejor || choquesReales < mejor.choques || (choquesReales === mejor.choques && p.unplaced.length < mejor.p.unplaced.length)) mejor = { p, r, choques: choquesReales };
+        if (!choquesReales) break;
+      }
+      if (!mejor) return send(res, 422, { error: 'El solver no encontró distribución' });
+      return send(res, 200, { items: mejor.p.items, unplaced: mejor.p.unplaced, estado: mejor.r.estado, dias: mejor.p.dias, choques: mejor.choques });
     }
     if (path.startsWith('/api/')) return send(res, 404, { error: 'No existe' });
 

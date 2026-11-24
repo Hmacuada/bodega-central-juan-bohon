@@ -4,6 +4,9 @@
 import { buildProblem } from './solver.js';
 import { schedule, turnoAt, slotAllowed } from './manual.js';
 import { cohortDays, blocksFor, DAYS_PER_LEVEL, toMinutes } from './calendar.js';
+import { calendarOf, semanasHastaCierre } from './fechas.js';
+export { semanasHastaCierre };
+
 
 // Asignaturas que se dictan online: no ocupan sala. Lista editable (empieza con las 4 transversales).
 export const ONLINE = ['Tecnologías de la Información', 'Comunicación Efectiva', 'Taller de Habilidades Sociales', 'Innovación y Creatividad'];
@@ -33,11 +36,12 @@ function bloquesSabado(jornadas, jornada, sem) {
 
 // Entrada del solver para las secciones de una jornada.
 // `fijadas`: clases ya decididas (fase anterior o asignadas a mano) que no se mueven.
-export function buildSolverInput(state, { jornada, fijadas: extra = [], tiempoSeg = 45, poolSalas = null, capacidadPool = 30, diasLibres = false, salaPorCarrera = false, carrera = null } = {}) {
+export function buildSolverInput(state, { jornada, fijadas: extra = [], tiempoSeg = 45, poolSalas = null, capacidadPool = 30, diasLibres = false, salaPorCarrera = false, carrera = null, margen = 1 } = {}) {
   const problem = buildProblem(state);
   const docentes = Object.fromEntries((state.docentes || []).map((d) => [d.id, d]));
   const jn = state.jornadas?.[jornada];
   const secciones = [], fijadas = [...extra], sinLugar = [];
+  const cierre = semanasHastaCierre(calendarOf(state));
 
   for (const sec of problem.sections) {
     if (jornada && sec.g.jornada !== jornada) continue;
@@ -49,8 +53,10 @@ export function buildSolverInput(state, { jornada, fijadas: extra = [], tiempoSe
     // Clases ya asignadas a mano: se respetan tal como están.
     const fijadasSec = [];
     if (manual.length) {
-      const plan = schedule(g.subjects, manual.map(([c, p]) => [c, { slots: p.slots, o: p.o || 0, salaId: p.salaId || null, desde: p.desde }]));
-      for (const it of plan) fijadasSec.push({ secId: sec.id, codigo: it.codigo, slots: it.slots, salaId: it.salaId, desde: it.desde, hasta: it.hasta, docente: state.asignaciones?.[it.codigo] || null });
+      // Semanas reales (con feriados y recesos), como se ven en la app; el margen cubre el desfase entre las
+      // semanas del solver y las fechas reales de las clases nuevas.
+      const plan = schedule(g.subjects, manual.map(([c, p]) => [c, { slots: p.slots, o: p.o || 0, salaId: p.salaId || null, desde: p.desde }]), calendarOf(state));
+      for (const it of plan) fijadasSec.push({ secId: sec.id, codigo: it.codigo, slots: it.slots, salaId: it.salaId, desde: it.desde, hasta: it.hasta, margen, docente: state.asignaciones?.[it.codigo] || null });
     }
     fijadas.push(...fijadasSec);
     // Planificar una sola carrera: las demás solo aportan lo que ya tienen asignado (queda fijo).
@@ -87,11 +93,12 @@ export function buildSolverInput(state, { jornada, fijadas: extra = [], tiempoSe
           return { d, inicio: b.inicio, fin: b.fin, ok };
         }).filter(Boolean),
       }));
-      return { codigo: s.codigo, nombre: s.nombre, horas: s.horas || 0, dur: weeksOf(s.horas), docente, online: ONLINE.includes(s.nombre), pistas };
+      // Con sábado la pista da 10 horas por semana (3 + 3 + 4) en vez de 9: la asignatura termina antes.
+      return { codigo: s.codigo, nombre: s.nombre, horas: s.horas || 0, dur: weeksOf(s.horas), durSa: Math.max(1, Math.ceil((s.horas || 0) / 10)), docente, online: ONLINE.includes(s.nombre), pistas };
     });
     secciones.push({
       id: sec.id, carrera: g.carrera.codigo, limite: g.semanasImpresas ? g.semanasImpresas + TOLERANCIA_SEMANAS : SEMANAS_SIN_MALLA, salas,
-      salaElegida: elegida && salas.length === 1 ? elegida : null,
+      salaElegida: elegida && salas.length === 1 ? elegida : null, cierre,
       diasCandidatos: candidatos, diasFijos: fijos, nDias: DAYS_PER_LEVEL, asignaturas, elige, jornada: g.jornada, diasPreferidos: g.days || [],
     });
   }

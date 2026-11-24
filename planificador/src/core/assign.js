@@ -1,5 +1,17 @@
 // Asignación de docentes: quién puede dictar qué, sugerencia automática y estimación de docentes necesarios.
 import { activeSemesters, roman, cohortDays, blocksFor } from './calendar.js';
+import { calendarOf, semanasHastaCierre } from './fechas.js';
+
+// Capacidad del docente en horas del periodo: su tope de sesiones por semana × 3 horas × semanas del periodo.
+export function capacidadHoras(state, docente) {
+  const tope = docente?.tope ?? state.reglas?.tope ?? 12;
+  const otra = docente?.otraCarga || 0;
+  return Math.max(0, (tope - otra) * 3 * (semanasHastaCierre(calendarOf(state)) || 20));
+}
+// ¿Le caben esas horas más? (sinContar: horas que ya tiene y no deben sumarse dos veces).
+export function leCabe(state, docente, load, horas, sinContar = 0) {
+  return (load[docente.id] || 0) - sinContar + horas <= capacidadHoras(state, docente);
+}
 
 // ¿El docente puede ir todos los días del nivel? Un módulo usa los 3 días, así que basta un día bloqueado para no poder dictarlo.
 export function availableForLevel(state, docente, carrera, sem) {
@@ -58,8 +70,10 @@ export function suggestAssignments(state, { careerCode = null, overwrite = false
   const load = estimatedLoad(state, asign);
   const changed = [];
   for (const n of items) {
-    if (!n.cands.length) continue;
-    const best = [...n.cands].sort((a, b) => (load[a.id] || 0) - (load[b.id] || 0) || a.nombre.localeCompare(b.nombre))[0];
+    // Solo docentes a los que aún les cabe la asignatura (no superan su capacidad del periodo).
+    const cands = n.cands.filter((d) => leCabe(state, d, load, n.asignatura.horas * n.secs));
+    if (!cands.length) continue;
+    const best = [...cands].sort((a, b) => (load[a.id] || 0) - (load[b.id] || 0) || a.nombre.localeCompare(b.nombre))[0];
     asign[n.asignatura.codigo] = best.id;
     load[best.id] = (load[best.id] || 0) + n.asignatura.horas * n.secs;
     changed.push(n.asignatura.codigo);

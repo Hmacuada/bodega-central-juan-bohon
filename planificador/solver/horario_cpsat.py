@@ -32,15 +32,29 @@ def main():
     def agregar(clave, intervalo):
         recursos.setdefault(clave, []).append(intervalo)
 
-    # 1) Clases fijas: ocupan sus recursos en sus semanas.
+    # 1) Clases fijas: ocupan sus recursos en sus semanas (semanas reales, con feriados). Por recurso se unen los
+    #    tramos que se tocan: dos clases seguidas en la misma sala o pista pueden compartir la semana del cambio.
+    #    El margen (semanas) para sala y docente cubre el desfase con las fechas reales de las clases nuevas.
+    tramos = {}
     for f in data.get("fijadas", []):
-        ini, dur = f["desde"], f["hasta"] - f["desde"] + 1
+        ini, fin = f["desde"], f["hasta"]
+        mg = int(f.get("margen", 0))
         for sl in f["slots"]:
-            agregar(("sec", f["secId"], sl["d"], sl["clave"]), m.NewFixedSizeIntervalVar(ini, dur, "fija"))
+            tramos.setdefault(("sec", f["secId"], sl["d"], sl["clave"]), []).append((ini, fin))
             if f.get("salaId"):
-                agregar(("sala", f["salaId"], sl["d"], sl["clave"]), m.NewFixedSizeIntervalVar(ini, dur, "fija"))
+                tramos.setdefault(("sala", f["salaId"], sl["d"], sl["clave"]), []).append((max(1, ini - mg), fin + mg))
             if f.get("docente"):
-                agregar(("doc", f["docente"], sl["d"], sl["clave"]), m.NewFixedSizeIntervalVar(ini, dur, "fija"))
+                tramos.setdefault(("doc", f["docente"], sl["d"], sl["clave"]), []).append((max(1, ini - mg), fin + mg))
+    for clave, lista in tramos.items():
+        lista.sort()
+        unidos = []
+        for a, b in lista:
+            if unidos and a <= unidos[-1][1] + 1:
+                unidos[-1][1] = max(unidos[-1][1], b)
+            else:
+                unidos.append([a, b])
+        for a, b in unidos:
+            agregar(clave, m.NewFixedSizeIntervalVar(a, b - a + 1, "fija"))
 
     # 2) Días de cada sección.
     D = {}  # (sección, día) -> bool
@@ -84,6 +98,7 @@ def main():
     P = {}  # (sección, asignatura) -> bool colocada
     X = {}  # (sección, asignatura, pista) -> bool
     S = {}  # (sección, asignatura) -> semana de inicio
+    DUR = {}  # (sección, asignatura) -> semanas (entero o variable si depende del sábado)
     for sec in data["secciones"]:
         sid = sec["id"]
         ys = Y[grupo_de[sid]]
@@ -92,10 +107,19 @@ def main():
         for a in sec["asignaturas"]:
             cod = a["codigo"]
             dur = a["dur"]
+            # Si la sección usa el sábado (4 horas), la asignatura dura menos semanas.
+            dur_sa = a.get("durSa") or dur
+            if dur_sa < dur and (sid, "Sa") in D:
+                dv = m.NewIntVar(dur_sa, dur, f"dur_{sid}_{cod}")
+                m.Add(dv == dur - (dur - dur_sa) * D[(sid, "Sa")])
+                dur = dv
+            DUR[(sid, cod)] = dur
             p = m.NewBoolVar(f"p_{sid}_{cod}")
             st = m.NewIntVar(1, HORIZONTE, f"s_{sid}_{cod}")
             P[(sid, cod)] = p
             S[(sid, cod)] = st
+            fin_iv = m.NewIntVar(1, 2 * HORIZONTE + 1, f"e_{sid}_{cod}")  # fin del intervalo (inicio + duración)
+            m.Add(fin_iv == st + dur)
             m.Add(st <= limite - dur + 1).OnlyEnforceIf(p)
             m.Add(M[sid] >= st + dur - 1).OnlyEnforceIf(p)
             xs = []
@@ -116,7 +140,7 @@ def main():
                     pres = m.NewBoolVar(f"pd_{sid}_{cod}_{t}_{sl['d']}")
                     m.AddBoolAnd([x, D[dia]]).OnlyEnforceIf(pres)
                     m.AddBoolOr([x.Not(), D[dia].Not(), pres])
-                    iv_sec = m.NewOptionalFixedSizeIntervalVar(st, dur, pres, f"iv_{sid}_{cod}_{t}_{sl['d']}")
+                    iv_sec = m.NewOptionalIntervalVar(st, dur, fin_iv, pres, f"iv_{sid}_{cod}_{t}_{sl['d']}")
                     agregar(("sec", sid, sl["d"], sl["clave"]), iv_sec)
                     if a.get("docente"):
                         agregar(("doc", a["docente"], sl["d"], sl["clave"]), iv_sec)
@@ -124,7 +148,7 @@ def main():
                         pr = m.NewBoolVar(f"pr_{sid}_{cod}_{t}_{sl['d']}_{r}")
                         m.AddBoolAnd([pres, ys[r]]).OnlyEnforceIf(pr)
                         m.AddBoolOr([pres.Not(), ys[r].Not(), pr])
-                        agregar(("sala", r, sl["d"], sl["clave"]), m.NewOptionalFixedSizeIntervalVar(st, dur, pr, f"ivs_{sid}_{cod}_{t}_{sl['d']}_{r}"))
+                        agregar(("sala", r, sl["d"], sl["clave"]), m.NewOptionalIntervalVar(st, dur, fin_iv, pr, f"ivs_{sid}_{cod}_{t}_{sl['d']}_{r}"))
 
     # 4) Sin solapes por recurso.
     for ivs in recursos.values():
@@ -168,7 +192,20 @@ def main():
                  if d not in (s.get("diasPreferidos") or []) and (s["id"], d) in D]
         # El curso con más horas de cada carrera debería tener el sábado (4 horas): pesa más que el patrón configurado.
         sin_sabado = [1 - D[(s['id'], 'Sa')] for s in data['secciones'] if s.get('prefiereSabado') and (s['id'], 'Sa') in D]
-        m.Minimize(sum(M.values()) + 100 * sum(sabados) + 200 * sum(desbalance) + 5 * sum(fuera) + 50 * sum(sin_sabado) - 1000 * sum(P.values()))
+        # Pasar del cierre del periodo es lo más caro después de dejar asignaturas sin lugar (60 por hora que no cabe).
+        # Se mide en horas por pista: hasta el cierre caben 9 h por semana (3 sesiones de 3 h) o 10 con sábado (4 h).
+        exceso = []
+        for s in data["secciones"]:
+            if not s.get("cierre"):
+                continue
+            sid = s["id"]
+            con_sa = D.get((sid, "Sa"), 0)
+            for t in range(2):
+                horas = sum(X[(sid, a["codigo"], t)] * int(a.get("horas") or 0) for a in s["asignaturas"])
+                e = m.NewIntVar(0, 2000, f"exc_{sid}_{t}")
+                m.Add(e >= horas - 9 * s["cierre"] - s["cierre"] * con_sa)
+                exceso.append(e)
+        m.Minimize(sum(M.values()) + 100 * sum(sabados) + 200 * sum(desbalance) + 5 * sum(fuera) + 50 * sum(sin_sabado) + 60 * sum(exceso) - 1000 * sum(P.values()))
 
     solver = cp_model.CpSolver()
     solver.parameters.max_time_in_seconds = tiempo
@@ -201,7 +238,7 @@ def main():
                 "colocada": colocada,
                 "pista": pista,
                 "desde": solver.Value(S[key]) if colocada else None,
-                "dur": a["dur"],
+                "dur": solver.Value(DUR[key]) if colocada else a["dur"],
             })
     print(json.dumps({"estado": estado, "asignaturas": asignaturas, "salas": salas, "dias": dias}))
 

@@ -109,3 +109,12 @@ export function sesionesDe(cal, dias, horas, desdeIso) {
   }
   return { fechas: out, horas: dadas };
 }
+
+// Semanas de clase reales del periodo (de inicio a cierre), descontando feriados y recesos:
+// cada sección usa 3 de los 6 días, así que en promedio cada 6 días sin clases son una semana menos.
+export function semanasHastaCierre(cal) {
+  if (!cal?.inicio || !cal?.fin) return null;
+  let perdidos = 0;
+  for (let iso = cal.inicio; iso <= cal.fin; iso = addDays(iso, 1)) if (dayCode(iso) !== 'Do' && sinClases(cal, iso)) perdidos++;
+  return Math.max(1, weekOf(cal, cal.fin) - Math.ceil(perdidos / 6));
+}

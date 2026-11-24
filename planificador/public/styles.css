@@ -1062,3 +1062,20 @@ div.mx-busy { display: flex; align-items: center; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .spin { animation-duration: 3s; } }
 .stepper { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+
+.sala-n { margin-left: 10px; }
+
+/* Ocupación: salas como cuadros pequeños, color por carrera */
+.mx-grid.mx-sq { width: max-content; height: auto; align-content: start; }
+.plan-wrap .mx-grid.mx-sq { flex: 0 0 auto; }
+.mx-grid.mx-sq .mx-room { padding: 0 1px 3px; font-size: 10px; }
+.mx-grid.mx-sq:not(.mx-dia) .mx-room small { font-size: 8.5px; }
+.mx-grid.mx-sq:not(.mx-dia) .mx-busy { justify-content: center; padding: 0; border-left: 0; background: var(--c); color: #fff; }
+.mx-grid.mx-sq:not(.mx-dia) .mx-busy b { font-size: 8.5px; letter-spacing: .02em; }
+.mx-grid.mx-sq.mx-dia .mx-busy { border-left-width: 4px; background: color-mix(in srgb, var(--c) 18%, var(--surface)); }
+.mx-leyenda { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 4px 0 8px; font-size: 12px; color: var(--ink-2); }
+.mx-leyenda span { display: inline-flex; align-items: center; gap: 6px; }
+.mx-leyenda i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.mx-leyenda small { color: var(--ink-3); }
+
+.mx-grid.mx-sq .mx-time b { width: 52px; flex: none; }
