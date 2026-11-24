@@ -1095,3 +1095,11 @@ div.mx-busy { display: flex; align-items: center; }
 .car-card.lista .car-top small, .car-card.lista .car-foot { color: rgba(255,255,255,.88); }
 .car-card.lista .badge.ok { background: rgba(255,255,255,.22); color: #fff; }
 @media (prefers-reduced-motion: reduce) { .car-card { transition: none; } .car-card:hover { transform: none; } }
+/* Tarjetas compactas: las 15 carreras caben en pantalla sin scroll */
+.car-grid { grid-template-columns: repeat(auto-fill, minmax(138px, 1fr)); gap: 8px; margin-top: 10px; }
+.car-card { min-height: 0; gap: 4px; padding: 8px 10px; border-radius: 9px; }
+.car-top b { font-size: 13px; }
+.car-top small { font-size: 10px; }
+.car-name { font-size: 11.5px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.5em; }
+.car-foot { font-size: 10.5px; }
+.car-foot .badge { font-size: 10px; padding: 1px 6px; }
