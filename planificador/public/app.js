@@ -312,7 +312,7 @@ function viewHorario() {
   const head = `<div class="pagehead">
       <div><h1>Horario</h1><p class="muted">${ui.hsub || `${esc(S.periodo.nombre)} · ${semTxt}${enPractica ? ` · ${enPractica} en práctica` : ''}`}</p></div>
       <div class="row">
-        ${H ? `<button class="btnq" data-act="print" title="Imprimir la semana">${icon('printer')}<span class="sr">Imprimir</span></button><button class="btnq" data-act="csv" title="Descargar CSV">${icon('download')}<span class="sr">CSV</span></button>` : ''}
+        ${H ? `<button class="btnq" data-act="print" title="Imprimir la semana de la sección elegida">${icon('printer')}<span class="sr">Imprimir</span></button><button class="btnq" data-act="csv" title="Descargar todas las clases del periodo (se abre en Excel)">${icon('download')}<span class="sr">Excel</span></button>` : ''}
         <a class="btnq" href="#/ocupacion">${icon('grid')}Ocupación de salas</a>
         <button class="btnp" data-act="modal" data-v="wizard" data-k="${ui.hc}" ${ui.hc ? '' : 'disabled title="Elige una carrera"'}>${icon('sparkle')}Planificar carrera</button>
       </div></div>`;
@@ -347,9 +347,12 @@ function courseViewer(H) {
   const c = ui.hc ? career(ui.hc) : null;
   if (!c) ui.hc = '';
   const activos = activeSemesters(S.periodo.paridad);
-  const yrSems = (ui.hy === 2 ? [3, 4] : [1, 2]).filter((n) => activos.includes(n));
-  if (!yrSems.includes(ui.hs)) ui.hs = yrSems[0];
+  // Cada año tiene 2 semestres (1º año: I y II; 2º año: III y IV). En un periodo se dictan solo los impares o los pares.
+  if (![1, 2, 3, 4].includes(ui.hs)) ui.hs = activos[0];
+  ui.hy = ui.hs <= 2 ? 1 : 2;
+  const yrSems = ui.hy === 1 ? [1, 2] : [3, 4];
   const sem = ui.hs;
+  const fueraPeriodo = !activos.includes(sem);
   const secs = H && c ? H.secciones.filter((x) => x.carrera === c.codigo && x.sem === sem) : [];
   if (!secs.some((x) => x.letra === ui.hl)) ui.hl = secs[0]?.letra || 'A';
   const sec = secs.find((x) => x.letra === ui.hl) || null;
@@ -362,7 +365,7 @@ function courseViewer(H) {
   const filters = `<div class="hfilters">
       <label class="hf"><span>Carrera</span><select data-change="hc" aria-label="Carrera"><option value="">Elige una carrera</option>${S.carreras.map((x) => `<option value="${x.codigo}" ${x.codigo === ui.hc ? 'selected' : ''}>${esc(x.nombre)}</option>`).join('')}</select></label>
       <div class="hf"><span>Año</span>${seg('hy', [[1, '1º año'], [2, '2º año']], ui.hy)}</div>
-      ${yrSems.length > 1 ? `<div class="hf"><span>Semestre</span>${seg('hs', yrSems.map((n) => [n, roman(n)]), sem)}</div>` : `<div class="hf"><span>Semestre</span><b class="hf-val">${roman(sem)}</b></div>`}
+      <div class="hf" title="En ${esc(S.periodo.nombre)} se dictan los semestres ${activos.map(roman).join(' y ')}"><span>Semestre</span>${seg('hs', yrSems.map((n) => [n, roman(n) + (activos.includes(n) ? '' : ' <small class="faint">otro periodo</small>')]), sem)}</div>
       ${secs.length > 1 ? `<div class="hf"><span>Sección</span>${seg('hl', secs.map((x) => [x.letra, x.letra]), ui.hl)}</div>` : ''}
       <div class="hf hf-end">${H ? weekNav(maxW) : ''}</div>
     </div>`;
@@ -370,10 +373,13 @@ function courseViewer(H) {
   const total = sec ? sec.plan.length + sec.pendientes.length : 0;
   const sub = !c ? 'Elige una carrera y un semestre para ver su horario.'
     : !H ? `${esc(c.nombre)} · semestre ${roman(sem)}`
+    : fueraPeriodo ? `${esc(c.nombre)} · el semestre ${roman(sem)} no se dicta en ${esc(S.periodo.nombre)}. Para verlo, cambia el periodo arriba (${sem % 2 ? 'otoño' : 'primavera'}).`
     : !sec ? `${esc(c.nombre)} · el semestre ${roman(sem)} no tiene secciones en ${esc(S.periodo.nombre)}.`
     : `${secLabel(sec)} · ${sec.estudiantes} estudiantes · <b>${sec.plan.length} de ${total}</b> asignaturas asignadas${sec.fechaFin ? ` · <span class="${sec.pasaCierre ? "bad-t" : ""}" title="${sec.pasaCierre ? "Pasa del cierre del periodo (Configuración → Calendario)" : ""}">termina el ${fmtFecha(sec.fechaFin)}${sec.pasaCierre ? " (después del cierre)" : ""}</span>` : ""} · <button class="linkbtn" data-act="modal" data-v="plan" data-k="${sec.id}">Plan del semestre</button>`;
   if (c) ui.hsub += sub;
-  return `<section class="viewer" aria-label="Horario semanal">${filters}
+  // Al imprimir, en vez de los selectores va un título con carrera, semestre, sección y semana.
+  const printHead = c && sec ? `<p class="print-only print-head"><b>${esc(c.nombre)}</b> · Semestre ${roman(sem)} · Sección ${sec.letra} · ${esc(S.periodo.nombre)} · Semana ${ui.week} (${esc(weekRange(ui.week))})</p>` : '';
+  return `<section class="viewer" aria-label="Horario semanal">${printHead}${filters}
     ${c ? '' : `<p class="muted small">${sub}</p>`}
     <div class="plan-wrap"><div class="tablewrap week-scroll">${courseGrid(c, sem, ses, sec)}</div>${H && ui.pick && sec ? pickPanel(H, sec, ui.pick) : ""}</div>
     ${sec ? agenda(ses, H) : ''}
@@ -1723,9 +1729,10 @@ function downloadCsv() {
   const H = S.horario;
   const secById = Object.fromEntries(H.secciones.map((s) => [s.id, s]));
   const rows = [['Carrera', 'Semestre', 'Sección', 'Asignatura', 'Docente', 'Sala', 'Día', 'Inicio', 'Fin', 'Semana desde', 'Semana hasta']];
+  const sinSala = (id) => (id ? salaName(id) : 'Sin sala');
   for (const x of H.sesiones) {
     const s = secById[x.seccionId];
-    rows.push([s.carreraNombre, roman(s.sem), s.letra, x.nombre, docName(x.docenteId), salaName(x.salaId), DAY_NAMES[x.dia], x.inicio, x.fin, x.desde, x.hasta]);
+    rows.push([s.carreraNombre, roman(s.sem), s.letra, x.nombre, docName(x.docenteId), sinSala(x.salaId), DAY_NAMES[x.dia], x.inicio, x.fin, x.desde, x.hasta]);
   }
   const csv = '﻿' + rows.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(';')).join('\r\n');
   download(new Blob([csv], { type: 'text/csv;charset=utf-8' }), `horario-${S.periodo.nombre.replace(/\s+/g, '-').toLowerCase()}.csv`);

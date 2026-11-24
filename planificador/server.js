@@ -110,7 +110,7 @@ const server = createServer(async (req, res) => {
       const usuario = form.get('usuario') || '';
       const r = intentarLogin(req, usuario, form.get('clave') || '');
       if (r.ok) return redirect(res, '/', r.cookie);
-      return send(res, r.bloqueado ? 429 : 401, paginaLogin(r.bloqueado ? 'Demasiados intentos. Espera 10 minutos.' : 'Usuario o clave incorrectos.', usuario), 'text/html; charset=utf-8');
+      return send(res, r.bloqueado ? 429 : 401, paginaLogin(r.bloqueado ? 'Demasiados intentos. Espera 10 minutos.' : 'Usuario o contraseña incorrectos.', usuario), 'text/html; charset=utf-8');
     }
     if (path === '/logout') return redirect(res, authActiva() ? '/login' : '/', cookieSalida(req));
     if (!sesionValida(req) && path !== '/public/logo.png') {

@@ -1165,3 +1165,12 @@ div.mx-busy { display: flex; align-items: center; }
 
 .side-out { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 10px; color: var(--ink-3); text-decoration: none; font-size: 14px; }
 .side-out:hover { background: var(--navy-50); color: var(--ink); }
+
+/* Impresión del horario: título en vez de selectores, hoja apaisada */
+.print-only { display: none; }
+@media print {
+  @page { size: landscape; margin: 12mm; }
+  .print-only { display: block; }
+  .print-head { margin: 0 0 10px; font-size: 14px; }
+  .viewer .hfilters { display: none !important; }
+}
